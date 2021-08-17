@@ -56,7 +56,8 @@ const allowCrossDomain = function (req, res, next) {
   const allowedOrigins = [
     'https://supplieson.com',
     'https://www.supplieson.com',
-    'http://localhost:3000'
+    'http://localhost:3000',
+    'http://192.168.107.183:3000'
   ];
   origin = req.headers.origin;
 

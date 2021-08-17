@@ -781,6 +781,20 @@ export default {
       status: Joi.array()
     }
   },
+  getInvoiceReport: {
+    query: {
+      skip: Joi.number().integer().min(0).required(),
+      limit: Joi.number().integer().min(1).required(),
+      startDate: Joi.string().required(),
+      endDate: Joi.string().required(),
+      // customerId: Joi.string().hex(),
+    }
+  },
+  getInvoiceDetail: {
+    query: {
+      _id: Joi.string(),
+    }
+  },
   getTransactionReport: {
     query: {
       startDate: Joi.string().required(),
