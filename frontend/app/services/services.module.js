@@ -23,8 +23,9 @@ const production = 'https://supplieson.com';
 const staging = 'http://dev.supplieson.com'; // 'http://dev.supplieson.com';
 const testEnv = 'http://167.71.169.109';
 const development = 'http://localhost:3000';
+const dante = "http://192.168.107.183:3000";
 
-const host = staging;
+const host = dante;
 // const host = production;
 
 const servicesModule = angular.module('app.servicesModule', []);

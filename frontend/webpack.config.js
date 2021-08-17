@@ -15,7 +15,7 @@ module.exports = {
     output: {
         path: path.resolve(__dirname, 'pages'),
         filename: 'js/[name].min.js',
-        // publicPath: '/dist'
+        publicPath: 'pages/'
     },
     module: {
         rules: [

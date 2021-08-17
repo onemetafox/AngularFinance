@@ -737,7 +737,9 @@
         "transactionsReport": "Transactions Reports",
         "summaryReport": "Summary Reports",
         "transactionsDetail": "Transaction Detail",
-        "detailedReport": "Detailed Reports"
+        "detailedReport": "Detailed Reports",
+        "invoices": "Invoices",
+        "invoiceDetail": "Invoice Details"
       },
       "index": {
         "reports": "Reports",
@@ -847,7 +849,41 @@
         "branches": "branches"
       },
       "invoices": {
-        "title": "Invoices"
+        "title": "Invoices",
+        "number": "Invoice Number",
+        "details": "Details",
+        "paid": "Paid",
+        "invoiceDetail": "Invoice Details",
+        "taxInvoice": "Tax Invoice",
+        "dateOfSupply": "Date of Supply",
+        "issueDate": "Invoice Issue Date",
+        "seller": "Seller",
+        "buyer": "Buyer",
+        "name": "Name",
+        "buildingNo": "Building No.",
+        "streetName": "Street Name",
+        "district": "District",
+        "city": "City",
+        "country": "Country",
+        "postalCode": "Postal Code",
+        "additionalInfo": "Additional No.",
+        "vatNumber": "VAT Number",
+        "otherSellerId":"Other Seller ID",
+        "otherBuyerId": "Other Buyer ID",
+        "lineItems": "Line Items",
+        "natureOfGoods": "Nature Of Goods or Service",
+        "unitPrice": "Unit Price",
+        "quantity": "Quantity",
+        "taxableAmount": "Taxable Amount",
+        "discount": "Discount",
+        "taxRate": "Tax Rate",
+        "taxAmount": "Tax Amount",
+        "itemSubtotal": "Item Subtotal(Including VAT)",
+        "totalAmount": "Total Amount",
+        "totalExculd": "Total (Excluding VAT)",
+        "totalTaxableAmount": "Total Taxable Amount (Excluding VAT)",
+        "totalVat": "Total VAT",
+        "totalAmountDue": "Total Amount Due"
       }
     },
     "customer": {

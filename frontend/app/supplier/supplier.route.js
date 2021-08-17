@@ -316,6 +316,49 @@ export default function supplierConfig($stateProvider, $urlRouterProvider, $loca
                 label: 'supplier.reports.breadcrumb.transactionsReport'
             }
         })
+        .state('app.supplier.report.invoices', {
+            url: '/invoices',
+            templateUrl: 'app/supplier/reports/invoices/invoices.html',
+            controller: 'SupplierReportInvoicesCtrl as $ctrl',
+            resolve: {
+                deps: ['$ocLazyLoad', function ($ocLazyLoad) {
+                    return $ocLazyLoad.load([
+                        'switchery',
+                        'select',
+                        'moment',
+                        'datepicker',
+                        'daterangepicker'
+                    ], {
+                        insertBefore: '#lazyload_placeholder'
+                    })
+                        .then(() => true// $ocLazyLoad.load('assets/js/controllers/forms_elements.js');
+                        );
+                }]
+            },
+            data: {
+                permissions: {
+                    only: ['manageTransactionsReports'],
+                    redirectTo: AuthorizationMethods.redirectTo404()
+                }
+            },
+            ncyBreadcrumb: {
+                label: 'supplier.reports.breadcrumb.invoices'
+            }
+        })
+        .state('app.supplier.report.invoiceDetails', {
+            url: '/invoices/:id',
+            templateUrl: 'app/supplier/reports/invoices/invoice-detail/invoice-detail.html',
+            controller: 'SupplierReportInvoiceDetailsCtrl as $ctrl',
+            data: {
+                permissions: {
+                    only: ['manageTransactionsReports'],
+                    redirectTo: AuthorizationMethods.redirectTo404()
+                }
+            },
+            ncyBreadcrumb: {
+                label: 'supplier.reports.breadcrumb.invoiceDetail'
+            }
+        })
         .state('app.supplier.report.detailed', {
             url: '/detailed',
             templateUrl: 'app/supplier/reports/detailed/reports.html',
