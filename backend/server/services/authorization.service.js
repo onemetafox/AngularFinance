@@ -154,7 +154,8 @@ function addPermissionsAndDefaultRoles() {
     key: 'manageSuppliers',
     type: 'Admin',
     allowedEndPoints: ['GET_/api/auth/checkToken', 'POST_/api/suppliers', 'PUT_/api/suppliers', 'PUT_/api/suppliers/approve', 'PUT_/api/suppliers/block',
-      'PUT_/api/suppliers/unblock', 'GET_/api/suppliers', 'GET_/api/suppliers/billingHistory', 'GET_/api/payments/count', 'GET_/api/transactions']
+      'PUT_/api/suppliers/unblock', 'GET_/api/suppliers', 'GET_/api/suppliers/billingHistory', 'GET_/api/payments/count', 
+      'GET_/api/transactions','GET_/api/suppliers/reports/invoices']
 
   });
   adminSupplierEndPoints.save();
@@ -187,7 +188,7 @@ function addPermissionsAndDefaultRoles() {
     key: 'manageOrdersReports',
     type: 'Admin',
     allowedEndPoints: ['GET_/api/auth/checkToken', 'GET_/api/admins/reports/orders', 'GET_/api/suppliers/reports/orders', 'GET_/api/orders',
-      'GET_/api/orders/history', 'GET_/api/customers', 'GET_/api/suppliers']
+      'GET_/api/orders/history', 'GET_/api/customers', 'GET_/api/suppliers','GET_/api/suppliers/reports/invoices']
   });
   adminOrdersReportsEndPoints.save();
 
@@ -446,9 +447,18 @@ function addPermissionsAndDefaultRoles() {
     englishName: 'Manage Orders Reports',
     key: 'manageOrdersReports',
     type: 'Supplier',
-    allowedEndPoints: ['GET_/api/auth/checkToken', 'GET_/api/orders', 'GET_/api/suppliers/reports/orders']
+    allowedEndPoints: ['GET_/api/auth/checkToken', 'GET_/api/orders', 'GET_/api/suppliers/reports/orders','GET_/api/suppliers/reports/invoices']
   });
   supplierOrdersReportEndPoints.save();
+
+  // const supplierInvoiceReportEndPoints = new Permission({
+  //   arabicName: 'ادارة تقارير الطلبات',
+  //   englishName: 'Manage Invoice Reports',
+  //   key: 'manageOrdersReports',
+  //   type: 'Supplier',
+  //   allowedEndPoints: ['GET_/api/auth/checkToken', 'GET_/api/suppliers/reports/invoices']
+  // });
+  // supplierInvoiceReportEndPoints.save();
 
   const supplierTransactionsReportEndPoints = new Permission({
     arabicName: 'ادارة تقارير المدفوعات',
@@ -527,6 +537,8 @@ function addPermissionsAndDefaultRoles() {
       supplierPaymentsEndPoints,
       supplierDeleteEndPoints,
       canDeliverEndPoints
+      // ,
+      // supplierInvoiceReportEndPoints
     ],
     isLocked: true });
   supplierAdmin.save();

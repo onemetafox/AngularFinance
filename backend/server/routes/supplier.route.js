@@ -62,6 +62,22 @@ router.route('/reports/orders')
     session: false
   }), auth.can('Manage Suppliers', 'GET_/api/suppliers/reports/orders'), validate(paramValidation.getReport), supplierCtrl.getReport);
 
+router.route('/reports/invoices')
+  /** GET /api/suppliers/reports/orders - Get a report of supplier orders and revenue */
+  .get(passport.authenticate('jwt', {
+    session: false
+  // }), auth.can('Manage Suppliers', 'GET_/api/suppliers/reports/invoices'), validate(paramValidation.getInvoiceReport), supplierCtrl.getInvoices);
+  }), validate(paramValidation.getInvoiceReport), supplierCtrl.getInvoices);
+
+
+router.route('/reports/invoice/:invoiceId')
+  /** GET /api/suppliers/reports/orders - Get a report of supplier orders and revenue */
+  .get(passport.authenticate('jwt', {
+    session: false
+  // }), auth.can('Manage Suppliers', 'GET_/api/suppliers/reports/selectInvoice'), validate(paramValidation.getReport), supplierCtrl.selectInvoice);
+  }), supplierCtrl.getInvoiceHistory);
+
+
 router.route('/reports/transactions')
   /** GET /api/suppliers/reports/transactions - Get a report of supplier orders and revenue */
   .get(passport.authenticate('jwt', {
