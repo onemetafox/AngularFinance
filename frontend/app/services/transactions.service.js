@@ -106,6 +106,11 @@ export default class TransactionsService {
                 request.url = request.url.concat(`&customerId=${query.customerId}`);
             }
         }
+        if (query.branchId) {
+            if (query.branchId !== 'All') {
+                request.url = request.url.concat(`&branchId=${query.branchId}`);
+            }
+        }
         // request.url = request.url.concat(`&type=${query.type}`);
         request.method = 'GET';
         request.headers = { 'Content-Type': 'application/json' };

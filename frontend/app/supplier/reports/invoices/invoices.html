@@ -45,7 +45,15 @@
                 </div>
             </div>
             <div class="col-sm-4">
-
+                <div style="z-index:1;" class="form-group form-group-custom form-group-default form-group-default-select2">
+                    <label class="label-custom">{{"supplier.reports.invoices.branchName" | translate }}</label>
+                    <select ng-model="$ctrl.searchCriteria.branchId" ng-change="$ctrl.onBranchFilterChange($ctrl.searchCriteria)" id="branchSelect"
+                            class="full-width" data-placeholder="Select Branch" data-init-plugin="select2">
+                        <option value="">اختر</option>
+                        <option value="All">{{"supplier.reports.transactions.filter.All" | translate }}</option>
+                        <option ng-repeat="item in $ctrl.branches" value="{{item._id}}">{{item.branchName}}</option>
+                    </select>
+                </div>
             </div>
             <div class="col-sm-4">
                 <div class="form-group form-group-default input-group">
@@ -75,11 +83,11 @@
                             <th class="bold">{{"supplier.reports.transactions.table.date" | translate }}</th>
                             <th class="bold">{{"supplier.reports.transactions.filter.customer" | translate }}</th>
                             <th class="bold">{{"supplier.reports.transactions.table.amount" | translate }}</th>
-                            <th class="bold">{{"supplier.recipes.list.search.status.placeholder" | translate }}</th>
+                            <th class="bold">{{"supplier.reports.invoices.branchName" | translate }}</th>
                         </tr></thead>
                         <tbody>
 
-                        <tr ng-repeat="item in $ctrl.invoice.invoices" class="gradeX odd content-table-payment cursor" role="row" ng-click="$ctrl.selected(item)">
+                        <tr ng-repeat="item in $ctrl.invoice" class="gradeX odd content-table-payment cursor" role="row" ng-click="$ctrl.selected(item)">
                             <td class="sorting_1 mn-150 p-r-0">{{item.invoiceId}}</td>
                             <td class="sorting_1 mn-50 p-r-0 p-l-0">
                                 <span class="label upper-case">{{item.createdAt | amUtcOffset:'-0000' | amDateFormat:'DD-MM-YYYY'}}</span>
@@ -89,7 +97,7 @@
 
                             <td class="sorting_1 p-l-5">{{item.total| currency:"":2}} <small>{{"supplier.account.payment.sar" | translate }}</small></td>
                             <td class="sorting_1 p-l-5">
-                                <span ng-if="item.isPaid == true" class="label label-success upper-case"><li class="fa fa-money"></li> {{"supplier.reports.invoices.paid" | translate}}</span>
+                                {{item.customer.branch.branchName | translate}}
                             </td>
                         </tr>
 
@@ -105,7 +113,7 @@
 <view-payment bill="$ctrl.billItem" payment-type="'AS'"></view-payment>
 
 <script>
-    $('#customerSelect , #typeSelect').on('select2:open',function(){
+    $('#customerSelect').on('select2:open',function(){
         let that = $(this);
         let flag = false;
         if ( $(window).width() > 739) {
@@ -134,4 +142,5 @@
             });
         }
     });
+
 </script>

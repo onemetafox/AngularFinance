@@ -883,7 +883,8 @@
         "totalExculd": "Total (Excluding VAT)",
         "totalTaxableAmount": "Total Taxable Amount (Excluding VAT)",
         "totalVat": "Total VAT",
-        "totalAmountDue": "Total Amount Due"
+        "totalAmountDue": "Total Amount Due",
+        "branchName": "Branch Name"
       }
     },
     "customer": {

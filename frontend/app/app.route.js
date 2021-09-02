@@ -15,7 +15,6 @@ export default function appConfig(
         $urlRouterProvider,
         $breadcrumbProvider
     ) {
-    $locationProvider.html5Mode(true);
     $stateProvider
         .state('app', {
             abstract: true,
@@ -57,6 +56,6 @@ export default function appConfig(
         const $state = $injector.get('$state');
         $state.go('website');
     });
-    $locationProvider.html5Mode(true);
+    $locationProvider.html5Mode(true).hashPrefix('!');
 }
 
