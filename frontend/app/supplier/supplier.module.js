@@ -13,6 +13,8 @@ import OrderDetailsCtrl from './order/order.details.controller';
 import SupplierReportOrdersCtrl from './reports/orders/supplierReportOrders.controller';
 import SupplierReportOrderDetailsCtrl from './reports/orders/order-detail/supplierOrderReportDetails.controller';
 import SupplierReportTransactionsCtrl from './reports/transactions/supplierReportTransaction.controller';
+import SupplierReportInvoicesCtrl from './reports/invoices/supplierReportInvoice.controller';
+import SupplierReportInvoiceDetailsCtrl from './reports/invoices/invoice-detail/supplierReportInvoiceDetails.controller';
 import SupplierAccountProfileCtrl from './account/profile/supplierAccountProfile.controller';
 import SupplierAccountPaymentsCtrl from './account/payments/supplierAccountPayments.controller';
 import SupplierAccountRolesCtrl from './account/role/supplierAccountRoles.controller';
@@ -60,6 +62,7 @@ supplierModule.controller('OrderDetailsCtrl', OrderDetailsCtrl);
 supplierModule.controller('SupplierReportOrdersCtrl', SupplierReportOrdersCtrl);
 supplierModule.controller('SupplierReportOrderDetailsCtrl', SupplierReportOrderDetailsCtrl);
 supplierModule.controller('SupplierReportTransactionCtrl', SupplierReportTransactionsCtrl);
+supplierModule.controller('SupplierReportTransactionCtrl', SupplierReportTransactionsCtrl);
 supplierModule.controller('SupplierAccountProfileCtrl', SupplierAccountProfileCtrl);
 supplierModule.controller('SupplierAccountPaymentsCtrl', SupplierAccountPaymentsCtrl);
 supplierModule.controller('SupplierAccountRolesCtrl', SupplierAccountRolesCtrl);
@@ -84,6 +87,8 @@ supplierModule.controller(
 supplierModule.controller('SupplierCustomerListBranchesCtrl', supplierCustomerListBranchesCtrl);
 supplierModule.controller('SupplierDetailedReportsCtrl', supplierDetailedReportsCtrl);
 supplierModule.controller('SupplierSummaryReportsCtrl', supplierSummaryReportsCtrl);
+supplierModule.controller('SupplierReportInvoicesCtrl', SupplierReportInvoicesCtrl);
+supplierModule.controller('SupplierReportInvoiceDetailsCtrl', SupplierReportInvoiceDetailsCtrl);
 
 supplierModule.component('supplierReceiptFormComponent', ReceiptFormComponent);
 supplierModule.component('supplierIngredientFormComponent', ingredientFormComponent);

@@ -92,6 +92,37 @@ export default class TransactionsService {
             }
         );
     }
+
+    listInvoices(query) {
+        const request = {};
+        request.url = `${this._AppConstants.api}/suppliers/reports/invoices?startDate=${query.startDate}&endDate=${query.endDate}&skip=${query.skip}&limit=${query.limit}`;
+        if (query.supplierId) {
+            if (query.supplierId !== 'All') {
+                request.url = request.url.concat(`&supplierId=${query.supplierId}`);
+            }
+        }
+        if (query.customerId) {
+            if (query.customerId !== 'All') {
+                request.url = request.url.concat(`&customerId=${query.customerId}`);
+            }
+        }
+        // request.url = request.url.concat(`&type=${query.type}`);
+        request.method = 'GET';
+        request.headers = { 'Content-Type': 'application/json' };
+        request.headers.Authorization = `Bearer ${this._JwtService.get()}`;
+
+        return this.retryRequest(request);        
+    }
+    getInvoice(query) {
+        const request = {};
+        request.url = `${this._AppConstants.api}/suppliers/reports/invoice/${query.id}`;
+        // request.url = request.url.concat(`&type=${query.type}`);
+        request.method = 'GET';
+        request.headers = { 'Content-Type': 'application/json' };
+        request.headers.Authorization = `Bearer ${this._JwtService.get()}`;
+
+        return this.retryRequest(request);
+    }
 }
 
 TransactionsService.$inject = ['AppConstants', 'JwtService', 'RetryRequest'];

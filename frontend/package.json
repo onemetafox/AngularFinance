@@ -8,7 +8,7 @@
     "url": "https://bitbucket.org/khaleel/supplieson_front-end"
   },
   "scripts": {
-    "start": "webpack-dev-server --watch",
+    "start": "webpack-dev-server --watch --hot",
     "webpack": "webpack",
     "precommit": "yarn lint",
     "lint": "esw app/*.js scripts --color",
