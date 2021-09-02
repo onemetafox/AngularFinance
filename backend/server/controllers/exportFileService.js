@@ -60,6 +60,13 @@ function exportReceiptFile(headerPath, bodyPath, dataObject, title, description,
 }
 
 function exportFile(headerPath, bodyPath, dataObject, title, description, type, res) {
+  console.log("headerPath ............" , headerPath);
+  console.log("bodyPath ............" , bodyPath);
+  console.log("dataObject ............" , dataObject);
+  console.log("title ............" , title);
+  console.log("description ............" , description);
+  console.log("type ............" , type);
+  
   try {
     // const htmlHeaderContent = fs.readFileSync('report_template/transaction/pdf-transaction-report-header-arabic.html', 'utf8');
     // const htmlBodyContent = fs.readFileSync('report_template/transaction/pdf-transaction-report-body-arabic.html', 'utf8');

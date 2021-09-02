@@ -69,6 +69,13 @@ router.route('/reports/invoices')
   // }), auth.can('Manage Suppliers', 'GET_/api/suppliers/reports/invoices'), validate(paramValidation.getInvoiceReport), supplierCtrl.getInvoices);
   }), validate(paramValidation.getInvoiceReport), supplierCtrl.getInvoices);
 
+router.route('/reports/branches')
+  /** GET /api/suppliers/reports/orders - Get a report of supplier orders and revenue */
+  .get(passport.authenticate('jwt', {
+    session: false
+  // }), auth.can('Manage Suppliers', 'GET_/api/suppliers/reports/invoices'), validate(paramValidation.getInvoiceReport), supplierCtrl.getInvoices);
+  }), validate(paramValidation.getBranches), supplierCtrl.getBranches);
+
 
 router.route('/reports/invoice/:invoiceId')
   /** GET /api/suppliers/reports/orders - Get a report of supplier orders and revenue */
