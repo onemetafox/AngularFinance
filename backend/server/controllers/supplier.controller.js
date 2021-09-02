@@ -1829,17 +1829,22 @@ function getInvoiceHistory(req, res){
         path: 'order'
       }
     })
-  .then(async (invoiceDetail) => {
+  .then( (invoiceDetail) => {
     var transactions = invoiceDetail.transactions;
     var totalPrice = 0;
-    for (var i = transactions.length - 1; i >= 0; i--) {
-      let orderProduct = await OrderProduct.findOne({order: transactions[i].order._id}).populate('product');
-      totalPrice = totalPrice + transactions[i].order.price;
-
-      transactions[i]["_doc"]['orderProduct'] = orderProduct;
-    }
-    invoiceDetail["_doc"]["totalPrice"] = totalPrice;
-    res.json(Response.success(invoiceDetail));
+    new Promise((resolve, reject) => {
+      transactions.forEach((item, index)=>{
+        OrderProduct.findOne({order: item.order._id}).populate('product').then((product) => {
+          item['_doc']['orderProduct'] = product;
+          totalPrice = totalPrice + item.order.price;
+          if (index === transactions.length -1) resolve();
+        });
+        
+      })
+    }).then(() => {
+        invoiceDetail['_doc']["totalPrice"] = totalPrice; 
+        res.json(Response.success(invoiceDetail));
+    });
   });
 }
 
@@ -2955,12 +2960,17 @@ function getBranchesArray(userId, supplierId, callback) {
   //   }
   //   return branches;
   // })
-  Branches.find({ customer: userId })
-  .then((branches) => {
-    callback(null, branches, supplierId);
-  }).catch((err) => {
-    callback(err, null, null);
-  });
+  if(userId != "All"){
+    Branches.find({ customer: userId })
+    .then((branches) => {
+      callback(null, branches, supplierId);
+    }).catch((err) => {
+      callback(err, null, null);
+    });  
+  }else{
+    callback(null, [], supplierId);
+  }
+  
 }
 
 export default {
