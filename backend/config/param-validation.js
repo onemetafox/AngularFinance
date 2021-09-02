@@ -232,7 +232,16 @@ export default {
       parentCategory: Joi.string().hex()
     }
   },
-
+  getBranches : {
+    params: {
+      // categoryId: Joi.string().hex().required()
+    },
+    query: {
+      // skip: Joi.number().integer().min(0),
+      // limit: Joi.number().integer().min(1),
+      customerId: Joi.string().hex()
+    }
+  },
   // GET api/categories/otherProducts/:categoryId
   otherProducts: {
     params: {

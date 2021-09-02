@@ -1829,17 +1829,22 @@ function getInvoiceHistory(req, res){
         path: 'order'
       }
     })
-  .then(async (invoiceDetail) => {
+  .then( (invoiceDetail) => {
     var transactions = invoiceDetail.transactions;
     var totalPrice = 0;
-    for (var i = transactions.length - 1; i >= 0; i--) {
-      let orderProduct = await OrderProduct.findOne({order: transactions[i].order._id}).populate('product');
-      totalPrice = totalPrice + transactions[i].order.price;
-
-      transactions[i]["_doc"]['orderProduct'] = orderProduct;
-    }
-    invoiceDetail["_doc"]["totalPrice"] = totalPrice;
-    res.json(Response.success(invoiceDetail));
+    new Promise((resolve, reject) => {
+      transactions.forEach((item, index)=>{
+        OrderProduct.findOne({order: item.order._id}).populate('product').then((product) => {
+          item['_doc']['orderProduct'] = product;
+          totalPrice = totalPrice + item.order.price;
+          if (index === transactions.length -1) resolve();
+        });
+        
+      })
+    }).then(() => {
+        invoiceDetail['_doc']["totalPrice"] = totalPrice; 
+        res.json(Response.success(invoiceDetail));
+    });
   });
 }
 
@@ -1955,16 +1960,26 @@ function updateAdminRelation(supplierId, adminRelation, callback) {
     .catch(e => callback(e, null));
 }
 
-function getNumberInvoices(query, supplierInvoiceReport,skip, limit, match, callback){
-  console.log("math test" , { $and: [{status: 'Delivered'}, match] });
-  Invoice.find()
+function getNumberInvoices(query, req, supplierInvoiceReport,skip, limit, match, callback){
+  let branchMatch = {};
+  if(req.query.branchId){
+    branchMatch = {_id : req.query.branchId};
+  }else{
+    branchMatch = {};
+  }
+  Invoice.find(query)
     .populate('supplier')
-    .populate('customer')
-    .populate('user')
+    .populate({
+      path: 'customer',
+      populate : {
+        path: 'branch',
+        match: branchMatch
+      } 
+    })
     .populate({
       path: 'transactions',
       populate: {
-        path: 'orders',
+        path: 'order',
         match: { $and: [{status: 'Delivered'}, match] },
       }
     })
@@ -1979,6 +1994,7 @@ function getNumberInvoices(query, supplierInvoiceReport,skip, limit, match, call
             invoiceId: acceptedInvoicesObj.invoiceId,
             supplier: acceptedInvoicesObj.supplier,
             customer: acceptedInvoicesObj.customer,
+            transactions: acceptedInvoicesObj.transactions,
             isPaid: acceptedInvoicesObj.isPaid,
             total: acceptedInvoicesObj.total,
             close: acceptedInvoicesObj.close,
@@ -1986,13 +2002,8 @@ function getNumberInvoices(query, supplierInvoiceReport,skip, limit, match, call
           };
           supplierInvoiceReport.invoices.push(invoice);
         });
-        Invoice.find(match)
-        .count()
-        .then((invoiceCount) => {
-          // Get the supplier's transactionReport count
-          supplierInvoiceReport.numberOfInvoices = invoiceCount;
-          callback(null, supplierInvoiceReport);
-        });
+        supplierInvoiceReport.numberOfInvoices = supplierInvoiceReport.invoices.length;
+        callback(null, supplierInvoiceReport);
       }else{
         supplierInvoiceReport.invoices = [];
         supplierInvoiceReport.numberOfInvoices = 0;
@@ -2073,6 +2084,13 @@ function getNumberTransactions(supplierData, supplierTransactionReport,
     });
 }
 
+/**
+ * Helper Function
+ * Get invoice detail
+ */
+function getInvoiceDetail(req, res) {
+
+}
 /**
  * Helper Function
  * Get Supplier's or Customer's total balance and credit
@@ -2577,6 +2595,35 @@ function getSupplierTransactions(customerId, supplierId, skip, limit, callback) 
  * return {Invoice} invoices for a supplier.
  */
 
+ function getBranches(req, res){
+    const customerId = req.query.customerId;
+    const supplierId =req.user._id;
+    async.waterfall([
+      function passParamter(callback){
+        callback(null, customerId, supplierId);
+      },
+      getBranchesArray
+    ], (err, result)=> {
+      if (err) {
+        res.status(httpStatus.INTERNAL_SERVER_ERROR).json(Response.failure(err));
+      } else if (req.query.export) {
+        if (req.user.language === 'en') {
+          ExportService.exportFile(`report_template/invoiceReport/${req.query.export}-invoice-report-header-english.html`,
+            `report_template/invoiceReport/${req.query.export}-invoice-report-body-english.html`, result.invoices,
+            'Invoice Report', `From: ${moment(startDate).tz(appSettings.timeZone).format('DD-MM-YYYY')} To: ${moment(endDate).tz(appSettings.timeZone).subtract(1, 'days').format('DD-MM-YYYY')}`, req.query.export, res
+            );
+          // res.download(`report.${req.query.export}`, `SUPReport.${req.query.export}`);
+        } else {
+          ExportService.exportFile(`report_template/invoiceReport/${req.query.export}-invoice-report-header-arabic.html`,
+            `report_template/invoiceReport/${req.query.export}-invoice-report-body-arabic.html`, result.invoices,
+            'تقرير المعاملات النقدية', `من: ${moment(startDate).tz(appSettings.timeZone).format('DD-MM-YYYY')} إلى: ${moment(endDate).tz(appSettings.timeZone).subtract(1, 'days').format('DD-MM-YYYY')}`, req.query.export, res);
+          // res.download(`report.${req.query.export}`, `SUPReport.${req.query.export}`);
+        }
+      } else {
+        res.json(Response.success(result));
+      }
+    })
+ }
  function getInvoices(req, res){
   const startDate = new Date(req.query.startDate.toString());
   const endDate = new Date(req.query.endDate.toString());
@@ -2584,22 +2631,13 @@ function getSupplierTransactions(customerId, supplierId, skip, limit, callback) 
 
   let idMatch = { updatedAt: { $gte: startDate, $lte: endDate } };
   let query = {};
-  if(req.user.type == "Supplier"){
-    if( req.query.customerId && req.query.customerId != "All"){
-      query = { $and: [{ supplier: req.user._id }, { customer: req.query.customerId }] };
-    }else{
-      query = { supplier: req.user._id };
-    }
+
+  if( req.query.customerId && req.query.customerId != "All"){
+    query = { $and: [{ supplier: req.user._id }, { customer: req.query.customerId }] };
+  }else{
+    query = { supplier: req.user._id };
   }
-  
-  else if(req.user.type=="Customer"){
-    if( req.query.supplierId && req.query.supplierId != "All"){
-      query = { $and: [{ customer: req.user._id }, { supplier: req.query.supplierId }] };
-    }else{
-      query = {customer: req.user._id};
-    }
-  }
-  // if (req.user.type === 'Admin') {
+
   const supplierInvoiceReport = {
     supplierId: '',
     numberOfInvoices: '',
@@ -2608,7 +2646,7 @@ function getSupplierTransactions(customerId, supplierId, skip, limit, callback) 
   };
   async.waterfall([
     function passParameter(callback) {
-      callback(null, query, supplierInvoiceReport,
+      callback(null, query,req, supplierInvoiceReport,
         req.query.skip, req.query.limit, idMatch);
     },
     getNumberInvoices
@@ -2908,23 +2946,31 @@ function getSupplierDetails(billingHistory, supplierId, customerId, callback) {
  */
 function getBranchesArray(userId, supplierId, callback) {
   let customer = null;
-  Customer.findOne({ user: userId }).then((cus) => {
-    customer = cus;
-    if (customer.type === 'Staff') {
-      return Branches.find({ manager: customer._id }, { _id: 1 });
-    }
-    return Branches.find({ customer: customer._id }, { _id: 1 });
-  }).then((branches) => {
-    if (branches.length === 0 && customer.type === 'Staff') {
-      return Branches.find({ customer: customer.customer }, { _id: 1 });
-    }
-    return branches;
-  }).then((branches) => {
-    branches = branches.map(branch => branch._id);
-    callback(null, branches, supplierId);
-  }).catch((err) => {
-    callback(err, null, null);
-  });
+  // Customer.findOne({ user: userId }).then((cus) => {
+  //   customer = cus;
+  //   if (customer.type === 'Staff') {
+  //     return Branches.find({ manager: customer._id }, { _id: 1 });
+  //   }
+  //   return Branches.find({ customer: customer._id }, { _id: 1 });
+  // }).then((branches) => {
+  //   console.log(branches);
+
+  //   if (branches.length === 0 && customer.type === 'Staff') {
+  //     return Branches.find({ customer: customer.customer }, { _id: 1 });
+  //   }
+  //   return branches;
+  // })
+  if(userId != "All"){
+    Branches.find({ customer: userId })
+    .then((branches) => {
+      callback(null, branches, supplierId);
+    }).catch((err) => {
+      callback(err, null, null);
+    });  
+  }else{
+    callback(null, [], supplierId);
+  }
+  
 }
 
 export default {
@@ -2949,5 +2995,6 @@ export default {
   getTransactionsReport,
   getBillingHistory,
   getInvoices,
-  getInvoiceHistory
+  getInvoiceHistory,
+  getBranches
 };
