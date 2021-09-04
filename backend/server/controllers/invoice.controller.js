@@ -79,7 +79,7 @@ function createInvoice(req, res){
   .then((order)=> {
     const nextInvoiceId = moment().tz(appSettings.timeZone).format('x');
     const invoice = new Invoice({
-      invoiceId: '' + _appSettings2.default.invoicePrefix + nextInvoiceId,
+      invoiceId: `${appSettings.invoicePrefix}${nextInvoiceId}`,
       supplier : supplierId,
       order : orderId,
       customer : order.customer,
