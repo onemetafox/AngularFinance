@@ -11,7 +11,7 @@ const router = express.Router(); // eslint-disable-line new-cap
 router.route('/')
   .get(passport.authenticate('jwt', {
     session: false
-  }), invoiceCtrl.list)
+  }), invoiceCtrl.getInvoices)
   .post(passport.authenticate('jwt', {
     session: false
   }), invoiceCtrl.create);
@@ -21,6 +21,15 @@ router.route('/:invoiceId')
     session: false
   }), validate(paramValidation.getInvoice), invoiceCtrl.get);
 
+router.route('/create/:orderId')
+  .get(passport.authenticate('jwt', {
+    session: false
+  }), invoiceCtrl.createInvoice);
+
+router.route('/getInvoice/:invoiceId')
+  .get(passport.authenticate('jwt', {
+    session: false
+  }), invoiceCtrl.getInvoice);
 router.param('invoiceId', invoiceCtrl.load);
 
 export default router;

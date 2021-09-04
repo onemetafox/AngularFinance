@@ -152,10 +152,7 @@ function deliveryNote(req, res) {
                       log.save();
                       order.save()
                         .then((savedOrder) => {
-                          OrderProduct.find({
-                            order: savedOrder,
-                            status: { $in: ['Accepted', 'Pending'] }
-                          })
+                          OrderProduct.find({ order: savedOrder, stats: 'Accepted'})
                             .select('_id order product price quantity status')
                             .populate({
                               path: 'product',
@@ -166,6 +163,7 @@ function deliveryNote(req, res) {
                             })
                             .then((products) => {
                               savedOrder.customer.coverPhoto = `${appSettings.imagesUrl}${savedOrder.customer.coverPhoto}`;
+                              order.VAT = parseFloat(order.VAT.toString(2));
                               ordersArr.push({
                                 order,
                                 products,
@@ -174,10 +172,7 @@ function deliveryNote(req, res) {
                                 total: order.price + order.VAT,
                                 VATNumber: order.supplier.VATRegisterNumber
                               });
-                              console.log('order', order);
-                              console.log(ordersArr)
                               if (ordersArr.length === orders.length) {
-
                                 if (req.query.export) {
                                   if (req.user.language === 'en') {
                                     ExportService.exportReceiptFile('report_template/main_header/english_header_out_delivery.html',
@@ -258,7 +253,7 @@ function deliveryNote(req, res) {
                 log.save();
                 order.save()
                   .then((savedOrder) => {
-                    OrderProduct.find({ order: savedOrder })
+                    OrderProduct.find({ order: savedOrder, stats: 'Accepted'})
                       .select('_id order product price quantity status')
                       .populate({
                         path: 'product',
@@ -279,9 +274,6 @@ function deliveryNote(req, res) {
                         });
                         if (ordersArr.length === orders.length) {
                           if (req.query.export) {
-                            // ordersArr[0].order.total = ordersArr[0].order.total.toString(2);
-                            // ordersArr[0].order.price = ordersArr[0].order.price.toString(2);
-                            // ordersArr[0].order.VAT = ordersArr[0].order.VAT.toString(2);
                             if (req.user.language === 'en') {
                               ExportService.exportReceiptFile('report_template/main_header/english_header_out_delivery.html',
                                 'report_template/orders/delivery-orders-body-english.html', {
