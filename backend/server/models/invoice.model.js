@@ -22,6 +22,11 @@ const Invoice = new mongoose.Schema({
     ref: 'Customer',
     required: false
   },
+  order: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Order',
+    required: true
+  },
   createdAt: {
     type: Date,
     default: moment().tz(appSettings.timeZone).format(appSettings.momentFormat)
@@ -40,6 +45,16 @@ const Invoice = new mongoose.Schema({
     default: 0
   },
   close: {
+    type: Number,
+    required: false,
+    default: 0
+  },
+  price: {
+    type: Number,
+    required: false,
+    default: 0
+  },
+  VAT: {
     type: Number,
     required: false,
     default: 0

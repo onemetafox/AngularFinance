@@ -7,6 +7,7 @@ import Invoice from '../models/invoice.model';
 import Payments from '../models/pendingPayment.model';
 import Supplier from '../models/supplier.model';
 import Customer from '../models/customer.model';
+import Order from '../models/order.model';
 import ExportService from './exportFileService';
 import OrderProduct from '../models/orderProduct.model';
 
@@ -71,7 +72,73 @@ function list(req, res) {
       res.json(Response.success(invoices));
     });
 }
+function createInvoice(req, res){
+  const supplierId = req.user._id;
+  const orderId = req.params.orderId;
+  Order.findById(orderId)
+  .then((order)=> {
+    const nextInvoiceId = moment().tz(appSettings.timeZone).format('x');
+    const invoice = new Invoice({
+      invoiceId: '' + _appSettings2.default.invoicePrefix + nextInvoiceId,
+      supplier : supplierId,
+      order : orderId,
+      customer : order.customer,
+      dueDate: moment().add(Number(appSettings.duePaymentDays), 'days').tz(appSettings.timeZone).format(appSettings.momentFormat),
+      createdAt: moment().tz(appSettings.timeZone).format(appSettings.momentFormat),
+      price : order.price,
+      VAT : order.VAT
+    });
+    invoice.save();
+    res.json(Response.success());
+  })
+}
+function getInvoices(req, res){
+  const startDate = new Date(req.query.startDate.toString());
+  const endDate = new Date(req.query.endDate.toString());
+  endDate.setDate(endDate.getDate() + 1);
 
+  let idMatch = { createdAt: { $gte: startDate, $lte: endDate } };
+  let query = {};
+
+  if( req.query.customerId && req.query.customerId != "All"){
+    query = { $and: [{ supplier: req.user._id }, { customer: req.query.customerId }] };
+  }else{
+    query = { supplier: req.user._id };
+  }
+  const supplierInvoiceReport = {
+    supplierId: '',
+    numberOfInvoices: '',
+    totalCredit: '',
+    invoices: []
+  };
+  async.waterfall([
+    function passParameter(callback) {
+      callback(null, query,req, supplierInvoiceReport,
+        req.query.skip, req.query.limit, idMatch);
+    },
+    getNumberInvoices
+  ], (err, result) => {
+    if (err) {
+      res.status(httpStatus.INTERNAL_SERVER_ERROR).json(Response.failure(err));
+    } else if (req.query.export) {
+      if (req.user.language === 'en') {
+        ExportService.exportFile(`report_template/invoiceReport/${req.query.export}-invoice-report-header-english.html`,
+          `report_template/invoiceReport/${req.query.export}-invoice-report-body-english.html`, result.invoices,
+          'Invoice Report', `From: ${moment(startDate).tz(appSettings.timeZone).format('DD-MM-YYYY')} To: ${moment(endDate).tz(appSettings.timeZone).subtract(1, 'days').format('DD-MM-YYYY')}`, req.query.export, res
+          );
+        // res.download(`report.${req.query.export}`, `SUPReport.${req.query.export}`);
+      } else {
+        ExportService.exportFile(`report_template/invoiceReport/${req.query.export}-invoice-report-header-arabic.html`,
+          `report_template/invoiceReport/${req.query.export}-invoice-report-body-arabic.html`, result.invoices,
+          'تقرير المعاملات النقدية', `من: ${moment(startDate).tz(appSettings.timeZone).format('DD-MM-YYYY')} إلى: ${moment(endDate).tz(appSettings.timeZone).subtract(1, 'days').format('DD-MM-YYYY')}`, req.query.export, res);
+        // res.download(`report.${req.query.export}`, `SUPReport.${req.query.export}`);
+      }
+    } else {
+      res.json(Response.success(result));
+    }
+  });
+    
+}
 function create(req, res) {
   if (req.user.type === 'Admin') {
     Payments.find({ $and: [{ status: 'Pending' }, { customer: null }, { supplier: req.query.supplierId }] })
@@ -138,7 +205,68 @@ function create(req, res) {
     });
   }
 }
-
+function getInvoice(req, res){
+  const invoiceId = req.params.invoiceId;
+  Invoice.findOne({_id : req.params.invoiceId})
+  .populate('customer')
+  .populate('supplier')
+  .populate('order')
+  .then((invoiceDetail) => {
+    var order = invoiceDetail.order;
+    new Promise((resolve, reject) => {
+      OrderProduct.find({order: order._id}).populate('product').then((product) => {
+        order['_doc']['orderProduct'] = product;
+        resolve();
+      });
+    }).then(() => {
+        res.json(Response.success(invoiceDetail));
+    });
+  });
+}
+function getNumberInvoices(query, req, supplierInvoiceReport,skip, limit, match, callback){
+  let branchMatch = {};
+  if(req.query.branchId){
+    branchMatch = {banch : req.query.branchId};
+  }else{
+    branchMatch = {};
+  }
+  Invoice.find(query)
+    .populate('supplier')
+    .populate('customer')
+    .populate({
+        path: 'order',
+        match: branchMatch
+    })
+    .skip(Number(skip))
+    .limit(Number(limit))
+    .then((acceptedInvoices) => {
+      if(acceptedInvoices){
+        acceptedInvoices.forEach((acceptedInvoicesObj) => {
+          let invoice = {};
+          invoice = {
+            invoice_id: acceptedInvoicesObj._id,
+            invoiceId: acceptedInvoicesObj.invoiceId,
+            supplier: acceptedInvoicesObj.supplier,
+            customer: acceptedInvoicesObj.customer,
+            order : acceptedInvoicesObj.order,
+            isPaid: acceptedInvoicesObj.isPaid,
+            total: acceptedInvoicesObj.total,
+            close: acceptedInvoicesObj.close,
+            price : acceptedInvoicesObj.price,
+            VAT: acceptedInvoicesObj.VAT,
+            createdAt: acceptedInvoicesObj.createdAt
+          };
+          supplierInvoiceReport.invoices.push(invoice);
+        });
+        supplierInvoiceReport.numberOfInvoices = supplierInvoiceReport.invoices.length;
+        callback(null, supplierInvoiceReport);
+      }else{
+        supplierInvoiceReport.invoices = [];
+        supplierInvoiceReport.numberOfInvoices = 0;
+        callback(null, supplierInvoiceReport);
+      }
+    });
+}
 function load(req, res, next, id) {
   Invoice.findById(id)
     .populate({
@@ -190,5 +318,8 @@ export default {
   load,
   get,
   list,
-  create
+  create,
+  getInvoices,
+  createInvoice,
+  getInvoice
 };
