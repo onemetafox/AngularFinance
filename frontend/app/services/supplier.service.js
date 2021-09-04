@@ -75,7 +75,13 @@ export default class SupplierService {
         request.headers = this._request.headers;
         return this.retryRequest(request);
     }
-
+    getBranchesByCustomerId(id){
+        const request = {};
+        request.url = `${this._AppConstants.api}/suppliers/reports/branches?customerId=`+id;
+        request.method = 'GET';
+        request.headers = this._request.headers;
+        return this.retryRequest(request);
+    }
     getSupplier(supplierId) {
         const request = {
             url: `${this._AppConstants.api}/suppliers/${supplierId}`,

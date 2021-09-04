@@ -50,8 +50,19 @@ export default class SupplierReportInvoicesCtrl {
 
     listInvoices(searchCriteria) {
         const _onSuccess = (res) => {
-            this.invoice = res.data.data;
-            this.totalPages = Math.ceil(this.invoice.numberOfInvoices / this.searchCriteria.limit);
+            var tempArray = [];
+            var i;
+            for(var i= 0; i<res.data.data.invoices.length;i++) {
+                var inv_item = res.data.data.invoices[i];
+
+                if(inv_item.order!==null){
+                    tempArray.push(inv_item);
+                }
+
+            } 
+            this.invoice = tempArray;
+            console.log(tempArray);
+            this.totalPages = Math.ceil(tempArray.length / this.searchCriteria.limit);
         };
         const _onError = (err) => {
             this.error = err.data.data;
@@ -75,7 +86,17 @@ export default class SupplierReportInvoicesCtrl {
         this._CustomerService.getCustomers(this.cusSearchCriteria)
             .then(_onSuccess, _onError);
     }
-
+    getBranchesLookup(customerId) {
+        const _onSuccess = (res) => {
+            this.branches = res.data.data;
+            console.log(this.branches);
+        };
+        const _onError = (err) => {
+            this.errors = err;
+        };
+        this._SupplierService.getBranchesByCustomerId(customerId)
+            .then(_onSuccess, _onError);    
+    }
     openReportDetails(transactionsDetails) {
         /* $('#payment').modal('show');
         this.transactionsDetails = transactionsDetails;
@@ -89,8 +110,13 @@ export default class SupplierReportInvoicesCtrl {
         this.currentPage = 1;
         this.searchCriteria.skip = 0;
         this.listInvoices(searchCriteria);
+        this.getBranchesLookup(searchCriteria.customerId);
     }
-
+    onBranchFilterChange(searchCriteria) {
+        this.currentPage = 1;
+        this.searchCriteria.skip = 0;
+        this.listInvoices(searchCriteria); 
+    }
     setPage(pageNumber) {
         this.currentPage = pageNumber;
         this.searchCriteria.skip = (pageNumber - 1) * this.searchCriteria.limit;

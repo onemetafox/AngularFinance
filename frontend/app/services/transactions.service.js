@@ -95,7 +95,7 @@ export default class TransactionsService {
 
     listInvoices(query) {
         const request = {};
-        request.url = `${this._AppConstants.api}/suppliers/reports/invoices?startDate=${query.startDate}&endDate=${query.endDate}&skip=${query.skip}&limit=${query.limit}`;
+        request.url = `${this._AppConstants.api}/invoices?startDate=${query.startDate}&endDate=${query.endDate}&skip=${query.skip}&limit=${query.limit}`;
         if (query.supplierId) {
             if (query.supplierId !== 'All') {
                 request.url = request.url.concat(`&supplierId=${query.supplierId}`);
@@ -104,6 +104,11 @@ export default class TransactionsService {
         if (query.customerId) {
             if (query.customerId !== 'All') {
                 request.url = request.url.concat(`&customerId=${query.customerId}`);
+            }
+        }
+        if (query.branchId) {
+            if (query.branchId !== 'All') {
+                request.url = request.url.concat(`&branchId=${query.branchId}`);
             }
         }
         // request.url = request.url.concat(`&type=${query.type}`);
@@ -115,7 +120,7 @@ export default class TransactionsService {
     }
     getInvoice(query) {
         const request = {};
-        request.url = `${this._AppConstants.api}/suppliers/reports/invoice/${query.id}`;
+        request.url = `${this._AppConstants.api}/invoices/getInvoice/${query.id}`;
         // request.url = request.url.concat(`&type=${query.type}`);
         request.method = 'GET';
         request.headers = { 'Content-Type': 'application/json' };
