@@ -54,21 +54,11 @@ export default class SupplierReportInvoicesCtrl {
             var i;
             for(var i= 0; i<res.data.data.invoices.length;i++) {
                 var inv_item = res.data.data.invoices[i];
-                var tran_flag = false;
-                var branch_flag = false;
-                var j;
-                for(var j = 0; j<inv_item.transactions.length; j++){
-                    if(inv_item.transactions[j].order !== null){
-                        tran_flag = true;
-                        break;
-                    }
-                }
-                if(inv_item.customer && inv_item.customer.branches!==null){
-                    branch_flag = true;
-                }
-                if(tran_flag && branch_flag){
+
+                if(inv_item.order!==null){
                     tempArray.push(inv_item);
                 }
+
             } 
             this.invoice = tempArray;
             console.log(tempArray);

@@ -162,15 +162,15 @@
                             <td>{{"supplier.reports.invoices.taxAmount" | translate}}</td>
                             <td>{{"supplier.reports.invoices.itemSubtotal" | translate}}</td>
                         </tr>
-                        <tr ng-repeat="item in $ctrl.invoice.transactions" >
-                            <td>{{item.orderProduct.product.englishName}} - {{item.orderProduct.product.arabicName}}</td>
-                            <td>{{item.orderProduct.price | currency:"":2}} <small>{{"supplier.account.payment.sar" | translate }}</small></td>
-                            <td>{{item.orderProduct.quantity}}</td>
-                            <td>{{item.order.price | currency:"":2}} <small>{{"supplier.account.payment.sar" | translate }}</small></td>
+                        <tr ng-repeat="item in $ctrl.invoice.order.orderProduct" >
+                            <td>{{item.product.englishName}} - {{item.product.arabicName}}</td>
+                            <td>{{item.price | currency:"":2}} <small>{{"supplier.account.payment.sar" | translate }}</small></td>
+                            <td>{{item.quantity | currency:"":0}}</td>
+                            <td>{{item.price * item.quantity | currency:"":2}} <small>{{"supplier.account.payment.sar" | translate }}</small></td>
                             <td>0</td>
-                            <td>{{item.PVAT * 100}} %</td>
-                            <td>{{item.order.price * item.PVAT | currency:"":2}} <small>{{"supplier.account.payment.sar" | translate }}</small></td>
-                            <td>{{item.amount | currency:"":2}} <small>{{"supplier.account.payment.sar" | translate }}</small></td>
+                            <td>15%</td>
+                            <td>{{item.price * item.quantity * 0.15 | currency:"":2}} <small>{{"supplier.account.payment.sar" | translate }}</small></td>
+                            <td>{{item.price * item.quantity * 0.15 + item.price * item.quantity | currency:"":2}} <small>{{"supplier.account.payment.sar" | translate }}</small></td>
                         </tr>
                     </tbody>
                 </table>
@@ -187,7 +187,7 @@
                     <tbody>
                         <tr>
                             <td>{{"supplier.reports.invoices.totalExculd" | translate}}</td>
-                            <td>{{$ctrl.invoice.totalPrice | currency:"":2}} <small>{{"supplier.account.payment.sar" | translate }}</small></td>
+                            <td>{{$ctrl.invoice.price | currency:"":2}} <small>{{"supplier.account.payment.sar" | translate }}</small></td>
                         </tr>
                         <tr>
                             <td>{{"supplier.reports.invoices.discount" | translate}}</td>
@@ -195,15 +195,15 @@
                         </tr>
                         <tr>
                             <td>{{"supplier.reports.invoices.totalTaxableAmount" | translate}}</td>
-                            <td>{{$ctrl.invoice.totalPrice | currency:"":2}} <small>{{"supplier.account.payment.sar" | translate }}</small></td>
+                            <td>{{$ctrl.invoice.price | currency:"":2}} <small>{{"supplier.account.payment.sar" | translate }}</small></td>
                         </tr>
                         <tr>
                             <td>{{"supplier.reports.invoices.totalVat" | translate}}</td>
-                            <td>{{$ctrl.invoice.totalPrice * 0.15 | currency:"":2}} <small>{{"supplier.account.payment.sar" | translate }}</td>
+                            <td>{{$ctrl.invoice.VAT | currency:"":2}} <small>{{"supplier.account.payment.sar" | translate }}</td>
                         </tr>
                         <tr>
                             <td>{{"supplier.reports.invoices.totalAmountDue" | translate}}</td>
-                            <td>{{$ctrl.invoice.totalPrice * 1.15 | currency:"":2}} <small>{{"supplier.account.payment.sar" | translate }}</td>
+                            <td>{{$ctrl.invoice.price * 1.15 | currency:"":2}} <small>{{"supplier.account.payment.sar" | translate }}</td>
                         </tr>
                     </tbody>
                 </table>
