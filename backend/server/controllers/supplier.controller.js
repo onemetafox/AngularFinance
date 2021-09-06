@@ -2946,30 +2946,30 @@ function getSupplierDetails(billingHistory, supplierId, customerId, callback) {
  */
 function getBranchesArray(userId, supplierId, callback) {
   let customer = null;
-  // Customer.findOne({ user: userId }).then((cus) => {
-  //   customer = cus;
-  //   if (customer.type === 'Staff') {
-  //     return Branches.find({ manager: customer._id }, { _id: 1 });
-  //   }
-  //   return Branches.find({ customer: customer._id }, { _id: 1 });
-  // }).then((branches) => {
-  //   console.log(branches);
+  Customer.findOne({ user: userId }).then((cus) => {
+    customer = cus;
+    if (customer.type === 'Staff') {
+      return Branches.find({ manager: customer._id }, { _id: 1 });
+    }
+    return Branches.find({ customer: customer._id }, { _id: 1 });
+  }).then((branches) => {
+    console.log(branches);
 
-  //   if (branches.length === 0 && customer.type === 'Staff') {
-  //     return Branches.find({ customer: customer.customer }, { _id: 1 });
-  //   }
-  //   return branches;
-  // })
-  if(userId != "All"){
-    Branches.find({ customer: userId })
-    .then((branches) => {
-      callback(null, branches, supplierId);
-    }).catch((err) => {
-      callback(err, null, null);
-    });  
-  }else{
-    callback(null, [], supplierId);
-  }
+    if (branches.length === 0 && customer.type === 'Staff') {
+      return Branches.find({ customer: customer.customer }, { _id: 1 });
+    }
+    return branches;
+  })
+  // if(userId != "All"){
+  //   Branches.find({ customer: userId })
+  //   .then((branches) => {
+  //     callback(null, branches, supplierId);
+  //   }).catch((err) => {
+  //     callback(err, null, null);
+  //   });  
+  // }else{
+  //   callback(null, [], supplierId);
+  // }
   
 }
 

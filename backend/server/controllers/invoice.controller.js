@@ -93,18 +93,6 @@ function createInvoice(req, res){
   })
 }
 function getInvoices(req, res){
-  const startDate = new Date(req.query.startDate.toString());
-  const endDate = new Date(req.query.endDate.toString());
-  endDate.setDate(endDate.getDate() + 1);
-
-  let idMatch = { createdAt: { $gte: startDate, $lte: endDate } };
-  let query = {};
-
-  if( req.query.customerId && req.query.customerId != "All"){
-    query = { $and: [{ supplier: req.user._id }, { customer: req.query.customerId }] };
-  }else{
-    query = { supplier: req.user._id };
-  }
   const supplierInvoiceReport = {
     supplierId: '',
     numberOfInvoices: '',
@@ -113,8 +101,8 @@ function getInvoices(req, res){
   };
   async.waterfall([
     function passParameter(callback) {
-      callback(null, query,req, supplierInvoiceReport,
-        req.query.skip, req.query.limit, idMatch);
+      callback(null, req, supplierInvoiceReport,
+        req.query.skip, req.query.limit);
     },
     getNumberInvoices
   ], (err, result) => {
@@ -209,63 +197,122 @@ function getInvoice(req, res){
   const invoiceId = req.params.invoiceId;
   Invoice.findOne({_id : req.params.invoiceId})
   .populate('customer')
-  .populate('supplier')
   .populate('order')
   .then((invoiceDetail) => {
     var order = invoiceDetail.order;
     new Promise((resolve, reject) => {
       OrderProduct.find({order: order._id}).populate('product').then((product) => {
         order['_doc']['orderProduct'] = product;
-        resolve();
+        resolve(invoiceDetail, order);
       });
-    }).then(() => {
-        res.json(Response.success(invoiceDetail));
+    }).then((invoiceDetail, order)=>{
+      Customer.findById(invoiceDetail.customer.customer).then((customer)=>{
+        invoiceDetail.customer = customer;
+        Supplier.findOne()
+          .where('staff').in([invoiceDetail.supplier])
+          .then((supplier) => {
+            invoiceDetail.supplier = supplier;
+            res.json(Response.success(invoiceDetail));    
+          });
+      })
     });
   });
 }
-function getNumberInvoices(query, req, supplierInvoiceReport,skip, limit, match, callback){
+function getNumberInvoices(req, supplierInvoiceReport,skip, limit, callback){
+
+  const startDate = new Date(req.query.startDate.toString());
+  const endDate = new Date(req.query.endDate.toString());
+  endDate.setDate(endDate.getDate() + 1);
+
+  let query = {
+    createdAt: { $gte: startDate, $lte: endDate },
+    $and: [{ supplier: req.user._id }]
+  };
+
   let branchMatch = {};
   if(req.query.branchId){
-    branchMatch = {banch : req.query.branchId};
+    branchMatch = {branch : req.query.branchId};
   }else{
     branchMatch = {};
   }
-  Invoice.find(query)
-    .populate('supplier')
-    .populate('customer')
-    .populate({
-        path: 'order',
-        match: branchMatch
-    })
-    .skip(Number(skip))
-    .limit(Number(limit))
-    .then((acceptedInvoices) => {
-      if(acceptedInvoices){
-        acceptedInvoices.forEach((acceptedInvoicesObj) => {
-          let invoice = {};
-          invoice = {
-            invoice_id: acceptedInvoicesObj._id,
-            invoiceId: acceptedInvoicesObj.invoiceId,
-            supplier: acceptedInvoicesObj.supplier,
-            customer: acceptedInvoicesObj.customer,
-            order : acceptedInvoicesObj.order,
-            isPaid: acceptedInvoicesObj.isPaid,
-            total: acceptedInvoicesObj.total,
-            close: acceptedInvoicesObj.close,
-            price : acceptedInvoicesObj.price,
-            VAT: acceptedInvoicesObj.VAT,
-            createdAt: acceptedInvoicesObj.createdAt
-          };
-          supplierInvoiceReport.invoices.push(invoice);
-        });
-        supplierInvoiceReport.numberOfInvoices = supplierInvoiceReport.invoices.length;
-        callback(null, supplierInvoiceReport);
-      }else{
-        supplierInvoiceReport.invoices = [];
-        supplierInvoiceReport.numberOfInvoices = 0;
-        callback(null, supplierInvoiceReport);
-      }
-    });
+  if(req.query.customerId !== "All"){
+    Invoice.find(query)
+      .populate('supplier')
+      .populate('customer')
+      .populate({
+          path: 'order',
+          match: branchMatch
+      })
+      .skip(Number(skip))
+      .limit(Number(limit))
+      .then((acceptedInvoices) => {
+        if(acceptedInvoices){
+          acceptedInvoices.forEach((acceptedInvoicesObj) => {
+            if(acceptedInvoicesObj.customer.customer == req.query.customerId){
+              let invoice = {};
+              invoice = {
+                invoice_id: acceptedInvoicesObj._id,
+                invoiceId: acceptedInvoicesObj.invoiceId,
+                supplier: acceptedInvoicesObj.supplier,
+                customer: acceptedInvoicesObj.customer,
+                order : acceptedInvoicesObj.order,
+                isPaid: acceptedInvoicesObj.isPaid,
+                total: acceptedInvoicesObj.total,
+                close: acceptedInvoicesObj.close,
+                price : acceptedInvoicesObj.price,
+                VAT: acceptedInvoicesObj.VAT,
+                createdAt: acceptedInvoicesObj.createdAt
+              };
+              supplierInvoiceReport.invoices.push(invoice);
+            }
+          });
+          supplierInvoiceReport.numberOfInvoices = supplierInvoiceReport.invoices.length;
+          callback(null, supplierInvoiceReport);
+        }else{
+          supplierInvoiceReport.invoices = [];
+          supplierInvoiceReport.numberOfInvoices = 0;
+          callback(null, supplierInvoiceReport);
+        }
+      });
+  }else{
+    Invoice.find(query)
+      .populate('supplier')
+      .populate('customer')
+      .populate({
+          path: 'order',
+          match: branchMatch
+      })
+      .skip(Number(skip))
+      .limit(Number(limit))
+      .then((acceptedInvoices) => {
+        if(acceptedInvoices){
+          acceptedInvoices.forEach((acceptedInvoicesObj) => {
+            let invoice = {};
+            invoice = {
+              invoice_id: acceptedInvoicesObj._id,
+              invoiceId: acceptedInvoicesObj.invoiceId,
+              supplier: acceptedInvoicesObj.supplier,
+              customer: acceptedInvoicesObj.customer,
+              order : acceptedInvoicesObj.order,
+              isPaid: acceptedInvoicesObj.isPaid,
+              total: acceptedInvoicesObj.total,
+              close: acceptedInvoicesObj.close,
+              price : acceptedInvoicesObj.price,
+              VAT: acceptedInvoicesObj.VAT,
+              createdAt: acceptedInvoicesObj.createdAt
+            };
+            supplierInvoiceReport.invoices.push(invoice);
+          });
+          supplierInvoiceReport.numberOfInvoices = supplierInvoiceReport.invoices.length;
+          callback(null, supplierInvoiceReport);
+        }else{
+          supplierInvoiceReport.invoices = [];
+          supplierInvoiceReport.numberOfInvoices = 0;
+          callback(null, supplierInvoiceReport);
+        }
+      });
+  }
+  
 }
 function load(req, res, next, id) {
   Invoice.findById(id)
