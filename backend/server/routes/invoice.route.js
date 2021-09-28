@@ -16,20 +16,21 @@ router.route('/')
     session: false
   }), invoiceCtrl.create);
 
-router.route('/:invoiceId')
-  .get(passport.authenticate('jwt', {
-    session: false
-  }), validate(paramValidation.getInvoice), invoiceCtrl.get);
+// router.route('/:invoiceId')
+//   .get(passport.authenticate('jwt', {
+//     session: false
+//   }), validate(paramValidation.getInvoice), invoiceCtrl.get);
 
 router.route('/create/:orderId')
   .get(passport.authenticate('jwt', {
     session: false
   }), invoiceCtrl.createInvoice);
 
-router.route('/getInvoice/:invoiceId')
+router.route('/getInvoice')
   .get(passport.authenticate('jwt', {
     session: false
   }), invoiceCtrl.getInvoice);
+
 router.param('invoiceId', invoiceCtrl.load);
 
 export default router;

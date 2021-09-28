@@ -801,7 +801,8 @@ export default {
   },
   getInvoiceDetail: {
     query: {
-      _id: Joi.string(),
+      id: Joi.string().required(),
+      export:Joi.string()
     }
   },
   getTransactionReport: {

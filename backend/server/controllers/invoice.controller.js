@@ -93,6 +93,8 @@ function createInvoice(req, res){
   })
 }
 function getInvoices(req, res){
+  const startDate = new Date(req.query.startDate.toString());
+  const endDate = new Date(req.query.endDate.toString());
   const supplierInvoiceReport = {
     supplierId: '',
     numberOfInvoices: '',
@@ -110,14 +112,14 @@ function getInvoices(req, res){
       res.status(httpStatus.INTERNAL_SERVER_ERROR).json(Response.failure(err));
     } else if (req.query.export) {
       if (req.user.language === 'en') {
-        ExportService.exportFile(`report_template/invoiceReport/${req.query.export}-invoice-report-header-english.html`,
-          `report_template/invoiceReport/${req.query.export}-invoice-report-body-english.html`, result.invoices,
+        ExportService.exportFile(`report_template/invoiceReport/invoice-report-header-english.html`,
+          `report_template/invoiceReport/invoice-report-body-english.html`, result,
           'Invoice Report', `From: ${moment(startDate).tz(appSettings.timeZone).format('DD-MM-YYYY')} To: ${moment(endDate).tz(appSettings.timeZone).subtract(1, 'days').format('DD-MM-YYYY')}`, req.query.export, res
           );
         // res.download(`report.${req.query.export}`, `SUPReport.${req.query.export}`);
       } else {
-        ExportService.exportFile(`report_template/invoiceReport/${req.query.export}-invoice-report-header-arabic.html`,
-          `report_template/invoiceReport/${req.query.export}-invoice-report-body-arabic.html`, result.invoices,
+        ExportService.exportFile(`report_template/invoiceReport/invoice-report-header-arabic.html`,
+          `report_template/invoiceReport/invoice-report-body-arabic.html`, result,
           'تقرير المعاملات النقدية', `من: ${moment(startDate).tz(appSettings.timeZone).format('DD-MM-YYYY')} إلى: ${moment(endDate).tz(appSettings.timeZone).subtract(1, 'days').format('DD-MM-YYYY')}`, req.query.export, res);
         // res.download(`report.${req.query.export}`, `SUPReport.${req.query.export}`);
       }
@@ -194,8 +196,8 @@ function create(req, res) {
   }
 }
 function getInvoice(req, res){
-  const invoiceId = req.params.invoiceId;
-  Invoice.findOne({_id : req.params.invoiceId})
+  
+  Invoice.findOne({_id : req.query.id})
   .populate('customer')
   .populate('order')
   .then((invoiceDetail) => {
@@ -212,7 +214,23 @@ function getInvoice(req, res){
           .where('staff').in([invoiceDetail.supplier])
           .then((supplier) => {
             invoiceDetail.supplier = supplier;
-            res.json(Response.success(invoiceDetail));    
+            
+            if(req.query.export){
+              if (req.user.language === 'en') {
+                ExportService.exportFile(`report_template/invoice/invoice-header-english.html`,
+                  `report_template/invoice/invoice-body-english.html`, invoiceDetail._doc,
+                  'Invoice Detail', ``, req.query.export, res
+                  );
+                // res.download(`report.${req.query.export}`, `SUPReport.${req.query.export}`);
+              } else {
+                ExportService.exportFile(`report_template/invoice/invoice-header-arabic.html`,
+                  `report_template/invoice/invoice-body-arabic.html`, invoiceDetail._doc,
+                  'تقرير المعاملات النقدية', `من:`, req.query.export, res);
+                // res.download(`report.${req.query.export}`, `SUPReport.${req.query.export}`);
+              }
+            }else{
+              res.json(Response.success(invoiceDetail));    
+            }
           });
       })
     });
@@ -230,7 +248,7 @@ function getNumberInvoices(req, supplierInvoiceReport,skip, limit, callback){
   };
 
   let branchMatch = {};
-  if(req.query.branchId){
+  if(req.query.branchId !== "All"){
     branchMatch = {branch : req.query.branchId};
   }else{
     branchMatch = {};

@@ -2598,31 +2598,34 @@ function getSupplierTransactions(customerId, supplierId, skip, limit, callback) 
  function getBranches(req, res){
     const customerId = req.query.customerId;
     const supplierId =req.user._id;
-    async.waterfall([
-      function passParamter(callback){
-        callback(null, customerId, supplierId);
-      },
-      getBranchesArray
-    ], (err, result)=> {
-      if (err) {
-        res.status(httpStatus.INTERNAL_SERVER_ERROR).json(Response.failure(err));
-      } else if (req.query.export) {
-        if (req.user.language === 'en') {
-          ExportService.exportFile(`report_template/invoiceReport/${req.query.export}-invoice-report-header-english.html`,
-            `report_template/invoiceReport/${req.query.export}-invoice-report-body-english.html`, result.invoices,
-            'Invoice Report', `From: ${moment(startDate).tz(appSettings.timeZone).format('DD-MM-YYYY')} To: ${moment(endDate).tz(appSettings.timeZone).subtract(1, 'days').format('DD-MM-YYYY')}`, req.query.export, res
-            );
-          // res.download(`report.${req.query.export}`, `SUPReport.${req.query.export}`);
+    if(customerId != "All"){
+      async.waterfall([
+        function passParamter(callback){
+          callback(null, customerId, supplierId);
+        },
+        getBranchesArray
+      ], (err, result)=> {
+        if (err) {
+          res.status(httpStatus.INTERNAL_SERVER_ERROR).json(Response.failure(err));
+        } else if (req.query.export) {
+          if (req.user.language === 'en') {
+            ExportService.exportFile(`report_template/invoiceReport/${req.query.export}-invoice-report-header-english.html`,
+              `report_template/invoiceReport/${req.query.export}-invoice-report-body-english.html`, result.invoices,
+              'Invoice Report', `From: ${moment(startDate).tz(appSettings.timeZone).format('DD-MM-YYYY')} To: ${moment(endDate).tz(appSettings.timeZone).subtract(1, 'days').format('DD-MM-YYYY')}`, req.query.export, res
+              );
+            // res.download(`report.${req.query.export}`, `SUPReport.${req.query.export}`);
+          } else {
+            ExportService.exportFile(`report_template/invoiceReport/${req.query.export}-invoice-report-header-arabic.html`,
+              `report_template/invoiceReport/${req.query.export}-invoice-report-body-arabic.html`, result.invoices,
+              'تقرير المعاملات النقدية', `من: ${moment(startDate).tz(appSettings.timeZone).format('DD-MM-YYYY')} إلى: ${moment(endDate).tz(appSettings.timeZone).subtract(1, 'days').format('DD-MM-YYYY')}`, req.query.export, res);
+            // res.download(`report.${req.query.export}`, `SUPReport.${req.query.export}`);
+          }
         } else {
-          ExportService.exportFile(`report_template/invoiceReport/${req.query.export}-invoice-report-header-arabic.html`,
-            `report_template/invoiceReport/${req.query.export}-invoice-report-body-arabic.html`, result.invoices,
-            'تقرير المعاملات النقدية', `من: ${moment(startDate).tz(appSettings.timeZone).format('DD-MM-YYYY')} إلى: ${moment(endDate).tz(appSettings.timeZone).subtract(1, 'days').format('DD-MM-YYYY')}`, req.query.export, res);
-          // res.download(`report.${req.query.export}`, `SUPReport.${req.query.export}`);
+          res.json(Response.success(result));
         }
-      } else {
-        res.json(Response.success(result));
-      }
-    })
+      })
+    }
+    
  }
  function getInvoices(req, res){
   const startDate = new Date(req.query.startDate.toString());
@@ -2946,30 +2949,30 @@ function getSupplierDetails(billingHistory, supplierId, customerId, callback) {
  */
 function getBranchesArray(userId, supplierId, callback) {
   let customer = null;
-  Customer.findOne({ user: userId }).then((cus) => {
-    customer = cus;
-    if (customer.type === 'Staff') {
-      return Branches.find({ manager: customer._id }, { _id: 1 });
-    }
-    return Branches.find({ customer: customer._id }, { _id: 1 });
-  }).then((branches) => {
-    console.log(branches);
+  // Customer.findOne({ user: userId }).then((cus) => {
+  //   customer = cus;
+  //   if (customer.type === 'Staff') {
+  //     return Branches.find({ manager: customer._id }, { _id: 1 });
+  //   }
+  //   return Branches.find({ customer: customer._id }, { _id: 1 });
+  // }).then((branches) => {
+  //   console.log(branches);
 
-    if (branches.length === 0 && customer.type === 'Staff') {
-      return Branches.find({ customer: customer.customer }, { _id: 1 });
-    }
-    return branches;
-  })
-  // if(userId != "All"){
-  //   Branches.find({ customer: userId })
-  //   .then((branches) => {
-  //     callback(null, branches, supplierId);
-  //   }).catch((err) => {
-  //     callback(err, null, null);
-  //   });  
-  // }else{
-  //   callback(null, [], supplierId);
-  // }
+  //   if (branches.length === 0 && customer.type === 'Staff') {
+  //     return Branches.find({ customer: customer.customer }, { _id: 1 });
+  //   }
+  //   return branches;
+  // })
+  if(userId != "All"){
+    Branches.find({ customer: userId })
+    .then((branches) => {
+      callback(null, branches, supplierId);
+    }).catch((err) => {
+      callback(err, null, null);
+    });  
+  }else{
+    callback(null, [], supplierId);
+  }
   
 }
 
