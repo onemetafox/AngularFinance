@@ -21,7 +21,9 @@ export default class SupplierReportInvoiceDetailsCtrl {
 
         this._TransactionsService.getInvoice(searchCriteria).then(_onSuccess, _onError);
     }
-
+    exportFile() {
+        this._TransactionsService.exportInvoiceDetailsFile(this.searchCriteria);
+    }
     printFile(query) {
         this._SupplierService.printFile(this.$stateParams.id, query);
     }

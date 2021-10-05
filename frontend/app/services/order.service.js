@@ -233,11 +233,6 @@ export default class OrderService {
         request.method = 'PUT';
         request.data = data;
         request.headers = this._request.headers;
-        const request1 = {};
-        request1.url = `${this._AppConstants.api}/invoices/create/${id}`;
-        request1.method = 'GET';
-        request1.headers = this._request.headers;
-        this.retryRequest(request1);
         return this.retryRequest(request);
     }
 
@@ -249,6 +244,11 @@ export default class OrderService {
         if (data) {
             request.data = data;
         }
+        const request1 = {};
+        request1.url = `${this._AppConstants.api}/invoices/create/${id}`;
+        request1.method = 'GET';
+        request1.headers = this._request.headers;
+        this.retryRequest(request1);
         return this.retryRequest(request);
     }
 

@@ -92,7 +92,59 @@ export default class TransactionsService {
             }
         );
     }
+    exportInvoiceFile(query) {
+        const request = {};
+        request.url = `${this._AppConstants.api}/invoices?export=pdf&startDate=${query.startDate}&endDate=${query.endDate}&skip=${query.skip}&limit=${query.limit}`;
+        if (query.supplierId) {
+            if (query.supplierId !== 'All') {
+                request.url = request.url.concat(`&supplierId=${query.supplierId}`);
+            }
+        }
+        if (query.customerId) {
+            if (query.customerId === 'All') {
+                request.url = request.url.concat(`&customerId=All`);
+            }else{
+                request.url = request.url.concat(`&customerId=${query.customerId}`);
+            }
+        }else{
+            request.url = request.url.concat(`&customerId=All`);
+        }
+        if (query.branchId) {
+            if (query.branchId === 'All') {
+                request.url = request.url.concat(`&branchId=All`);
+            }else{
+                request.url = request.url.concat(`&branchId=${query.branchId}`);
+            }
+        }else{
+            request.url = request.url.concat(`&branchId=All`);
+        }
+        // request.url = request.url.concat(`&type=${query.type}`);
+        request.method = 'GET';
+        request.headers = { 'Content-Type': 'application/json' };
+        request.responseType = 'arraybuffer';
+        request.headers.Authorization = `Bearer ${this._JwtService.get()}`;
 
+        this.retryRequest(request).then(
+            (result) => {
+                suppliesOnHelper.createBlob(result, 'SupOn-Report', 'pdf');
+            }
+        );
+    }
+    exportInvoiceDetailsFile(query) {
+        const request = {};
+        request.url = `${this._AppConstants.api}/invoices/getInvoice?id=${query.id}&export=pdf`;
+        // request.url = request.url.concat(`&type=${query.type}`);
+        request.method = 'GET';
+        request.headers = { 'Content-Type': 'application/json' };
+        request.headers.Authorization = `Bearer ${this._JwtService.get()}`;
+        request.responseType = 'arraybuffer';
+
+        this.retryRequest(request).then(
+            (result) => {
+                suppliesOnHelper.createBlob(result, 'SupOn-Report', 'pdf');
+            }
+        );
+    }
     listInvoices(query) {
         const request = {};
         request.url = `${this._AppConstants.api}/invoices?startDate=${query.startDate}&endDate=${query.endDate}&skip=${query.skip}&limit=${query.limit}`;
@@ -102,14 +154,22 @@ export default class TransactionsService {
             }
         }
         if (query.customerId) {
-            if (query.customerId !== 'All') {
+            if (query.customerId === 'All') {
+                request.url = request.url.concat(`&customerId=All`);
+            }else{
                 request.url = request.url.concat(`&customerId=${query.customerId}`);
             }
+        }else{
+            request.url = request.url.concat(`&customerId=All`);
         }
         if (query.branchId) {
-            if (query.branchId !== 'All') {
+            if (query.branchId === 'All') {
+                request.url = request.url.concat(`&branchId=All`);
+            }else{
                 request.url = request.url.concat(`&branchId=${query.branchId}`);
             }
+        }else{
+            request.url = request.url.concat(`&branchId=All`);
         }
         // request.url = request.url.concat(`&type=${query.type}`);
         request.method = 'GET';
@@ -120,7 +180,7 @@ export default class TransactionsService {
     }
     getInvoice(query) {
         const request = {};
-        request.url = `${this._AppConstants.api}/invoices/getInvoice/${query.id}`;
+        request.url = `${this._AppConstants.api}/invoices/getInvoice?id=${query.id}`;
         // request.url = request.url.concat(`&type=${query.type}`);
         request.method = 'GET';
         request.headers = { 'Content-Type': 'application/json' };

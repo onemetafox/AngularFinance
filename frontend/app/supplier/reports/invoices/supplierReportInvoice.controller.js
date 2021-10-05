@@ -123,8 +123,8 @@ export default class SupplierReportInvoicesCtrl {
         this.listInvoices(this.searchCriteria);
     }
 
-    exportFile(type) {
-        this._SupplierService.exportFile(type, 'invoices', this.searchCriteria);
+    exportFile() {
+        this._TransactionsService.exportInvoiceFile(this.searchCriteria);
     }
     selected(item) {
         const invoice = { id: item.invoice_id };

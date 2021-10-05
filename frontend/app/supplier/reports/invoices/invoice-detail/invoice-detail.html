@@ -7,7 +7,7 @@
 </div>
 <div class="card card-details">
     <div class="card-header">
-        <button class="btn btn-transparent btn-lg pull-right">{{"supplier.reports.orders.details.print" | translate}}</button>
+        <button class="btn btn-transparent btn-lg pull-right" ng-click="$ctrl.exportFile()">{{"supplier.reports.orders.details.print" | translate}}</button>
         <div class="card-title" style="padding-top: 10px;">
             {{"supplier.reports.invoices.invoiceDetail" | translate}}: 
         </div>
@@ -58,7 +58,7 @@
                         </tr>
                         <tr>
                             <td width="50%">{{"supplier.reports.invoices.streetName" | translate}}</td>
-                            <td width="50%"></td>
+                            <td width="50%">{{$ctrl.invoice.supplier.location.address}}</td>
                         </tr>
                         <tr>
                             <td width="50%">{{"supplier.reports.invoices.district" | translate}}</td>
@@ -109,7 +109,7 @@
                         </tr>
                         <tr>
                             <td width="50%">{{"supplier.reports.invoices.streetName" | translate}}</td>
-                            <td width="50%"></td>
+                            <td width="50%">{{$ctrl.invoice.customer.location.address}}</td>
                         </tr>
                         <tr>
                             <td width="50%">{{"supplier.reports.invoices.district" | translate}}</td>

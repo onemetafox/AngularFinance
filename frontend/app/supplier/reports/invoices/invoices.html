@@ -13,11 +13,8 @@
                 <small class="text-uppercase p-t-10 p-l-10 p-r-10">{{"supplier.reports.transactions.filter.export" | translate }}</small>
                 <div class="btn-toolbar" role="toolbar">
                     <div dir="ltr" class="btn-group btn-group-sm">
-                        <button type="button" class="btn btn-primary" ng-click="$ctrl.exportFile('pdf')"><i
+                        <button type="button" class="btn btn-primary" ng-click="$ctrl.exportFile()"><i
                                 class="fa fa-file-pdf-o"></i> PDF
-                        </button>
-                        <button type="button" class="btn btn-primary" ng-click="$ctrl.exportFile('xls')"><i
-                                class="fa fa-file-excel-o"></i> EXCEL
                         </button>
                     </div>
                 </div>
@@ -95,7 +92,7 @@
                             </td>
                             <td class="sorting_1 mn-150 p-l-5 text-capitalize">{{item.customer.representativeName}}</td>
 
-                            <td class="sorting_1 p-l-5">{{item.total| currency:"":2}} <small>{{"supplier.account.payment.sar" | translate }}</small></td>
+                            <td class="sorting_1 p-l-5">{{item.price| currency:"":2}} <small>{{"supplier.account.payment.sar" | translate }}</small></td>
                             <td class="sorting_1 p-l-5">
                                 {{item.order.branchName | translate}}
                             </td>
