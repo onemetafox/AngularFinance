@@ -884,7 +884,10 @@
         "totalTaxableAmount": "Total Taxable Amount (Excluding VAT)",
         "totalVat": "Total VAT",
         "totalAmountDue": "Total Amount Due",
-        "branchName": "Branch Name"
+        "branchName": "Branch Name",
+        "invoiceTitle": "INVOCE",
+        "averageInvoices":"Daily Avg. Invoices"
+
       }
     },
     "customer": {

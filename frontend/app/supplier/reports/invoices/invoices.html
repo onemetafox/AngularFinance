@@ -4,7 +4,60 @@
         <li class="breadcrumb-item active">{{"supplier.reports.invoices.title" | translate }}</li>
     </ol>
 </div>
-
+<div class="row">
+    <div class="col-xl-3 col-sm-6 m-b-20">
+        <div class="border-top-balance-card">
+            <div class="p-t-10 p-b-10 p-l-15 p-r-15">
+                <h6>{{"supplier.reports.invoices.title" | translate }}</h6>
+                <shimmer hide="$ctrl.reportIsLoaded" row="1" clipped="true"></shimmer>
+                <h5 ng-if="$ctrl.reportIsLoaded" class="bold">{{$ctrl.numberOfInvoices}}
+                    <small>
+                        <small class="w300 sm-text-left upper-case">{{"supplier.reports.invoices.invoiceTitle" | translate }}</small>
+                    </small>
+                </h5>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-sm-6 m-b-20">
+        <div class="border-top-balance-card">
+            <div class="p-t-10 p-b-10 p-l-15 p-r-15">
+                <h6>{{"supplier.reports.orders.stats.revenue" | translate }}</h6>
+                <shimmer hide="$ctrl.reportIsLoaded" row="1" clipped="true"></shimmer>
+                <h5 ng-if="$ctrl.reportIsLoaded" class="bold">{{$ctrl.totalRevenue | currency:"":2}}
+                    <small>
+                        <small class="w300 sm-text-left upper-case">{{"supplier.reports.orders.stats.sar" | translate }}</small>
+                    </small>
+                </h5>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-sm-6 m-b-20">
+        <div class="border-top-balance-card">
+            <div class="p-t-10 p-b-10 p-l-15 p-r-15">
+                <h6>{{"supplier.reports.invoices.averageInvoices" | translate }}</h6>
+                <shimmer hide="$ctrl.reportIsLoaded" row="1" clipped="true"></shimmer>
+                <h5 ng-if="$ctrl.reportIsLoaded" class="bold">{{$ctrl.avgDailyNumberOfInvoices | number:1}}
+                    <small>
+                        <small class="w300 sm-text-left upper-case">{{"supplier.reports.invoices.invoiceTitle" | translate }}</small>
+                    </small>
+                </h5>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-sm-6 m-b-20">
+        <div class="border-top-balance-card">
+            <div class="p-t-10 p-b-10 p-l-15 p-r-15">
+                <h6>{{"supplier.reports.orders.stats.averageRevenue" | translate }}</h6>
+                <shimmer hide="$ctrl.reportIsLoaded" row="1" clipped="true"></shimmer>
+                <h5 ng-if="$ctrl.reportIsLoaded" class="bold">{{$ctrl.avgDailyRevenue | currency:"":2}}
+                    <small>
+                        <small class="w300 sm-text-left upper-case">{{"supplier.reports.orders.stats.sar" | translate }}</small>
+                    </small>
+                </h5>
+            </div>
+        </div>
+    </div>
+</div>
 <div class="card">
     <div class="gray-container">
         <div class="row">
@@ -92,7 +145,7 @@
                             </td>
                             <td class="sorting_1 mn-150 p-l-5 text-capitalize">{{item.customer.representativeName}}</td>
 
-                            <td class="sorting_1 p-l-5">{{item.price| currency:"":2}} <small>{{"supplier.account.payment.sar" | translate }}</small></td>
+                            <td class="sorting_1 p-l-5">{{item.price * 1.15 | currency:"":2}} <small>{{"supplier.account.payment.sar" | translate }}</small></td>
                             <td class="sorting_1 p-l-5">
                                 {{item.order.branchName | translate}}
                             </td>

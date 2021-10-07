@@ -61,13 +61,19 @@ export default class SupplierReportInvoicesCtrl {
 
             } 
             this.invoice = tempArray;
-            console.log(tempArray);
+            this.numberOfInvoices = res.data.data.numberOfInvoices;
+            this.totalRevenue = res.data.data.totalRevenue;
+            this.avgDailyNumberOfInvoices = res.data.data.avgDailyNumberOfInvoices;
+            this.avgDailyRevenue = res.data.data.avgDailyRevenue;
             this.totalPages = Math.ceil(tempArray.length / this.searchCriteria.limit);
         };
         const _onError = (err) => {
             this.error = err.data.data;
         };
-        this._TransactionsService.listInvoices(searchCriteria).then(_onSuccess, _onError);
+        const _onFinal = (err) => {
+            this.reportIsLoaded = true;
+        };
+        this._TransactionsService.listInvoices(searchCriteria).then(_onSuccess, _onError).finally(_onFinal);
     }
 
     getCustomersLookup() {
