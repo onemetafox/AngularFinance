@@ -108,6 +108,7 @@ function getInvoices(req, res){
     createdAt: { $gte: startDate, $lte: endDate },
     $and: [{ supplier: req.user._id }]
   };
+  
   async.waterfall([
     function passParameter(callback) {
       callback(null, req, supplierInvoiceReport,
@@ -132,8 +133,15 @@ function getInvoices(req, res){
       Invoice.aggregate([
         {
           $match: query
-        },
-        {
+        },{
+          $lookup:
+            {
+              from: "orders",
+              localField: "branch",
+              foreignField: "_id",
+              as: "orders"
+            }
+       },{
           $group: {
             _id: {
               month: { $month: '$createdAt' },
@@ -215,7 +223,7 @@ function getNumberInvoices(req, supplierInvoiceReport,skip, limit, callback){
       .then((acceptedInvoices) => {
         if(acceptedInvoices){
           acceptedInvoices.forEach((acceptedInvoicesObj) => {
-            if(acceptedInvoicesObj.customer.customer == req.query.customerId || acceptedInvoicesObj.customer._id == req.query.customerId){
+            if((acceptedInvoicesObj.customer.customer == req.query.customerId || acceptedInvoicesObj.customer._id == req.query.customerId) && acceptedInvoicesObj.order){
               let invoice = {};
               invoice = {
                 invoice_id: acceptedInvoicesObj._id,
@@ -246,7 +254,6 @@ function getNumberInvoices(req, supplierInvoiceReport,skip, limit, callback){
   }else{
     Invoice.find(query)
       .populate('supplier')
-      .populate('customer')
       .populate({
           path: 'order',
           match: branchMatch
@@ -255,27 +262,22 @@ function getNumberInvoices(req, supplierInvoiceReport,skip, limit, callback){
       .limit(Number(limit))
       .then((acceptedInvoices) => {
         if(acceptedInvoices){
-          new Promise((resolve, reject) => {
-            acceptedInvoices.forEach((acceptedInvoicesObj, index) => {
-              if(acceptedInvoicesObj.customer.type == 'Customer'){
-                let invoice = {};
-                invoice = {
-                  invoice_id: acceptedInvoicesObj._id,
-                  invoiceId: acceptedInvoicesObj.invoiceId,
-                  supplier: acceptedInvoicesObj.supplier,
-                  customer: acceptedInvoicesObj.customer,
-                  order : acceptedInvoicesObj.order,
-                  isPaid: acceptedInvoicesObj.isPaid,
-                  total: acceptedInvoicesObj.total,
-                  close: acceptedInvoicesObj.close,
-                  price : acceptedInvoicesObj.price,
-                  VAT: acceptedInvoicesObj.VAT,
-                  createdAt: acceptedInvoicesObj.createdAt
-                };
-                supplierInvoiceReport.invoices.push(invoice);
-                if (index === acceptedInvoices.length -1) resolve();
-              }else{
-                Customer.findById(acceptedInvoicesObj.customer.customer).then((customer)=>{
+           Customer.aggregate(
+            {
+              $lookup: {
+                from: 'customers',
+                localField: '_id',
+                foreignField: 'customer',
+                as: 'Staffs'
+              }
+              
+            },
+            {$match : {type: 'Customer'}}
+            
+          ).then((customers)=>{
+            customers.forEach(customer => {
+              acceptedInvoices.forEach(acceptedInvoicesObj => {
+                if(customer._id.toString() == acceptedInvoicesObj.customer.toString()){
                   let invoice = {};
                   invoice = {
                     invoice_id: acceptedInvoicesObj._id,
@@ -291,15 +293,32 @@ function getNumberInvoices(req, supplierInvoiceReport,skip, limit, callback){
                     createdAt: acceptedInvoicesObj.createdAt
                   };
                   supplierInvoiceReport.invoices.push(invoice);
-                  if (index === acceptedInvoices.length -1) resolve();
-                })
-              }
+                }else{
+                  customer.Staffs.forEach(staff => {
+                    if(staff._id.toString() == acceptedInvoicesObj.customer.toString()){
+                      let invoice = {};
+                      invoice = {
+                        invoice_id: acceptedInvoicesObj._id,
+                        invoiceId: acceptedInvoicesObj.invoiceId,
+                        supplier: acceptedInvoicesObj.supplier,
+                        customer: customer,
+                        order : acceptedInvoicesObj.order,
+                        isPaid: acceptedInvoicesObj.isPaid,
+                        total: acceptedInvoicesObj.total,
+                        close: acceptedInvoicesObj.close,
+                        price : acceptedInvoicesObj.price,
+                        VAT: acceptedInvoicesObj.VAT,
+                        createdAt: acceptedInvoicesObj.createdAt
+                      };
+                      supplierInvoiceReport.invoices.push(invoice);
+                    }
+                  });
+                }
+              });
             });
-          }).then(()=>{
             supplierInvoiceReport.numberOfInvoices = supplierInvoiceReport.invoices.length;
             callback(null, supplierInvoiceReport);
-          })
-          
+          })         
         }else{
           supplierInvoiceReport.invoices = [];
           supplierInvoiceReport.numberOfInvoices = 0;
