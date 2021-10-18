@@ -248,7 +248,20 @@ export default class OrderService {
         request1.url = `${this._AppConstants.api}/invoices/create/${id}`;
         request1.method = 'GET';
         request1.headers = this._request.headers;
-        this.retryRequest(request1);
+        this.retryRequest(request1).then(
+            (result) => {
+                const request2 = {};
+                console.log(result)
+                request2.url = `${this._AppConstants.api}/invoices/getInvoice?id=${result.data.data._id}&export=pdf`;
+                request2.method = 'GET';
+                request2.headers = this._request.headers;
+                this.retryRequest(request2).then(
+                    (result1) => {
+                        suppliesOnHelper.createBlob(result1, 'SupOn-Report', 'pdf');
+                    }
+                );
+            }
+        );
         return this.retryRequest(request);
     }
 
