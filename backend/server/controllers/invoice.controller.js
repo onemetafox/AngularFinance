@@ -88,8 +88,11 @@ function createInvoice(req, res){
       price : order.price,
       VAT : order.VAT
     });
-    invoice.save();
-    res.json(Response.success());
+    invoice.save(function(err,result){
+      res.json(Response.success(result));
+      });
+    // invoice.save();
+    // res.json(Response.success());
   })
 }
 function getInvoices(req, res){

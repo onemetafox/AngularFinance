@@ -57,7 +57,12 @@
                   <td width="25%">اسم</td>
                   <td width="25%">{{:data.supplier.representativeName}}</td>
                   <td width="25%">اسم</td>
-                  <td width="25%">{{:data.customer.representativeName}}</td>
+                  {{if data.customer}}
+                      <td width="25%">{{:data.customer.representativeName}}</td>
+                  {{else}}
+                      <td width="25%"></td>
+                  {{/if}}
+                  
               </tr>
               <tr>
                   <td width="25%"> رقم المبنى </td>
@@ -75,7 +80,12 @@
                   <td width="25%">اسم الشارع</td>
                   <td width="25%">{{:data.supplier.location.address}}</td>
                   <td width="25%">اسم الشارع</td>
-                  <td width="25%">{{:data.customer.location.address}}</td>
+                  {{if data.customer}}
+                      <td width="25%">{{:data.customer.location.address}}</td>
+                  {{else}}
+                      <td width="25%"></td>
+                  {{/if}}
+                  
               </tr>
               <tr>
                   <td width="25%">يصرف</td>
@@ -111,13 +121,23 @@
                   <td width="25%">ضريبه الشراء</td>
                   <td width="25%">{{:data.supplier.VATRegisterNumber}}</td>
                   <td width="25%">ضريبه الشراء</td>
-                  <td width="25%">{{:data.customer.VATRegisterNumber}}</td>
+                  {{if data.customer}}
+                      <td width="25%">{{:data.customer.VATRegisterNumber}}</td>
+                  {{else}}
+                      <td width="25%"></td>
+                  {{/if}}
+                  
               </tr>
               <tr>
                   <td width="25%"> رقم السجل التجاري </td>
                   <td width="25%">{{:data.supplier.commercialRegister}}</td>
                   <td width="25%"> رقم السجل التجاري </td>
-                  <td width="25%">{{:data.customer.commercialRegister}}</td>
+                   {{if data.customer}}
+                      <td width="25%">{{:data.customer.commercialRegister}}</td>
+                  {{else}}
+                      <td width="25%"></td>
+                  {{/if}}
+                  
               </tr>  
           </tbody>
         </table>
