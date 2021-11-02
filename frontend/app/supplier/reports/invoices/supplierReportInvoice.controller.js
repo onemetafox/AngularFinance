@@ -65,7 +65,7 @@ export default class SupplierReportInvoicesCtrl {
             this.totalRevenue = res.data.data.totalRevenue;
             this.avgDailyNumberOfInvoices = res.data.data.avgDailyNumberOfInvoices;
             this.avgDailyRevenue = res.data.data.avgDailyRevenue;
-            this.totalPages = Math.ceil(tempArray.length / this.searchCriteria.limit);
+            this.totalPages = Math.ceil(res.data.data.numberOfInvoices / this.searchCriteria.limit);
         };
         const _onError = (err) => {
             this.error = err.data.data;

@@ -212,6 +212,7 @@ function getNumberInvoices(req, supplierInvoiceReport,skip, limit, callback){
   
   if(req.query.customerId !== "All"){
     Customer.findById(req.query.customerId).then((customer)=>{
+      const invoices = []
       Invoice.find(query)
       .populate('supplier')
       .populate('customer')
@@ -219,8 +220,7 @@ function getNumberInvoices(req, supplierInvoiceReport,skip, limit, callback){
           path: 'order',
           match: branchMatch
       })
-      .skip(Number(skip))
-      .limit(Number(limit))
+      
       .then((acceptedInvoices) => {
         if(acceptedInvoices){
           acceptedInvoices.forEach((acceptedInvoicesObj) => {
@@ -240,10 +240,20 @@ function getNumberInvoices(req, supplierInvoiceReport,skip, limit, callback){
                 VAT: acceptedInvoicesObj.VAT,
                 createdAt: acceptedInvoicesObj.createdAt
               };
-              supplierInvoiceReport.invoices.push(invoice);
+              invoices.push(invoice);
+              // supplierInvoiceReport.invoices.push(invoice);
             }
-          });
-          supplierInvoiceReport.numberOfInvoices = supplierInvoiceReport.invoices.length;
+          });  
+          supplierInvoiceReport.numberOfInvoices = invoices.length;
+          if(invoices.length != 0){
+            for(var i = Number(skip); i < Number(skip) + Number(limit); i++ ){
+              if(i < invoices.length)
+                supplierInvoiceReport.invoices.push(invoices[i]);
+            }
+          }else{
+            supplierInvoiceReport.invoices = [];
+          }
+          console.log(supplierInvoiceReport);
           callback(null, supplierInvoiceReport);
         }else{
           supplierInvoiceReport.invoices = [];
@@ -317,8 +327,10 @@ function getNumberInvoices(req, supplierInvoiceReport,skip, limit, callback){
                 }
               });
             });
-            supplierInvoiceReport.numberOfInvoices = supplierInvoiceReport.invoices.length;
-            callback(null, supplierInvoiceReport);
+            Invoice.find(query).then((acceptedInvoices) => {
+              supplierInvoiceReport.numberOfInvoices = acceptedInvoices.length;
+              callback(null, supplierInvoiceReport);
+            });
           })         
         }else{
           supplierInvoiceReport.invoices = [];
