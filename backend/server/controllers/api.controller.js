@@ -40,13 +40,13 @@ function create(req, res) {
   const todayDate = moment().tz(appSettings.timeZone);
   let futureDate = '';
   let days = 0;
-  if (req.body.paymentInterval) {
-    if (req.body.paymentInterval === 'Month') {
-      futureDate = moment(todayDate).tz(appSettings.timeZone).add(Number(req.body.paymentFrequency), 'M');
-    } else if (req.body.paymentInterval === 'Week') {
-      futureDate = moment(todayDate).tz(appSettings.timeZone).add(Number(req.body.paymentFrequency) * 7, 'days');
+  if (req.query.paymentInterval) {
+    if (req.query.paymentInterval === 'Month') {
+      futureDate = moment(todayDate).tz(appSettings.timeZone).add(Number(req.query.paymentFrequency), 'M');
+    } else if (req.query.paymentInterval === 'Week') {
+      futureDate = moment(todayDate).tz(appSettings.timeZone).add(Number(req.query.paymentFrequency) * 7, 'days');
     } else {
-      futureDate = moment(todayDate).tz(appSettings.timeZone).add(Number(req.body.paymentFrequency), 'days');
+      futureDate = moment(todayDate).tz(appSettings.timeZone).add(Number(req.query.paymentFrequency), 'days');
     }
     days = futureDate.diff(todayDate, 'days');
   } else {
@@ -54,11 +54,6 @@ function create(req, res) {
   }
 
   let supplierStatus = '';
-  // if (req.user.type === 'Admin') {
-  //   supplierStatus = 'Active';
-  // } else {
-  //   supplierStatus = 'Suspended';
-  // }
   if (req.query.admin) {
     supplierStatus = 'Active';
     user.status = 'Active';
@@ -78,7 +73,7 @@ function create(req, res) {
     commercialRegister: req.query.commercialRegister,
     commercialRegisterPhoto: req.query.commercialRegisterPhoto,
     commercialRegisterExpireDate: req.query.commercialRegisterExpireDate ? moment(req.query.commercialRegisterExpireDate) : '',
-    commercialRegisterExpireDateIslamic: req.query.commercialRegisterExpireDateIslamic ? momentHijri(req.query.commercialRegisterExpireDateIslamic) : '',
+    commercialRegisterExpireDateIslamic: req.body.commercialRegisterExpireDateIslamic ? momentHijri(req.body.commercialRegisterExpireDateIslamic) : '',
     staff: [user._id],
     paymentFrequency: req.query.paymentFrequency,
     paymentInterval: req.query.paymentInterval,
@@ -90,14 +85,13 @@ function create(req, res) {
     VATRegisterNumber: req.query.VATRegisterNumber ? Number(req.query.VATRegisterNumber) : 0,
     VATRegisterPhoto: req.query.VATRegisterPhoto ? req.query.VATRegisterPhoto : null
   });
-  
   if (req.query.commercialRegisterExpireDate && (moment(req.query.commercialRegisterExpireDate).diff(moment(), 'days') > appSettings.dateExpireValidation)) {
     res.status(httpStatus.BAD_REQUEST).json(Response.failure(20));
   } else if (req.query.commercialRegisterExpireDate && (moment(req.query.commercialRegisterExpireDate).diff(moment(), 'days') <= 0)) {
     res.status(httpStatus.BAD_REQUEST).json(Response.failure(21));
-  } else if (req.query.commercialRegisterExpireDateIslamic && (momentHijri(req.query.commercialRegisterExpireDateIslamic).diff(momentHijri().format('iYYYY/iM/iD'), 'days') > appSettings.dateExpireValidation)) {
+  } else if (req.query.commercialRegisterExpireDateIslamic && (momentHijri(req.query.commercialRegisterExpireDateIslamic).diff(momentHijri().format('YYYY-M-D'), 'days') > appSettings.dateExpireValidation)) {
     res.status(httpStatus.BAD_REQUEST).json(Response.failure(22));
-  } else if (req.query.commercialRegisterExpireDateIslamic && (momentHijri(req.query.commercialRegisterExpireDateIslamic).diff(momentHijri().format('iYYYY/iM/iD'), 'days') <= 0)) {
+  } else if (req.query.commercialRegisterExpireDateIslamic && (momentHijri(req.query.commercialRegisterExpireDateIslamic).diff(momentHijri().format('YYYY-M-D'), 'days') <= 0)) {
     res.status(httpStatus.BAD_REQUEST).json(Response.failure(23));
   } else {
     // Find the supplier admin role and assign it to user.
@@ -140,7 +134,7 @@ function create(req, res) {
                     userName: req.query.userEmail,
                     password: req.query.userPassword
                   };
-                  EmailHandler.sendEmail(req.query.userEmail, content, 'NEWUSER', req.query.language);
+                  // EmailHandler.sendEmail(req.query.userEmail, content, 'NEWUSER', req.query.language);
                   User.findOne({ email: appSettings.superAdmin })
                     .then((superAdmin) => {
                       const notification = {
@@ -203,6 +197,29 @@ function createUser(supplier, user, role, callback) {
   role.supplier = supplier._id;
   role.save()
     .then(savedRole => callback(null, supplier, user, savedRole));
+}
+
+/**
+ * Helper Function
+ * Checks that the user's role is appropriate
+ * @param {User} user - The updated user
+ * @param {Supplier} supplier - The supplier of the user
+ */
+ function roleEligible(supplier, user, callback) {
+  Role.findById(user.role)
+    .then((role) => {
+      if (role) {
+        // Check if the role is for suppliers and is general or added by this supplier.
+        if (role.userType === 'Supplier' && (role.supplier.toString() === supplier._id.toString())) {
+          callback(null, supplier, user);
+        } else {
+          callback(13, null);
+        }
+      } else {
+        callback(13, null);
+      }
+    })
+    .catch(e => callback(e, null));
 }
 
 /**
