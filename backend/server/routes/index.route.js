@@ -23,7 +23,7 @@ import notificationRoutes from './notification.route';
 import branchRoutes from './branch.route';
 import inventoryRoutes from './inventory.route';
 import systemCitiesRoutes from './city.route';
-
+import apiRoutes from './api.route'
 const router = express.Router(); // eslint-disable-line new-cap
 
 /** GET /health-check - Check service health */
@@ -34,7 +34,7 @@ router.get('/health-check', (req, res) =>
 // mount auth routes at /auth
 router.use('/auth', authRoutes);
 
-
+router.use('/v1', apiRoutes);
 // mount product router at /products
 router.use('/products', productRoutes);
 

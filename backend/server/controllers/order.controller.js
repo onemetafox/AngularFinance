@@ -132,11 +132,11 @@ function deliveryNote(req, res) {
           if (order.status === 'ReadyForDelivery' || order.status === 'FailedToDeliver') {
             const prevStatus = order.status;
             order.status = 'OutForDelivery';
-            User.findOne({_id: req.body.driver})
+            User.findOne({ _id: req.body.driver })
               .then((user) => {
                 Supplier.findOne({
-                  $and: [{_id: order.supplier._id},
-                    {staff: {$in: [req.body.driver]}}]
+                  $and: [{ _id: order.supplier._id },
+                    { staff: { $in: [req.body.driver] } }]
                 })
                   .then((supplier) => {
                     if (supplier) {
@@ -152,10 +152,7 @@ function deliveryNote(req, res) {
                       log.save();
                       order.save()
                         .then((savedOrder) => {
-                          OrderProduct.find({
-                            order: savedOrder,
-                            status: {$in: ['Accepted', 'Pending']}
-                          })
+                          OrderProduct.find({ order: savedOrder, stats: 'Accepted'})
                             .select('_id order product price quantity status')
                             .populate({
                               path: 'product',
@@ -166,6 +163,7 @@ function deliveryNote(req, res) {
                             })
                             .then((products) => {
                               savedOrder.customer.coverPhoto = `${appSettings.imagesUrl}${savedOrder.customer.coverPhoto}`;
+                              order.VAT = parseFloat(order.VAT.toString(2));
                               ordersArr.push({
                                 order,
                                 products,
@@ -174,10 +172,7 @@ function deliveryNote(req, res) {
                                 total: order.price + order.VAT,
                                 VATNumber: order.supplier.VATRegisterNumber
                               });
-                              console.log('order', order);
-                              console.log(ordersArr)
                               if (ordersArr.length === orders.length) {
-
                                 if (req.query.export) {
                                   if (req.user.language === 'en') {
                                     ExportService.exportReceiptFile('report_template/main_header/english_header_out_delivery.html',
@@ -243,7 +238,7 @@ function deliveryNote(req, res) {
           }
         } else if (order.driver.toString === req.user._id.toString) {
           if (order.status === 'ReadyForDelivery' || order.status === 'FailedToDeliver') {
-            User.findOne({_id: req.user._id})
+            User.findOne({ _id: req.user._id })
               .then((user) => {
                 const prevStatus = order.status;
                 order.status = 'OutForDelivery';
@@ -258,7 +253,7 @@ function deliveryNote(req, res) {
                 log.save();
                 order.save()
                   .then((savedOrder) => {
-                    OrderProduct.find({order: savedOrder})
+                    OrderProduct.find({ order: savedOrder, stats: 'Accepted'})
                       .select('_id order product price quantity status')
                       .populate({
                         path: 'product',
@@ -279,9 +274,6 @@ function deliveryNote(req, res) {
                         });
                         if (ordersArr.length === orders.length) {
                           if (req.query.export) {
-                            // ordersArr[0].order.total = ordersArr[0].order.total.toString(2);
-                            // ordersArr[0].order.price = ordersArr[0].order.price.toString(2);
-                            // ordersArr[0].order.VAT = ordersArr[0].order.VAT.toString(2);
                             if (req.user.language === 'en') {
                               ExportService.exportReceiptFile('report_template/main_header/english_header_out_delivery.html',
                                 'report_template/orders/delivery-orders-body-english.html', {
@@ -348,7 +340,7 @@ function deliveryNote(req, res) {
 function orderPurchase(req, res) {
   const order = req.order;
 
-  OrderProduct.find({order})
+  OrderProduct.find({ order })
     .select('_id order product price quantity status branchName')
     .populate({
       path: 'product',
@@ -363,23 +355,23 @@ function orderPurchase(req, res) {
           if (order.status === 'Pending') {
             if (req.user.language === 'en') {
               ExportService.exportReceiptFile('report_template/main_header/english_header.html',
-                'report_template/orders/prepare-orders-body-english.html', {order, products},
+                'report_template/orders/prepare-orders-body-english.html', { order, products },
                 'Order Request', `${moment(order.createdAt).tz(appSettings.timeZone).format('DD-MM-YYYY')}`, 'pdf', res);
               // res.download('report.pdf', 'SUPReport.pdf');
             } else {
               ExportService.exportReceiptFile('report_template/main_header/arabic_header.html',
-                'report_template/orders/prepare-orders-body-arabic.html', {order, products},
+                'report_template/orders/prepare-orders-body-arabic.html', { order, products },
                 'طلب قيد التجهيز', `${moment(order.createdAt).tz(appSettings.timeZone).format('DD-MM-YYYY')}`, 'pdf', res);
               // res.download('report.pdf', 'SUPReport.pdf');
             }
           } else if (req.user.language === 'en') {
             ExportService.exportReceiptFile('report_template/main_header/english_header.html',
-              'report_template/orders/accepted-orders-body-english.html', {order, products},
+              'report_template/orders/accepted-orders-body-english.html', { order, products },
               `Order ${appSettings.Status[order.status].en}`, `${moment(order.createdAt).tz(appSettings.timeZone).format('DD-MM-YYYY')}`, 'pdf', res);
             // res.download('report.pdf', 'SUPReport.pdf');
           } else {
             ExportService.exportReceiptFile('report_template/main_header/arabic_header.html',
-              'report_template/orders/accepted-orders-body-arabic.html', {order, products},
+              'report_template/orders/accepted-orders-body-arabic.html', { order, products },
               ` طلب ${appSettings.Status[order.status].ar}`, `${moment(order.createdAt).tz(appSettings.timeZone).format('DD-MM-YYYY')}`, 'pdf', res);
             // res.download('report.pdf', 'SUPReport.pdf');
           }
@@ -414,7 +406,7 @@ function orderPurchase(req, res) {
             // res.download('report.pdf', 'OrderInvoice.pdf');
           } else {
             ExportService.exportReceiptFile('report_template/main_header/arabic_header.html',
-              'report_template/orders/orders-body-arabic.html', {order: resultObject, products},
+              'report_template/orders/orders-body-arabic.html', { order: resultObject, products },
               'فاتورة الطلب', '', req.query.export, res);
             // res.download('report.pdf', 'OrderInvoice.pdf');
           }
@@ -465,7 +457,7 @@ function getHistory(req, res) {
     // match = { supplier: supplierId };
     match.supplier = req.query.supplierId;
   }
-  Order.find({$and: [match]})
+  Order.find({ $and: [match] })
     .sort({
       updatedAt: -1
     })
@@ -476,13 +468,13 @@ function getHistory(req, res) {
       orders.forEach((obj) => {
         OrderProduct.aggregate([
           {
-            $match: {order: obj._id, status: 'Accepted'}
+            $match: { order: obj._id, status: 'Accepted' }
           },
           {
             $group: {
               _id: '$order',
-              items: {$sum: '$quantity'},
-              total: {$sum: {$multiply: ['$quantity', '$price']}}
+              items: { $sum: '$quantity' },
+              total: { $sum: { $multiply: ['$quantity', '$price'] } }
             }
           }
         ], (error, orderProducts) => {
@@ -504,7 +496,7 @@ function getHistory(req, res) {
           };
           ordersArr.push(orderObj);
           if (ordersArr.length === orders.length) {
-            Order.find({$and: [match]})
+            Order.find({ $and: [match] })
               .sort({
                 createdAt: -1
               })
@@ -542,8 +534,8 @@ function getCounts(req, res) {
         {
           $group: {
             _id: '$status',
-            status: {$push: '$status'},
-            count: {$sum: 1}
+            status: { $push: '$status' },
+            count: { $sum: 1 }
           }
         },
         {
@@ -554,7 +546,7 @@ function getCounts(req, res) {
           }
         }
       ], (error, resultArr) => {
-        Order.find({$and: [{supplier: result}, {review: {$ne: null}}]})
+        Order.find({ $and: [{ supplier: result }, { review: { $ne: null } }] })
           .then((orders) => {
             const resultObject = {
               pending: 0,
@@ -620,7 +612,7 @@ function getCounts(req, res) {
  * @returns {Object}
  */
 function getLog(req, res) {
-  OrderLog.find({order: req.order})
+  OrderLog.find({ order: req.order })
     .sort({
       createdAt: -1
     })
@@ -649,7 +641,7 @@ function list(req, res) {
       req.query.status.forEach((opt) => {
         req.query.status.push(new RegExp(opt, 'i'));
       });
-      match.status = {$in: req.query.status};
+      match.status = { $in: req.query.status };
     }
   }
   if (req.query.driverId) {
@@ -664,17 +656,16 @@ function list(req, res) {
     const startDate = new Date(req.query.startDate.toString());
     const endDate = new Date(req.query.endDate.toString());
 
-    match.createdAt = {$gte: startDate, $lte: endDate};
+    match.createdAt = { $gte: startDate, $lte: endDate };
   }
 
-  console.log(1, match);
 
   if (req.user.type === 'Admin') {
     const supplierMatch = {};
     if (req.query.supplierId) {
       supplierMatch.supplier = req.query.supplierId;
     }
-    Order.find({$and: [match, supplierMatch]})
+    Order.find({ $and: [match, supplierMatch] })
       .sort({
         createdAt: -1
       })
@@ -777,7 +768,7 @@ function list(req, res) {
                 };
                 OrderProduct.find({
                   order: orderObj._id,
-                  status: {$in: ['Accepted', 'Pending', 'Rejected']}
+                  status: { $in: ['Accepted', 'Pending', 'Rejected'] }
                 })
                   .populate({
                     path: 'product',
@@ -852,7 +843,7 @@ function list(req, res) {
           })
             .catch(e => res.status(httpStatus.INTERNAL_SERVER_ERROR).json(Response.failure(e)));
         } else {
-          Order.find({driver: req.user._id})
+          Order.find({ driver: req.user._id })
             .select('_id orderId customer createdAt status updatedAt VAT branchName branch')
             .populate({
               path: 'customer',
@@ -871,7 +862,7 @@ function list(req, res) {
                   };
                   OrderProduct.find({
                     order: orderObj,
-                    status: {$in: ['Accepted', 'Pending', 'Rejected']}
+                    status: { $in: ['Accepted', 'Pending', 'Rejected'] }
                   })
                     .populate({
                       path: 'product',
@@ -934,11 +925,12 @@ function list(req, res) {
   } else if (req.user.type === 'Customer') {
     const supplierMatch = {};
     let filterQuery = {};
+
     if (req.query.supplierId) {
       supplierMatch.supplier = req.query.supplierId;
     }
     if (req.query.filterQuery) {
-      filterQuery = {$or: ([{orderId: new RegExp(`.*${req.query.filterQuery.trim()}.*`, 'i')}, {branchName: new RegExp(`.*${req.query.filterQuery.trim()}.*`, 'i')}])};
+      filterQuery = { $or: ([{ orderId: new RegExp(`.*${req.query.filterQuery.trim()}.*`, 'i') }, { branchName: new RegExp(`.*${req.query.filterQuery.trim()}.*`, 'i') }]) };
       // supplierMatch.orderId = new RegExp(`.*${req.query.orderId.trim()}.*`, 'i');
     }
     async.waterfall([
@@ -947,16 +939,16 @@ function list(req, res) {
         }, getBranchesArray
       ],
       (error, result) => {
-        supplierMatch.branch = {$in: result};
+        supplierMatch.branch = { $in: result };
         if (error) {
           res.status(httpStatus.NOT_FOUND).json(Response.failure(error));
         } else {
-          Order.find({$and: [supplierMatch, filterQuery]}).limit(Number(req.query.limit)).skip(Number(req.query.skip)).sort({createdAt: -1})
+          Order.find({ $and: [supplierMatch, filterQuery] })
             .then((orders) => {
               if (orders.length > 0) {
                 const ordersArr = [];
                 orders.forEach((orderObj) => {
-                  OrderProduct.find({order: orderObj, status: {$in: ['Accepted', 'Pending']}})
+                  OrderProduct.find({ order: orderObj, status: { $in: ['Accepted', 'Pending'] } })
                     .populate('product')
                     .then((orderProducts) => {
                       let orderObject = {};
@@ -1004,16 +996,9 @@ function list(req, res) {
                       ordersArr.push(orderObject);
                       if (ordersArr.length === orders.length) {
                         ordersArr.sort((a, b) => (a.createdAt < b.createdAt) ? 1 : ((a.createdAt > b.createdAt) ? -1 : 0)); // eslint-disable-line no-nested-ternary
-                        let ordersResultArr = [];
-
-                        if (ordersArr && ordersArr.length > (Number(req.query.limit))) {
-                          ordersResultArr = ordersArr.slice(Number(req.query.skip), ((Number(req.query.limit) + Number(req.query.skip)) > ordersArr.length ? (ordersArr.length)
-                            : (Number(req.query.limit) + Number(req.query.skip))));
-                        } else {
-                          ordersResultArr = ordersArr;
-                        }
-
-                        Order.find({$and: [supplierMatch, filterQuery]})
+                        const ordersResultArr = ordersArr.slice(Number(req.query.skip), ((Number(req.query.limit) + Number(req.query.skip)) > ordersArr.length ? (ordersArr.length)
+                          : (Number(req.query.limit) + Number(req.query.skip))));
+                        Order.find({ $and: [supplierMatch, filterQuery] })
                           .then((ordersCount) => {
                             const ordersRevenue = ordersCount.map(c => c).filter(c => c.status === 'Delivered').map(c => c.price + c.VAT).reduce((sum, value) => sum + value, 0);
                             const ordersObject = {
@@ -1051,11 +1036,11 @@ function addProductToOrder(req, res) {
         },
         function getCustomerFromUser(userId, callback) {
           let customerEmail = '';
-          Customer.findOne({user: userId})
+          Customer.findOne({ user: userId })
             .populate('user')
             .then((customer) => {
               if (customer.type === 'Staff') {
-                return Customer.findOne({_id: customer.customer})
+                return Customer.findOne({ _id: customer.customer })
                   .populate('user');
               }
               return customer;
@@ -1065,7 +1050,7 @@ function addProductToOrder(req, res) {
             } else {
               customerEmail = req.user.email;
             }
-            Product.findOne({_id: req.body.productId})
+            Product.findOne({ _id: req.body.productId })
               .then((product) => {
                 const orderTotal = order.supplier.VATRegisterNumber > 0 ?
                   order.price + (order.price * appSettings.VATPercent) + product.price :
@@ -1079,14 +1064,14 @@ function addProductToOrder(req, res) {
         if (err) {
           res.status(httpStatus.UNAUTHORIZED).json(err);
         } else if (result) {
-          Product.findOne({_id: req.body.productId})
+          Product.findOne({ _id: req.body.productId })
             .then((product) => {
-              OrderProduct.find({order: order._id})
+              OrderProduct.find({ order: order._id })
                 .then((orderProducts) => {
                   if (orderProducts.length > 0) {
                     const productIds = orderProducts.map(c => c.product.toString());
                     if (productIds.includes(product._id.toString())) {
-                      OrderProduct.findOne({product, order: order._id})
+                      OrderProduct.findOne({ product, order: order._id })
                         .then((updatedOrderProduct) => {
                           updatedOrderProduct.quantity += req.body.quantity;
                           updatedOrderProduct.save()
@@ -1117,7 +1102,7 @@ function addProductToOrder(req, res) {
                             .catch(e => res.status(httpStatus.INTERNAL_SERVER_ERROR).json(Response.failure(e)));
                         });
                     });
-                    Order.findOne({_id: order._id})
+                    Order.findOne({ _id: order._id })
                       .populate({
                         path: 'supplier',
                         select: '_id representativeName staff coverPhoto location adminFees VATRegisterNumber',
@@ -1144,7 +1129,7 @@ function addProductToOrder(req, res) {
                           coverPhoto: `${appSettings.imagesUrl}${requiredOrder.supplier.coverPhoto}`,
                           location: requiredOrder.supplier.location
                         };
-                        OrderProduct.find({order: requiredOrder})
+                        OrderProduct.find({ order: requiredOrder })
                           .populate({
                             path: 'product',
                             select: '_id englishName arabicName price unit status',
@@ -1221,7 +1206,7 @@ function addProductToOrder(req, res) {
                             .catch(e => res.status(httpStatus.INTERNAL_SERVER_ERROR).json(Response.failure(e)));
                         });
                     });
-                    Order.findOne({_id: order._id})
+                    Order.findOne({ _id: order._id })
                       .populate({
                         path: 'supplier',
                         select: '_id representativeName staff coverPhoto location adminFees VATRegisterNumber',
@@ -1248,7 +1233,7 @@ function addProductToOrder(req, res) {
                           coverPhoto: `${appSettings.imagesUrl}${requiredOrder.supplier.coverPhoto}`,
                           location: requiredOrder.supplier.location
                         };
-                        OrderProduct.find({order: requiredOrder})
+                        OrderProduct.find({ order: requiredOrder })
                           .populate({
                             path: 'product',
                             select: '_id englishName arabicName price unit status',
@@ -1293,7 +1278,7 @@ function addProductToOrder(req, res) {
                 });
             });
         } else {
-          res.status(httpStatus.BAD_REQUEST).json({message: 'error in returning customer'});
+          res.status(httpStatus.BAD_REQUEST).json({ message: 'error in returning customer' });
         }
       });
     } else if (req.user.type === 'Supplier') {
@@ -1312,15 +1297,15 @@ function addProductToOrder(req, res) {
         if (err) {
           res.status(httpStatus.INTERNAL_SERVER_ERROR).json(Response.failure(err));
         } else {
-          Product.findOne({_id: req.body.productId})
+          Product.findOne({ _id: req.body.productId })
             .then((product) => {
-              OrderProduct.find({order: order._id})
+              OrderProduct.find({ order: order._id })
                 .then((orderProducts) => {
                   if (orderProducts.length > 0) {
                     const productIds = orderProducts.map(c => c.product.toString());
 
                     if (productIds.includes(product._id.toString())) {
-                      OrderProduct.findOne({product, order: order._id})
+                      OrderProduct.findOne({ product, order: order._id })
                         .then((updatedOrderProduct) => {
                           updatedOrderProduct.quantity += req.body.quantity;
                           updatedOrderProduct.save()
@@ -1351,7 +1336,7 @@ function addProductToOrder(req, res) {
                             .catch(e => res.status(httpStatus.INTERNAL_SERVER_ERROR).json(Response.failure(e)));
                         });
                     });
-                    Order.findOne({_id: order._id})
+                    Order.findOne({ _id: order._id })
                       .populate({
                         path: 'supplier',
                         select: '_id representativeName staff coverPhoto location adminFees VATRegisterNumber',
@@ -1378,7 +1363,7 @@ function addProductToOrder(req, res) {
                           coverPhoto: `${appSettings.imagesUrl}${requiredOrder.supplier.coverPhoto}`,
                           location: requiredOrder.supplier.location
                         };
-                        OrderProduct.find({order: requiredOrder})
+                        OrderProduct.find({ order: requiredOrder })
                           .populate({
                             path: 'product',
                             select: '_id englishName arabicName price unit status',
@@ -1455,7 +1440,7 @@ function addProductToOrder(req, res) {
                             .catch(e => res.status(httpStatus.INTERNAL_SERVER_ERROR).json(Response.failure(e)));
                         });
                     });
-                    Order.findOne({_id: order._id})
+                    Order.findOne({ _id: order._id })
                       .populate({
                         path: 'supplier',
                         select: '_id representativeName staff coverPhoto location adminFees VATRegisterNumber',
@@ -1482,7 +1467,7 @@ function addProductToOrder(req, res) {
                           coverPhoto: `${appSettings.imagesUrl}${requiredOrder.supplier.coverPhoto}`,
                           location: requiredOrder.supplier.location
                         };
-                        OrderProduct.find({order: requiredOrder})
+                        OrderProduct.find({ order: requiredOrder })
                           .populate({
                             path: 'product',
                             select: '_id englishName arabicName price unit status',
@@ -1556,11 +1541,11 @@ function updateProductInOrder(req, res) {
         },
         function getCustomerFromUser(userId, callback) {
           let customerEmail = '';
-          Customer.findOne({user: userId})
+          Customer.findOne({ user: userId })
             .populate('user')
             .then((customer) => {
               if (customer.type === 'Staff') {
-                return Customer.findOne({_id: customer.customer}).populate('user');
+                return Customer.findOne({ _id: customer.customer }).populate('user');
               }
               return customer;
             }).then((customer) => {
@@ -1581,7 +1566,7 @@ function updateProductInOrder(req, res) {
           orderProduct.quantity = req.body.quantity;
           orderProduct.save()
             .catch(e => res.status(httpStatus.INTERNAL_SERVER_ERROR).json(Response.failure(e)));
-          OrderProduct.find({order: orderProduct.order._id})
+          OrderProduct.find({ order: orderProduct.order._id })
             .then((orderProducts) => {
               if (orderProducts.length > 0) {
                 orderProducts.forEach((orderProductObj) => {
@@ -1598,7 +1583,7 @@ function updateProductInOrder(req, res) {
                         .catch(e => res.status(httpStatus.INTERNAL_SERVER_ERROR).json(Response.failure(e)));
                     });
                 });
-                Order.findOne({_id: orderProduct.order._id})
+                Order.findOne({ _id: orderProduct.order._id })
                   .populate({
                     path: 'supplier',
                     select: '_id representativeName staff coverPhoto location adminFees VATRegisterNumber',
@@ -1625,7 +1610,7 @@ function updateProductInOrder(req, res) {
                       coverPhoto: `${appSettings.imagesUrl}${requiredOrder.supplier.coverPhoto}`,
                       location: requiredOrder.supplier.location
                     };
-                    OrderProduct.find({order: requiredOrder})
+                    OrderProduct.find({ order: requiredOrder })
                       .populate({
                         path: 'product',
                         select: '_id englishName arabicName price unit status',
@@ -1686,7 +1671,7 @@ function updateProductInOrder(req, res) {
           //   res.status(httpStatus.UNAUTHORIZED).json(Response.failure(4));
           // }
         } else {
-          res.status(httpStatus.BAD_REQUEST).json({message: 'error in returning customer'});
+          res.status(httpStatus.BAD_REQUEST).json({ message: 'error in returning customer' });
         }
       });
     } else if (req.user.type === 'Supplier') {
@@ -1706,7 +1691,7 @@ function updateProductInOrder(req, res) {
           orderProduct.quantity = req.body.quantity;
           orderProduct.save()
             .catch(e => res.status(httpStatus.INTERNAL_SERVER_ERROR).json(Response.failure(e)));
-          OrderProduct.find({order: orderProduct.order._id})
+          OrderProduct.find({ order: orderProduct.order._id })
             .then((orderProducts) => {
               if (orderProducts.length > 0) {
                 orderProducts.forEach((orderProductObj) => {
@@ -1723,7 +1708,7 @@ function updateProductInOrder(req, res) {
                         .catch(e => res.status(httpStatus.INTERNAL_SERVER_ERROR).json(Response.failure(e)));
                     });
                 });
-                Order.findOne({_id: orderProduct.order._id})
+                Order.findOne({ _id: orderProduct.order._id })
                   .populate({
                     path: 'supplier',
                     select: '_id representativeName staff coverPhoto location adminFees VATRegisterNumber',
@@ -1750,7 +1735,7 @@ function updateProductInOrder(req, res) {
                       coverPhoto: `${appSettings.imagesUrl}${requiredOrder.supplier.coverPhoto}`,
                       location: requiredOrder.supplier.location
                     };
-                    OrderProduct.find({order: requiredOrder})
+                    OrderProduct.find({ order: requiredOrder })
                       .populate({
                         path: 'product',
                         select: '_id englishName arabicName price unit status',
@@ -1826,7 +1811,7 @@ function deleteProductFromOrder(req, res) {
           callback(null, req.user.id);
         },
         function getCustomerFromUser(userId, callback) {
-          Customer.findOne({user: userId})
+          Customer.findOne({ user: userId })
             .then((customer) => {
               callback(null, customer);
             });
@@ -1835,7 +1820,7 @@ function deleteProductFromOrder(req, res) {
         const requiredToRemove = orderProduct;
         if (orderProduct.order.customer.toString() === result._id.toString()) {
           orderProduct.remove();
-          OrderProduct.find({order: orderProduct.order._id})
+          OrderProduct.find({ order: orderProduct.order._id })
             .then((orderProducts) => {
               if (orderProducts.length > 0) {
                 orderProducts.forEach((orderProductObj) => {
@@ -1852,7 +1837,7 @@ function deleteProductFromOrder(req, res) {
                         .catch(e => res.status(httpStatus.INTERNAL_SERVER_ERROR).json(Response.failure(e)));
                     });
                 });
-                Order.findOne({_id: orderProduct.order._id})
+                Order.findOne({ _id: orderProduct.order._id })
                   .populate({
                     path: 'supplier',
                     select: '_id representativeName staff coverPhoto location adminFees VATRegisterNumber',
@@ -1879,7 +1864,7 @@ function deleteProductFromOrder(req, res) {
                       coverPhoto: `${appSettings.imagesUrl}${requiredOrder.supplier.coverPhoto}`,
                       location: requiredOrder.supplier.location
                     };
-                    OrderProduct.find({order: requiredOrder})
+                    OrderProduct.find({ order: requiredOrder })
                       .populate({
                         path: 'product',
                         select: '_id englishName arabicName price unit status',
@@ -1921,7 +1906,7 @@ function deleteProductFromOrder(req, res) {
                       });
                   });
               } else {
-                Order.findOne({_id: requiredToRemove.order._id})
+                Order.findOne({ _id: requiredToRemove.order._id })
                   .populate({
                     path: 'supplier',
                     select: '_id representativeName staff coverPhoto location adminFees VATRegisterNumber',
@@ -1948,7 +1933,7 @@ function deleteProductFromOrder(req, res) {
                       coverPhoto: `${appSettings.imagesUrl}${requiredOrder.supplier.coverPhoto}`,
                       location: requiredOrder.supplier.location
                     };
-                    OrderProduct.find({order: requiredOrder})
+                    OrderProduct.find({ order: requiredOrder })
                       .populate({
                         path: 'product',
                         select: '_id englishName arabicName price unit status',
@@ -2009,7 +1994,7 @@ function deleteProductFromOrder(req, res) {
         const requiredToRemove = orderProduct;
         if (orderProduct.order.supplier.toString() === result._id.toString()) {
           orderProduct.remove();
-          OrderProduct.find({order: orderProduct.order._id})
+          OrderProduct.find({ order: orderProduct.order._id })
             .then((orderProducts) => {
               if (orderProducts.length > 0) {
                 orderProducts.forEach((orderProductObj) => {
@@ -2026,7 +2011,7 @@ function deleteProductFromOrder(req, res) {
                         .catch(e => res.status(httpStatus.INTERNAL_SERVER_ERROR).json(Response.failure(e)));
                     });
                 });
-                Order.findOne({_id: orderProduct.order._id})
+                Order.findOne({ _id: orderProduct.order._id })
                   .populate({
                     path: 'supplier',
                     select: '_id representativeName staff coverPhoto location adminFees VATRegisterNumber',
@@ -2053,7 +2038,7 @@ function deleteProductFromOrder(req, res) {
                       coverPhoto: `${appSettings.imagesUrl}${requiredOrder.supplier.coverPhoto}`,
                       location: requiredOrder.supplier.location
                     };
-                    OrderProduct.find({order: requiredOrder})
+                    OrderProduct.find({ order: requiredOrder })
                       .populate({
                         path: 'product',
                         select: '_id englishName arabicName price unit status',
@@ -2108,7 +2093,7 @@ function deleteProductFromOrder(req, res) {
                       });
                   });
               } else {
-                Order.findOne({_id: requiredToRemove.order._id})
+                Order.findOne({ _id: requiredToRemove.order._id })
                   .populate({
                     path: 'supplier',
                     select: '_id representativeName staff coverPhoto location adminFees VATRegisterNumber',
@@ -2135,7 +2120,7 @@ function deleteProductFromOrder(req, res) {
                       coverPhoto: `${appSettings.imagesUrl}${requiredOrder.supplier.coverPhoto}`,
                       location: requiredOrder.supplier.location
                     };
-                    OrderProduct.find({order: requiredOrder})
+                    OrderProduct.find({ order: requiredOrder })
                       .populate({
                         path: 'product',
                         select: '_id englishName arabicName price unit status',
@@ -2219,7 +2204,7 @@ function cancel(req, res) {
           log.save();
           order.save()
             .then((canceledOrder) => {
-              OrderProduct.find({order: canceledOrder})
+              OrderProduct.find({ order: canceledOrder })
                 .select('_id order product price quantity status')
                 .populate({
                   path: 'product',
@@ -2319,7 +2304,7 @@ function cancel(req, res) {
                 //     }
                 //     customerInvite.save();
                 //   });
-                OrderProduct.find({order: canceledOrder})
+                OrderProduct.find({ order: canceledOrder })
                   .select('_id order product price quantity status')
                   .populate({
                     path: 'product',
@@ -2423,7 +2408,7 @@ function reject(req, res) {
           //     }
           //     customerInvite.save();
           //   });
-          OrderProduct.find({order: rejectedOrder})
+          OrderProduct.find({ order: rejectedOrder })
             .select('_id order product price quantity status')
             .populate({
               path: 'product',
@@ -2506,7 +2491,7 @@ function fail(req, res) {
       log.save();
       order.save()
         .then((failedOrder) => {
-          OrderProduct.find({order: failedOrder})
+          OrderProduct.find({ order: failedOrder })
             .select('_id order product price quantity status')
             .populate({
               path: 'product',
@@ -2577,7 +2562,7 @@ function rejectProducts(req, res) {
         res.status(httpStatus.BAD_REQUEST).json(Response.failure(err));
       } else if (req.order.supplier._id.toString() === result.toString()) {
         const orderProducts = [];
-        OrderProduct.find({$and: [{order: req.order}, {product: {$in: req.body.products}}]})
+        OrderProduct.find({ $and: [{ order: req.order }, { product: { $in: req.body.products } }] })
           .then((orderProductArr) => {
             orderProductArr.forEach((orderProductArrObj) => {
               orderProductArrObj.status = 'Rejected';
@@ -2658,7 +2643,7 @@ function accept(req, res) {
           log.save();
           order.save()
             .then((acceptedOrder) => {
-              OrderProduct.find({order: acceptedOrder})
+              OrderProduct.find({ order: acceptedOrder })
                 .select('_id order product price quantity status')
                 .populate({
                   path: 'product',
@@ -2758,7 +2743,7 @@ function readyForDelivery(req, res) {
       log.save();
       order.save()
         .then((savedOrder) => {
-          OrderProduct.find({order: savedOrder})
+          OrderProduct.find({ order: savedOrder })
             .select('_id order product price quantity status')
             .populate({
               path: 'product',
@@ -2826,11 +2811,11 @@ function outForDelivery(req, res) {
       const prevStatus = order.status;
       order.status = 'OutForDelivery';
       order.updatedAt = moment().tz(appSettings.timeZone).format(appSettings.momentFormat);
-      User.findOne({_id: req.body.driverId})
+      User.findOne({ _id: req.body.driverId })
         .then((user) => {
           Supplier.findOne({
-            $and: [{_id: order.supplier._id},
-              {staff: {$in: [req.body.driverId]}}]
+            $and: [{ _id: order.supplier._id },
+              { staff: { $in: [req.body.driverId] } }]
           })
             .then((supplier) => {
               if (supplier) {
@@ -2846,7 +2831,7 @@ function outForDelivery(req, res) {
                 log.save();
                 order.save()
                   .then((savedOrder) => {
-                    OrderProduct.find({order: savedOrder})
+                    OrderProduct.find({ order: savedOrder })
                       .select('_id order product price quantity status')
                       .populate({
                         path: 'product',
@@ -2918,7 +2903,7 @@ function outForDelivery(req, res) {
     log.save();
     order.save()
       .then((savedOrder) => {
-        OrderProduct.find({order: savedOrder})
+        OrderProduct.find({ order: savedOrder })
           .select('_id order product price quantity status')
           .populate({
             path: 'product',
@@ -3031,7 +3016,7 @@ function delivered(req, res) {
           //     }
           //     customerInvite.save();
           //   });
-          OrderProduct.find({order: savedOrder})
+          OrderProduct.find({ order: savedOrder })
             .select('_id order product price quantity status')
             .populate({
               path: 'product',
@@ -3269,7 +3254,7 @@ function getReviews(req, res) {
             updatedAt: orderReviewsObj.order.updatedAt,
             updatedAtDay: moment(orderReviewsObj.order.updatedAt).tz(appSettings.timeZone).format('YYYY-MM-DD')
           };
-          OrderProduct.find({order: orderReviewsObj.order})
+          OrderProduct.find({ order: orderReviewsObj.order })
             .populate({
               path: 'product',
               select: '_id arabicName englishName status'
@@ -3321,11 +3306,11 @@ function reOrder(req, res) {
     },
     function getCustomerFromUser(userId, callback) {
       let customerEmail = '';
-      Customer.findOne({user: userId})
+      Customer.findOne({ user: userId })
         .populate('user')
         .then((customer) => {
           if (customer.type === 'Staff') {
-            return Customer.findOne({_id: customer.customer})
+            return Customer.findOne({ _id: customer.customer })
               .populate('user');
           }
           return customer;
@@ -3344,10 +3329,10 @@ function reOrder(req, res) {
     if (err) {
       res.status(httpStatus.UNAUTHORIZED).json(err);
     } else if (result) {
-      OrderProduct.find({order: order._id})
+      OrderProduct.find({ order: order._id })
         .then((orderProducts) => {
           if (orderProducts.length > 0) {
-            Order.findOne({_id: order._id})
+            Order.findOne({ _id: order._id })
               .populate({
                 path: 'supplier',
                 select: '_id representativeName staff coverPhoto location adminFees VATRegisterNumber',
@@ -3387,7 +3372,7 @@ function reOrder(req, res) {
                   coverPhoto: `${appSettings.imagesUrl}${requiredOrder.supplier.coverPhoto}`,
                   location: requiredOrder.supplier.location
                 };
-                OrderProduct.find({order: requiredOrder})
+                OrderProduct.find({ order: requiredOrder })
                   .populate({
                     path: 'product',
                     select: '_id englishName arabicName price unit status',
@@ -3457,7 +3442,7 @@ function reOrder(req, res) {
           }
         });
     } else {
-      res.status(httpStatus.BAD_REQUEST).json({message: 'error in returning customer'});
+      res.status(httpStatus.BAD_REQUEST).json({ message: 'error in returning customer' });
     }
   });
 }
@@ -3530,7 +3515,7 @@ function loadOrderProduct(req, res, next, id) {
  * @returns {Customer}
  */
 function getCustomer(userId, orderId, callback) {
-  Customer.findOne({user: userId}).then(customer =>
+  Customer.findOne({ user: userId }).then(customer =>
     // if (customer.type === 'Staff') {
     //   return Customer.findOne({ _id: customer.customer });
     // }
@@ -3550,15 +3535,15 @@ function getCustomer(userId, orderId, callback) {
 function getBranchesArray(userId, orderId, callback) {
   if (userId) {
     let customer = null;
-    Customer.findOne({user: userId}).then((cus) => {
+    Customer.findOne({ user: userId }).then((cus) => {
       customer = cus;
       if (customer.type === 'Staff') {
-        return Branches.find({manager: customer._id}, {_id: 1});
+        return Branches.find({ manager: customer._id }, { _id: 1 });
       }
-      return Branches.find({customer: customer._id}, {_id: 1});
+      return Branches.find({ customer: customer._id }, { _id: 1 });
     }).then((branches) => {
       if (branches.length === 0 && customer.type === 'Staff') {
-        return Branches.find({customer: customer.customer}, {_id: 1});
+        return Branches.find({ customer: customer.customer }, { _id: 1 });
       }
       return branches;
     }).then((branches) => {
@@ -3580,7 +3565,7 @@ function getBranchesArray(userId, orderId, callback) {
  * @returns {Order}
  */
 function disableOrderCanceling(userId, orderId, callback) {
-  Order.findByIdAndUpdate(orderId, {$set: {canBeCanceled: false}})
+  Order.findByIdAndUpdate(orderId, { $set: { canBeCanceled: false } })
     .exec((err, order) => callback(err, order.customer, orderId));
 }
 
@@ -3643,7 +3628,7 @@ function getOrderProducts(order, skip, limit, callback) {
         .populate('product')
         .where('order').equals(order._id)
         .then((orderCount) => {
-          callback(null, {order, products: orderProducts, count: orderCount.length});
+          callback(null, { order, products: orderProducts, count: orderCount.length });
         });
     });
 }
@@ -3752,7 +3737,7 @@ function getSupplierFromUser(userId, callback) {
  * @returns {User}
  */
 function getUserFromCustomer(supplierId, customerId, order, vat, callback) {
-  Customer.findOne({_id: customerId})
+  Customer.findOne({ _id: customerId })
     .then((customer) => {
       User.findOne()
         .where('_id').equals(customer.user)
@@ -3768,7 +3753,7 @@ function getUserFromCustomer(supplierId, customerId, order, vat, callback) {
  */
 function createDebitTransaction(supplierId, customerId, order, vat, callback) {
   Transaction.findOne()
-    .sort({createdAt: -1})
+    .sort({ createdAt: -1 })
     .then((transObj) => {
       let nextSUPCUSTTransId = '';
       let nextSUPTransId = '';
@@ -3779,8 +3764,8 @@ function createDebitTransaction(supplierId, customerId, order, vat, callback) {
         nextSUPCUSTTransId = appSettings.transactionSUPCUSTIdInit;
         nextSUPTransId = appSettings.transactionSUPIdInit;
       }
-      Transaction.findOne({supplier: supplierId, customer: customerId})
-        .sort({transId: -1})
+      Transaction.findOne({ supplier: supplierId, customer: customerId })
+        .sort({ transId: -1 })
         .then((trans) => {
           if (trans) {
             const customerTransaction = new Transaction({
@@ -3797,7 +3782,7 @@ function createDebitTransaction(supplierId, customerId, order, vat, callback) {
             });
             customerTransaction.save()
               .then((savedTransaction) => {
-                Transaction.findOne({_id: savedTransaction._id})
+                Transaction.findOne({ _id: savedTransaction._id })
                   .then((newTransaction) => {
                     newTransaction.transId = `${appSettings.transactionPrefix}${nextSUPCUSTTransId}`;
                     newTransaction.save();
@@ -3819,7 +3804,7 @@ function createDebitTransaction(supplierId, customerId, order, vat, callback) {
             });
             customerTransaction.save()
               .then((savedTransaction) => {
-                Transaction.findOne({_id: savedTransaction._id})
+                Transaction.findOne({ _id: savedTransaction._id })
                   .then((newTransaction) => {
                     newTransaction.transId = `${appSettings.transactionPrefix}${nextSUPCUSTTransId}`;
                     newTransaction.save();
@@ -3829,8 +3814,8 @@ function createDebitTransaction(supplierId, customerId, order, vat, callback) {
           }
         });
 
-      Transaction.findOne({supplier: supplierId, customer: null})
-        .sort({transId: -1})
+      Transaction.findOne({ supplier: supplierId, customer: null })
+        .sort({ transId: -1 })
         .then((supplierTrans) => {
           let transClose = '';
           if (supplierTrans) {
@@ -3849,7 +3834,7 @@ function createDebitTransaction(supplierId, customerId, order, vat, callback) {
             });
             supplierTransaction.save()
               .then((savedTransaction) => {
-                Transaction.findOne({_id: savedTransaction._id})
+                Transaction.findOne({ _id: savedTransaction._id })
                   .then((newTransaction) => {
                     newTransaction.transId = `${appSettings.transactionPrefix}${nextSUPTransId}`;
                     newTransaction.save();
@@ -3873,7 +3858,7 @@ function createDebitTransaction(supplierId, customerId, order, vat, callback) {
             });
             supplierTransaction.save()
               .then((savedTransaction) => {
-                Transaction.findOne({_id: savedTransaction._id})
+                Transaction.findOne({ _id: savedTransaction._id })
                   .then((newTransaction) => {
                     newTransaction.transId = `${appSettings.transactionPrefix}${nextSUPTransId}`;
                     newTransaction.save();
@@ -3932,7 +3917,7 @@ function getReviewsForOrders(orders, skip, limit, callback) {
  * @returns {Array} Products
  */
 function getSupplierProducts(supplierId, callback) {
-  Product.find({supplier: supplierId})
+  Product.find({ supplier: supplierId })
     .select('_id arabicName englishName images unit')
     .populate('unit')
     .then((productsArr) => {
@@ -3969,7 +3954,7 @@ function getOrderOverview(productArr, callback) {
         weight: 0
       };
       newProduct.product = productObj;
-      OrderProduct.find({product: productObj, status: 'Pending'})
+      OrderProduct.find({ product: productObj, status: 'Pending' })
         .then((orderProducts) => {
           newProduct.count = orderProducts.length;
           orderProducts.forEach((orderProductsObj) => {
@@ -4000,7 +3985,7 @@ function checkCreditLimitWithOrder(customerEmail, order, customer, orderTotal, c
           .catch(e => parallelCallback(e, null));
       },
       supplierCreditLimit: (parallelCallback) => {
-        Supplier.findOne({_id: order.supplier})
+        Supplier.findOne({ _id: order.supplier })
           .then(ci => parallelCallback(null, ci))
           .catch(e => parallelCallback(e, null));
       }
@@ -4052,9 +4037,9 @@ function checkCreditLimitWithOrder(customerEmail, order, customer, orderTotal, c
              createdAtDate = createdAtDate.add(Number(frequency), interval)) {
           fromDate = createdAtDate.utc().format(appSettings.momentFormat);
         }
-        User.findOne({email: result.creditLimit.customerEmail})
+        User.findOne({ email: result.creditLimit.customerEmail })
           .then((userData) => {
-            Customer.findOne({user: userData})
+            Customer.findOne({ user: userData })
               .populate({
                 path: 'user'
               })
@@ -4065,7 +4050,7 @@ function checkCreditLimitWithOrder(customerEmail, order, customer, orderTotal, c
                   {
                     customer: customerId,
                     supplier: order.supplier,
-                    createdAt: {$gt: moment().startOf('month').tz(appSettings.timeZone).format(appSettings.momentFormat)}
+                    createdAt: { $gt: moment().startOf('month').tz(appSettings.timeZone).format(appSettings.momentFormat) }
                   })
                   .sort({
                     createdAt: -1
@@ -4145,17 +4130,17 @@ function deductingFromInventory(orderId, supplierId) {
       skuNumbers = [],
       completeData = [];
 
-    OrderProduct.find({order: orderId}, {product: 1, quantity: 1}).then((orderPro) => {
+    OrderProduct.find({ order: orderId }, { product: 1, quantity: 1 }).then((orderPro) => {
       ordersProducts = orderPro;
 
       const productIds = ordersProducts.map(prod => prod.product);
 
-      return Product.find({_id: {$in: productIds}}, {sku: 1, _id: 1});
+      return Product.find({ _id: { $in: productIds } }, { sku: 1, _id: 1 });
     }).then((skuNumber) => {
       skuNumbers = skuNumber;
       const mappedSku = skuNumbers.map(prod => new RegExp(['^', prod.sku, '$'].join(''), 'i'));
 
-      let filter = {supplierId, sku: {$in: mappedSku}};
+      let filter = { supplierId, sku: { $in: mappedSku } };
 
       return Recipes.find(filter).lean();
     }).then((recipes) => {
@@ -4170,7 +4155,7 @@ function deductingFromInventory(orderId, supplierId) {
       async.eachOfSeries(completeData, (recipe, key, callback) => {
         recipe.addIngredients.forEach((ingId) => {
           console.log('ing', ingId);
-          Ingredients.update({_id: ingId.ingredientId}, {$inc: {quantity: parseInt(-1 * ingId.quantity * recipe.quantity)}}).exec();
+          Ingredients.update({ _id: ingId.ingredientId }, { $inc: { quantity: parseInt(-1 * ingId.quantity * recipe.quantity) } }).exec();
         });
 
         callback();
@@ -4232,7 +4217,7 @@ function getReport(req, res) {
   // Public query condition Object for orders report - getReport
   const queryCond = {};
 
-  queryCond.createdAt = {$gte: startDate, $lte: endDate};
+  queryCond.createdAt = { $gte: startDate, $lte: endDate };
 
   if (req.query.export === 'pdf') {
     skip = 0;
@@ -4256,7 +4241,7 @@ function getReport(req, res) {
       req.query.status.forEach((opt) => {
         req.query.status.push(new RegExp(opt, 'i'));
       });
-      queryCond.status = {$in: req.query.status};
+      queryCond.status = { $in: req.query.status };
     }
   }
   if (req.query.customerId) {
@@ -4276,14 +4261,14 @@ function getReport(req, res) {
         // Get number of Orders
         function getNumberOrders(branches, orderId, callback) {
           if (!queryCond.branch && req.query.customerId && !req.query.branchId) {
-            queryCond.branch = {$in: branches};
+            queryCond.branch = { $in: branches };
           }
           Supplier.findOne()
             .populate('staff')
             .where('staff').in([req.user._id])
             .exec((err, supplier) => {
               queryCond.supplier = supplier._id;
-              const aggregatePipeLine = [{$match: queryCond}, {
+              const aggregatePipeLine = [{ $match: queryCond }, {
                 $lookup: {
                   from: 'suppliers',
                   localField: 'supplier',
@@ -4372,15 +4357,15 @@ function getReport(req, res) {
                 }
               }, {
                 $group: {
-                  _id: {branchId: '$branchId', customer: '$customer'},
-                  orderCount: {$sum: 1},
-                  orderId: {$first: '$orderId'},
+                  _id: { branchId: '$branchId', customer: '$customer' },
+                  orderCount: { $sum: 1 },
+                  orderId: { $first: '$orderId' },
                   // totalPrice: { $sum: { $multiply: ['$productPrice', '$productQuantity'] } },
-                  orderData: {$push: '$$ROOT'}
+                  orderData: { $push: '$$ROOT' }
                 }
               }];
 
-              const aggregatePipeLineVat = [{$match: queryCond}, {
+              const aggregatePipeLineVat = [{ $match: queryCond }, {
                 $project: {
                   orderId: 1,
                   createdAt: 1,
@@ -4392,9 +4377,9 @@ function getReport(req, res) {
                 }
               }, {
                 $group: {
-                  _id: {branchId: '$branchId', customer: '$customer'},
-                  orderId: {$first: '$orderId'},
-                  totalVat: {$sum: '$Vat'}
+                  _id: { branchId: '$branchId', customer: '$customer' },
+                  orderId: { $first: '$orderId' },
+                  totalVat: { $sum: '$Vat' }
                 }
               }];
 
@@ -4482,7 +4467,7 @@ function getReport(req, res) {
         // Get number of Orders
         function getNumberOrders(branches, orderId, callback) {
           if (!queryCond.branch && req.query.customerId && !req.query.branchId) {
-            queryCond.branch = {$in: branches};
+            queryCond.branch = { $in: branches };
           }
           Supplier.findOne()
             .populate('staff')
@@ -4490,7 +4475,7 @@ function getReport(req, res) {
             .exec((err, supplier) => {
               queryCond.supplier = supplier._id;
 
-              const aggregatePipeLine = [{$match: queryCond}, {
+              const aggregatePipeLine = [{ $match: queryCond }, {
                 $lookup: {
                   from: 'suppliers',
                   localField: 'supplier',
@@ -4563,11 +4548,11 @@ function getReport(req, res) {
               }, {
                 $group: {
                   _id: '$createdAt',
-                  orderId: {$first: '$orderId'},
-                  orderCount: {$sum: 1},
-                  totalVat: {$first: '$Vat'},
-                  totalPrice: {$sum: {$multiply: ['$productPrice', '$productQuantity']}},
-                  orderData: {$push: '$$ROOT'}
+                  orderId: { $first: '$orderId' },
+                  orderCount: { $sum: 1 },
+                  totalVat: { $first: '$Vat' },
+                  totalPrice: { $sum: { $multiply: ['$productPrice', '$productQuantity'] } },
+                  orderData: { $push: '$$ROOT' }
                 }
               }];
 
@@ -4628,11 +4613,11 @@ function getReport(req, res) {
         getSupplierFromUser,
         // Get number of Orders
         function getNumberOrders(supplier, user, callback) {
-          Order.find({$and: [queryCond]})
+          Order.find({ $and: [queryCond] })
             .where('supplier').equals(supplier)
             .then((ordersCount) => {
               supplierOrderReport.count = ordersCount.length;
-              Order.find({$and: [queryCond]})
+              Order.find({ $and: [queryCond] })
                 .populate('supplier')
                 .populate('customer')
                 .where('supplier').equals(supplier)
@@ -4646,7 +4631,7 @@ function getReport(req, res) {
 
                   const deliveredQuery = {
                     status: 'Delivered',
-                    createdAt: {$gte: startDate, $lte: endDate}
+                    createdAt: { $gte: startDate, $lte: endDate }
                   };
 
                   // if (req.query.export === 'pdf' || req.query.export === 'xls') {
@@ -4684,7 +4669,7 @@ function getReport(req, res) {
 
             const deliveredQuery = {
               status: 'Delivered',
-              createdAt: {$gte: startDate, $lte: endDate}
+              createdAt: { $gte: startDate, $lte: endDate }
             };
 
             // if (req.query.export === 'pdf' || req.query.export === 'xls') {
@@ -4702,12 +4687,12 @@ function getReport(req, res) {
               {
                 $group: {
                   _id: {
-                    month: {$month: '$createdAt'},
-                    day: {$dayOfMonth: '$createdAt'},
-                    year: {$year: '$createdAt'}
+                    month: { $month: '$createdAt' },
+                    day: { $dayOfMonth: '$createdAt' },
+                    year: { $year: '$createdAt' }
                   },
-                  count: {$sum: 1},
-                  total: {$sum: '$price'}
+                  count: { $sum: 1 },
+                  total: { $sum: '$price' }
                 }
               }
             ], (err, suppliersOrders) => {
@@ -4832,9 +4817,9 @@ function getReport(req, res) {
         // Get number of Orders
         function getNumberOrders(branches, orderId, callback) {
           if (!queryCond.branch) {
-            queryCond.branch = {$in: branches};
+            queryCond.branch = { $in: branches };
           }
-          const aggregatePipeLine = [{$match: queryCond}, {
+          const aggregatePipeLine = [{ $match: queryCond }, {
             $lookup: {
               from: 'suppliers',
               localField: 'supplier',
@@ -4907,11 +4892,11 @@ function getReport(req, res) {
           }, {
             $group: {
               _id: '$createdAt',
-              orderId: {$first: '$orderId'},
-              orderCount: {$sum: 1},
-              totalVat: {$first: '$Vat'},
-              totalPrice: {$sum: {$multiply: ['$productPrice', '$productQuantity']}},
-              orderData: {$push: '$$ROOT'}
+              orderId: { $first: '$orderId' },
+              orderCount: { $sum: 1 },
+              totalVat: { $first: '$Vat' },
+              totalPrice: { $sum: { $multiply: ['$productPrice', '$productQuantity'] } },
+              orderData: { $push: '$$ROOT' }
             }
           }];
 

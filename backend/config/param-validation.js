@@ -708,6 +708,22 @@ export default {
       language: Joi.string().required()
     }
   },
+  // POST /api/v1/suppliers
+  APIcreateSupplier: {
+    query: {
+      coordinates: Joi.array().min(1).max(2),
+      address: Joi.string(),
+      representativeName: Joi.string().required(),
+      commercialRegister: Joi.string().regex(/^[0-9]{10}$/).required(),
+      commercialRegisterPhoto: Joi.string().required(),
+      userEmail: Joi.string().email().required(),
+      userMobilePhone: Joi.string().regex(/^9665[0-9]{8}$/).required(),
+      userFirstName: Joi.string().required(),
+      userLastName: Joi.string().required(),
+      userPassword: Joi.string().min(6).max(20).required(),
+      language: Joi.string().required()
+    }
+  },
   // POST /api/suppliers/staff
   createSupplierStaff: {
     body: {

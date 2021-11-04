@@ -131,6 +131,7 @@ function profile(req, res) {
  * @returns {Supplier}
  */
 function create(req, res) {
+  console.log(req.body);
   const user = new User({
     email: req.body.userEmail.toLowerCase(),
     mobileNumber: req.body.userMobilePhone,
