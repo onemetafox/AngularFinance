@@ -4,12 +4,16 @@ import momentHijri from 'moment-hijri';
 import EmailHandler from '../../config/emailHandler';
 import appSettings from '../../appSettings';
 import Supplier from '../models/supplier.model';
+import Credit from '../models/credit.model';
 import User from '../models/user.model';
 import UserService from '../services/user.service';
 import Response from '../services/response.service';
 import Role from '../models/role.model';
 import notificationCtrl from '../controllers/notification.controller';
-
+import Customer from '../models/customer.model';
+import CustomerInvite from '../models/customerInvite.model';
+import Guest from '../models/guestCustomer.model';
+import Branch from '../models/branch.model';
 // const debug = require('debug')('app:supplier');
 const moment = require('moment-timezone');
 
@@ -25,7 +29,7 @@ const moment = require('moment-timezone');
  * @property {string} req.query.userPassword - The supplier admin user's password.
  * @returns {Supplier}
  */
-function create(req, res) {
+function supplierCreate(req, res) {
   
   const user = new User({
     email: req.query.userEmail.toLowerCase(),
@@ -73,7 +77,7 @@ function create(req, res) {
     commercialRegister: req.query.commercialRegister,
     commercialRegisterPhoto: req.query.commercialRegisterPhoto,
     commercialRegisterExpireDate: req.query.commercialRegisterExpireDate ? moment(req.query.commercialRegisterExpireDate) : '',
-    commercialRegisterExpireDateIslamic: req.body.commercialRegisterExpireDateIslamic ? momentHijri(req.body.commercialRegisterExpireDateIslamic) : '',
+    commercialRegisterExpireDateIslamic: req.query.commercialRegisterExpireDateIslamic ? momentHijri(req.query.commercialRegisterExpireDateIslamic) : '',
     staff: [user._id],
     paymentFrequency: req.query.paymentFrequency,
     paymentInterval: req.query.paymentInterval,
@@ -283,7 +287,248 @@ function load(req, res, next, id) {
 }
 
 
+/**
+ * Create new customer
+ * @property {string} req.query.photo - The photo of customer.
+ * @property {string} req.query.status - The status of customer.
+ * @property {string} req.query.longitude - The longitude of customer.
+ * @property {string} req.query.latitude - The latitude of customer.
+ * @property {string} req.query.representativeName - The status of customer.
+ * @property {string} req.query.representativePhone - The user Id of customer.
+ * @property {string} req.query.representativeEmail - The user Id of customer.
+ * @property {string} req.query.userEmail - The customer user's email.
+ * @property {string} req.query.userMobilePhone - The customer user's mobile phone.
+ * @property {string} req.query.userFirstName - The customer user's first name.
+ * @property {string} req.query.userPassword - The customer user's password.
+ * @returns {Customer}
+ */
+ function customerCreate(req, res) {
+  const user = new User({
+    email: req.query.userEmail.toLowerCase(),
+    mobileNumber: req.query.userMobilePhone,
+    password: req.query.userPassword,
+    firstName: req.query.userFirstName.toLowerCase(),
+    // lastName: req.query.userLastName ? req.query.userLastName.toLowerCase() : req.query.userFirstName.toLowerCase(),
+    language: req.query.language,
+    type: 'Customer',
+    createdAt: moment().tz(appSettings.timeZone).format(appSettings.momentFormat)
+  });
+
+  const customer = new Customer({
+    photo: req.query.photo,
+    coverPhoto: req.query.coverPhoto,
+    representativeName: req.query.representativeName.toLowerCase(),
+    representativePhone: req.query.representativePhone,
+    representativeEmail: req.query.representativeEmail,
+    commercialRegister: req.query.commercialRegister,
+    commercialRegisterPhoto: req.query.commercialRegisterPhoto,
+    commercialRegisterExpireDate: req.query.commercialRegisterExpireDate ? moment(req.query.commercialRegisterExpireDate) : '',
+    commercialRegisterExpireDateIslamic: req.query.commercialRegisterExpireDateIslamic ? momentHijri(req.query.commercialRegisterExpireDateIslamic) : '',
+    user: user._id,
+    location: {
+      coordinates: req.query.coordinates,
+      address: req.query.address,
+      city: req.query.cityId
+    },
+    createdAt: moment().tz(appSettings.timeZone).format(appSettings.momentFormat)
+  });
+
+  if (req.query.commercialRegisterExpireDate && (moment(req.query.commercialRegisterExpireDate).diff(moment(), 'days') > appSettings.dateExpireValidation)) {
+    res.status(httpStatus.BAD_REQUEST).json(Response.failure(20));
+  } else if (req.query.commercialRegisterExpireDate && (moment(req.query.commercialRegisterExpireDate).diff(moment(), 'days') <= 0)) {
+    res.status(httpStatus.BAD_REQUEST).json(Response.failure(21));
+  } else if (req.query.commercialRegisterExpireDateIslamic && (momentHijri(req.query.commercialRegisterExpireDateIslamic).diff(momentHijri().format('iYYYY/iM/iD'), 'days') > appSettings.dateExpireValidation)) {
+    res.status(httpStatus.BAD_REQUEST).json(Response.failure(22));
+  } else if (req.query.commercialRegisterExpireDateIslamic && (momentHijri(req.query.commercialRegisterExpireDateIslamic).diff(momentHijri().format('iYYYY/iM/iD'), 'days') <= 0)) {
+    res.status(httpStatus.BAD_REQUEST).json(Response.failure(23));
+  } else {
+    async.waterfall([
+        // Function that passes the parameters to the second function.
+      function passParamters(callback) {
+        callback(null, customer, user);
+      },
+      verifySupplierInvite,
+      setCustomerRole,
+      createUserAndCustomer
+    ],
+      (err, result) => {
+        if (err) {
+          res.status(httpStatus.INTERNAL_SERVER_ERROR).json(Response.failure(err));
+        } else {
+          if (appSettings.emailSwitch) {
+            const content = {
+              recipientName: UserService.toTitleCase(result.representativeName),
+              loginPageUrl: `<a href=\'${appSettings.mainUrl}/auth/login\'>${appSettings.mainUrl}/auth/login</a>`, // eslint-disable-line no-useless-escape
+              userName: req.query.userEmail.toLowerCase(),
+              password: req.query.userPassword
+            };
+            EmailHandler.sendEmail(req.query.userEmail, content, 'NEWUSER', req.query.language);
+          }
+          res.json(Response.success(result));
+        }
+      });
+  }
+}
+
+/**
+ * Helper Function
+ * Creates the user and customer
+ * @property {User} user - The user.
+ * @property {Customer} customer - The customer.
+ * @returns {User, Customer}
+ */
+ function createUserAndCustomer(customer, user, callback) {
+  async.waterfall([
+    function passParameters(innerCallback) {
+      innerCallback(null, user, customer);
+    },
+    customerCreateUser,
+    createCustomer
+  ],
+    (err, savedCustomer) => callback(err, savedCustomer));
+}
+
+/**
+ * Helper Function
+ * Creates the customer
+ * @property {Customer} customer - The customer.
+ * @returns {Customer}
+ */
+ function createCustomer(customer, callback) {
+  async.waterfall([
+    function passParameters(innerCallback) {
+      innerCallback(null, null, customer);
+    },
+    UserService.isCommercialRegisterDuplicate
+  ],
+    (err, createdCustomer) => {
+      if (err) {
+        console.log(err);
+        callback(3, null);
+      } else {
+        createdCustomer.save()
+          .then((savedCustomer) => {
+            Customer.findOne({
+              _id: savedCustomer._id
+            }).populate({
+              path: 'location.city',
+              select: 'englishName'
+            }).then((customerFound) => {
+              savedCustomer = JSON.parse(JSON.stringify(savedCustomer));
+              savedCustomer.location.city = customerFound.location.city.englishName;
+              savedCustomer.location.cityId = customerFound.location.city._id;
+
+              const branch = new Branch({
+                status: 'Active',
+                customer: savedCustomer,
+                branchName: savedCustomer.representativeName,
+                location: savedCustomer.location,
+                createdAt: moment().tz(appSettings.timeZone).format(appSettings.momentFormat)
+              });
+              branch.save().then((savedBranch) => {
+                customerFound.branch = savedBranch;
+                customerFound.save().then(saved => callback(null, saved));
+              });
+            });
+          })
+          .catch(e => callback(e, null));
+      }
+    });
+}
+/**
+ * Helper Function
+ * Creates the user
+ * @property {User} user - The user.
+ * @returns {User}
+ */
+ function customerCreateUser(user, customer, callback) {
+  async.waterfall([
+    function passParameters(innerCallback) {
+      innerCallback(null, user);
+    },
+    UserService.isEmailMobileNumberDuplicate,
+    UserService.hashPasswordAndSave
+  ],
+  err => callback(err, customer));
+}
+/**
+ * Helper Function
+ * Sets the customer role
+ * @returns {ObjectId}
+ */
+ function setCustomerRole(customer, user, callback) {
+  Role.findOne()
+    .where('userType').equals('Customer')
+    .where('isLocked').equals(true)
+    .then((role) => {
+      const newRole = new Role({
+        customer,
+        userType: 'Customer',
+        permissions: role.permissions,
+        isLocked: false,
+        createdAt: moment().tz(appSettings.timeZone).format(appSettings.momentFormat),
+        arabicName: 'عميل',
+        englishName: 'Customer',
+        isDeleted: false
+      });
+      newRole.save().then((savedRole) => {
+        user.role = savedRole;
+        callback(null, customer, user);
+      });
+    })
+    .catch(e => callback(e, null));
+}
+
+/**
+ * Helper Function
+ * Verifies that the customer that is about to be created is invited.
+ * @property {User} user - The user.
+ * @property {Customer} customer - The customer.
+ * @returns {User, Customer}
+ */
+ function verifySupplierInvite(customer, user, callback) {
+  CustomerInvite.find()
+    .where('customerEmail').equals(user.email)
+    .exec((err, customerInvites) => {
+      if (customerInvites.length === 0) {
+        Guest.findOne({
+          email: user.email
+        })
+          .then((guestExist) => {
+            if (guestExist) {
+              callback(8, null);
+            } else {
+              const guest = new Guest({
+                email: user.email,
+                mobileNumber: user.mobileNumber,
+                firstName: user.firstName,
+                lastName: user.lastName
+              });
+              guest.save();
+              callback(8, null);
+            }
+          });
+      } else {
+        for (let index = 0; index < customerInvites.length; index += 1) {
+          const customerInvite = customerInvites[index];
+          customerInvite.status = 'Active';
+          customerInvite.save()
+            .then((ci) => {
+              const credit = new Credit({
+                supplier: ci.supplier,
+                customer: customer._id
+              });
+              credit.save();
+            });
+        }
+        callback(null, customer, user);
+      }
+    });
+}
+
+
 export default {
   load,
-  create
+  supplierCreate,
+  customerCreate
 };

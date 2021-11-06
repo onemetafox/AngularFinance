@@ -339,6 +339,24 @@ export default {
       language: Joi.string().required()
     }
   },
+  APIcreateCustomer: {
+    query: {
+      // longitude: Joi.number().min(-180).max(180).required(),
+      // latitude: Joi.number().min(-90).max(90).required(),
+      coordinates: Joi.array().min(1).max(2).required(),
+      representativeName: Joi.string().required(),
+      representativePhone: Joi.string().regex(/^9665[0-9]{8}$/),
+      representativeEmail: Joi.string().email(),
+      commercialRegister: Joi.string().regex(/^[0-9]{10}$/).required(),
+      commercialRegisterPhoto: Joi.string().required(),
+      userEmail: Joi.string().email().required(),
+      userMobilePhone: Joi.string().regex(/^9665[0-9]{8}$/).required(),
+      userFirstName: Joi.string().min(2).max(20).required(),
+      // userLastName: Joi.string().min(2).max(20).required(),
+      userPassword: Joi.string().min(6).max(20).required(),
+      language: Joi.string().required()
+    }
+  },
   // POST /api/customers/invite
   inviteCustomer: {
     body: {
