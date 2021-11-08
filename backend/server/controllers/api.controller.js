@@ -118,6 +118,7 @@ function supplierCreate(req, res) {
         ],
           (err, result, user) => {
             if (err) {
+              console.log(err);
               res.status(httpStatus.NOT_FOUND).json(Response.failure(err));
             } else {
               result.photo = `${appSettings.imagesUrl}${result.photo}`;

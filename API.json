@@ -84,6 +84,82 @@
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "Register Customer",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://dev.supplieson.com/api/v1/customers?address=74PF+G2 Hijrat Al Harah Saudi Arabia&cityId=60451294e09ae62bed9be53b&commercialRegister=1234567890&commercialRegisterExpireDate=2021-11-30&commercialRegisterPhoto=https://supplieson.com/api/upload/image/d9d145391a998006f495605d37880976&confirmPassword=qweQWE123!@%23&language=en&representativeName=company&userEmail=jamesdcoulter@gmail.com&userFirstName=James&userMobilePhone=966554756352&userPassword=qweQWE123!@%23&coordinates=[26.286348600000018, 49.122605187500014]",
+					"protocol": "http",
+					"host": [
+						"dev",
+						"supplieson",
+						"com"
+					],
+					"path": [
+						"api",
+						"v1",
+						"customers"
+					],
+					"query": [
+						{
+							"key": "address",
+							"value": "74PF+G2 Hijrat Al Harah Saudi Arabia"
+						},
+						{
+							"key": "cityId",
+							"value": "60451294e09ae62bed9be53b"
+						},
+						{
+							"key": "commercialRegister",
+							"value": "1234567890"
+						},
+						{
+							"key": "commercialRegisterExpireDate",
+							"value": "2021-11-30"
+						},
+						{
+							"key": "commercialRegisterPhoto",
+							"value": "https://supplieson.com/api/upload/image/d9d145391a998006f495605d37880976"
+						},
+						{
+							"key": "confirmPassword",
+							"value": "qweQWE123!@%23"
+						},
+						{
+							"key": "language",
+							"value": "en"
+						},
+						{
+							"key": "representativeName",
+							"value": "company"
+						},
+						{
+							"key": "userEmail",
+							"value": "jamesdcoulter@gmail.com"
+						},
+						{
+							"key": "userFirstName",
+							"value": "James"
+						},
+						{
+							"key": "userMobilePhone",
+							"value": "966554756352"
+						},
+						{
+							"key": "userPassword",
+							"value": "qweQWE123!@%23"
+						},
+						{
+							"key": "coordinates",
+							"value": "[26.286348600000018, 49.122605187500014]"
+						}
+					]
+				}
+			},
+			"response": []
 		}
 	]
 }
