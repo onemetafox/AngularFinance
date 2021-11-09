@@ -107,6 +107,13 @@ export default {
       password: Joi.string().min(6).max(20).required()
     }
   },
+  // POST /api/auth/login
+  APIlogin: {
+    query: {
+      username: Joi.string().required(),
+      password: Joi.string().min(6).max(20).required()
+    }
+  },
   // PUT /api/auth/changePassword
   userChangePassword: {
     body: {

@@ -3,7 +3,6 @@ import passport from 'passport';
 import validate from 'express-validation';
 import paramValidation from '../../config/param-validation';
 import apiCtrl from '../controllers/api.controller';
-import auth from '../services/Permissions/index';
 
 const router = express.Router(); // eslint-disable-line new-cap
 
@@ -14,6 +13,8 @@ router.route('/suppliers')
 router.route('/customers')
    /** POST /api/suppliers - Create new supplier */
   .post(validate(paramValidation.APIcreateCustomer), apiCtrl.customerCreate);
+router.route('/login')
+  .post(validate(paramValidation.APIlogin), passport.authenticate('local', { session: false }), apiCtrl.login);
 
 /** Load supplier when API with supplierId route parameter is hit */
 router.param('supplierId', apiCtrl.load);

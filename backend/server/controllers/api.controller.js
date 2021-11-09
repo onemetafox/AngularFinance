@@ -14,6 +14,7 @@ import Customer from '../models/customer.model';
 import CustomerInvite from '../models/customerInvite.model';
 import Guest from '../models/guestCustomer.model';
 import Branch from '../models/branch.model';
+import JWTHandler from '../helpers/JWTHandler';
 // const debug = require('debug')('app:supplier');
 const moment = require('moment-timezone');
 
@@ -527,9 +528,45 @@ function load(req, res, next, id) {
     });
 }
 
+/**
+ * Returns jwt token if valid username and password is provided
+ * @param req
+ * @param res
+ * @param next
+ * @returns {*}
+ */
+ function login(req, res, next) {
+  // after passport check the username and password
+  // generate and return JWT
+  JWTHandler.generate(req.user._id, (err, jwt, expiresIn) => {
+    if (err) {
+      return next(err);
+    }
+    const permssionsArr = [];
+    for (let i = 0; i < req.user.role.permissions.length; i += 1) {
+      permssionsArr.push(req.user.role.permissions[i].key);
+    }
+    const user = {
+      _id: req.user._id,
+      role: req.user.role,
+      permissions: permssionsArr,
+      email: req.user.email,
+      mobileNumber: req.user.mobileNumber,
+      firstName: req.user.firstName,
+      lastName: req.user.lastName,
+      type: req.user.type,
+      language: req.user.language,
+      token: jwt,
+      tokenExpiresIn: moment().tz(appSettings.timeZone).add(expiresIn.frequency, expiresIn.interval)
+    };
+    return res.json(user);
+  });
+}
+
 
 export default {
   load,
   supplierCreate,
-  customerCreate
+  customerCreate,
+  login,
 };
