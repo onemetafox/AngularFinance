@@ -192,6 +192,38 @@
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "ForgotPassword-sendEmail",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://dev.supplieson.com/api/v1/login?username=bakingkuptest@gmail.com&password=supplieson2030",
+					"protocol": "http",
+					"host": [
+						"dev",
+						"supplieson",
+						"com"
+					],
+					"path": [
+						"api",
+						"v1",
+						"login"
+					],
+					"query": [
+						{
+							"key": "username",
+							"value": "bakingkuptest@gmail.com"
+						},
+						{
+							"key": "password",
+							"value": "supplieson2030"
+						}
+					]
+				}
+			},
+			"response": []
 		}
 	]
 }
