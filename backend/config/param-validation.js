@@ -931,6 +931,13 @@ export default {
       email: Joi.string().required()
     }
   },
+
+  // POST /api/forgetPassword/forget
+  APIforgetPassword: {
+    query: {
+      email: Joi.string().required()
+    }
+  },
   // PUT /api/forgetPassword/Reset
   resetPassword: {
     body: {

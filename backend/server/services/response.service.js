@@ -60,7 +60,7 @@ function failure(error) {
   return {
     status: 'Failure',
     errorCode: typeof error === 'number' ? error : 1,
-    data: null
+    data: error
   };
 }
 

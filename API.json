@@ -11,7 +11,7 @@
 				"method": "POST",
 				"header": [],
 				"url": {
-					"raw": "http://dev.supplieson.com/api/v1/suppliers?VATRegisterNumber=30&VATRegisterPhoto=https://supplieson.com/api/upload/image/470959861eeaf63de14704f2905026d4&commercialRegister=1234567890&commercialRegisterExpireDate=2021-11-30&commercialRegisterExpireDateIslamic=2022-11-05 T08:00:00.000Z&commercialRegisterPhoto=https://supplieson.com/api/upload/image/d9d145391a998006f495605d37880976&confirmPassword=qweQWE123!@%23&language=en&representativeName=company&userEmail=jamesdcoulter1972@gmail.com&userFirstName=James&userLastName=Coulter&userMobilePhone=966554756352&userPassword=qweQWE123!@%23",
+					"raw": "http://dev.supplieson.com/api/v1/suppliers?VATRegisterNumber=909090&VATRegisterPhoto=https://supplieson.com/api/upload/image/470959861eeaf63de14704f2905026d4&commercialRegister=1234567892&commercialRegisterExpireDate=2021-11-30&commercialRegisterExpireDateIslamic=2022-11-05 T08:00:00.000Z&commercialRegisterPhoto=https://supplieson.com/api/upload/image/d9d145391a998006f495605d37880976&confirmPassword=abcabc&language=en&representativeName=ewee&userEmail=useremail:s2s@gmail.com&userFirstName=James&userLastName=Coulter&userMobilePhone=966554756352&userPassword=abcabc",
 					"protocol": "http",
 					"host": [
 						"dev",
@@ -26,7 +26,7 @@
 					"query": [
 						{
 							"key": "VATRegisterNumber",
-							"value": "30"
+							"value": "909090"
 						},
 						{
 							"key": "VATRegisterPhoto",
@@ -34,7 +34,7 @@
 						},
 						{
 							"key": "commercialRegister",
-							"value": "1234567890"
+							"value": "1234567892"
 						},
 						{
 							"key": "commercialRegisterExpireDate",
@@ -50,7 +50,7 @@
 						},
 						{
 							"key": "confirmPassword",
-							"value": "qweQWE123!@%23"
+							"value": "abcabc"
 						},
 						{
 							"key": "language",
@@ -58,11 +58,11 @@
 						},
 						{
 							"key": "representativeName",
-							"value": "company"
+							"value": "ewee"
 						},
 						{
 							"key": "userEmail",
-							"value": "jamesdcoulter1972@gmail.com"
+							"value": "useremail:s2s@gmail.com"
 						},
 						{
 							"key": "userFirstName",
@@ -78,7 +78,7 @@
 						},
 						{
 							"key": "userPassword",
-							"value": "qweQWE123!@%23"
+							"value": "abcabc"
 						}
 					]
 				}
@@ -91,7 +91,7 @@
 				"method": "POST",
 				"header": [],
 				"url": {
-					"raw": "http://dev.supplieson.com/api/v1/customers?address=74PF+G2 Hijrat Al Harah Saudi Arabia&cityId=60451294e09ae62bed9be53b&commercialRegister=1234567890&commercialRegisterExpireDate=2021-11-30&commercialRegisterPhoto=https://supplieson.com/api/upload/image/d9d145391a998006f495605d37880976&confirmPassword=qweQWE123!@%23&language=en&representativeName=company&userEmail=jamesdcoulter@gmail.com&userFirstName=James&userMobilePhone=966554756352&userPassword=qweQWE123!@%23&coordinates=[26.286348600000018, 49.122605187500014]",
+					"raw": "http://dev.supplieson.com/api/v1/customers?address=74PF+G2 Hijrat Al Harah Saudi Arabia&cityId=60451294e09ae62bed9be53b&commercialRegister=1234567584&commercialRegisterExpireDate=2021-11-30&commercialRegisterPhoto=https://supplieson.com/api/upload/image/d9d145391a998006f495605d37880976&confirmPassword=qweQWE123!@%23&language=en&representativeName=company&userEmail=jamesdcoulter@gmail.com&userFirstName=James&userMobilePhone=966554756352&userPassword=qweQWE123!@%23&coordinates=[26.286348600000018, 49.122605187500014]",
 					"protocol": "http",
 					"host": [
 						"dev",
@@ -114,7 +114,7 @@
 						},
 						{
 							"key": "commercialRegister",
-							"value": "1234567890"
+							"value": "1234567584"
 						},
 						{
 							"key": "commercialRegisterExpireDate",
@@ -155,6 +155,38 @@
 						{
 							"key": "coordinates",
 							"value": "[26.286348600000018, 49.122605187500014]"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Login",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://dev.supplieson.com/api/v1/login?username=bakingkuptest@gmail.com&password=supplieson2030",
+					"protocol": "http",
+					"host": [
+						"dev",
+						"supplieson",
+						"com"
+					],
+					"path": [
+						"api",
+						"v1",
+						"login"
+					],
+					"query": [
+						{
+							"key": "username",
+							"value": "bakingkuptest@gmail.com"
+						},
+						{
+							"key": "password",
+							"value": "supplieson2030"
 						}
 					]
 				}
