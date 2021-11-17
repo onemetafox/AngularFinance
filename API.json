@@ -199,7 +199,7 @@
 				"method": "POST",
 				"header": [],
 				"url": {
-					"raw": "http://dev.supplieson.com/api/v1/login?username=bakingkuptest@gmail.com&password=supplieson2030",
+					"raw": "http://dev.supplieson.com/api/v1/send?email=seniordev1994128@gmail.com",
 					"protocol": "http",
 					"host": [
 						"dev",
@@ -209,16 +209,17 @@
 					"path": [
 						"api",
 						"v1",
-						"login"
+						"send"
 					],
 					"query": [
 						{
-							"key": "username",
-							"value": "bakingkuptest@gmail.com"
+							"key": "email",
+							"value": "seniordev1994128@gmail.com"
 						},
 						{
 							"key": "password",
-							"value": "supplieson2030"
+							"value": "supplieson2030",
+							"disabled": true
 						}
 					]
 				}

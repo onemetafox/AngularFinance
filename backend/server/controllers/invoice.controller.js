@@ -430,7 +430,7 @@ function getInvoice(req, res){
               }
             }else{
               QRCode.toDataURL(req.headers.referer, function (err, url) {
-                invoiceDetail['qrcode'] = url;
+                invoiceDetail._doc.image = url;
                 res.json(Response.success(invoiceDetail));
               })
                   
