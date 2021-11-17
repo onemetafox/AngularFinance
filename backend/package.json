@@ -99,6 +99,7 @@
     "passport-jwt": "^3.0.0",
     "passport-local": "^1.0.0",
     "phantomjs": "^2.1.7",
+    "qrcode": "^1.4.4",
     "request": "^2.86.0",
     "sendgrid": "^5.2.3",
     "swagger-ui-express": "^4.1.4",

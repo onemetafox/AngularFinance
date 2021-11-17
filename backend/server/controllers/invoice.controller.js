@@ -11,6 +11,7 @@ import Order from '../models/order.model';
 import ExportService from './exportFileService';
 import OrderProduct from '../models/orderProduct.model';
 
+var QRCode = require('qrcode')
 // const moment = require('moment-timezone');
 
 function get(req, res) {
@@ -212,7 +213,6 @@ function getNumberInvoices(req, supplierInvoiceReport,skip, limit, callback){
   
   if(req.query.customerId !== "All"){
     Customer.findById(req.query.customerId).then((customer)=>{
-      const invoices = []
       Invoice.find(query)
       .populate('supplier')
       .populate('customer')
@@ -220,7 +220,8 @@ function getNumberInvoices(req, supplierInvoiceReport,skip, limit, callback){
           path: 'order',
           match: branchMatch
       })
-      
+      .skip(Number(skip))
+      .limit(Number(limit))
       .then((acceptedInvoices) => {
         if(acceptedInvoices){
           acceptedInvoices.forEach((acceptedInvoicesObj) => {
@@ -240,20 +241,10 @@ function getNumberInvoices(req, supplierInvoiceReport,skip, limit, callback){
                 VAT: acceptedInvoicesObj.VAT,
                 createdAt: acceptedInvoicesObj.createdAt
               };
-              invoices.push(invoice);
-              // supplierInvoiceReport.invoices.push(invoice);
+              supplierInvoiceReport.invoices.push(invoice);
             }
-          });  
-          supplierInvoiceReport.numberOfInvoices = invoices.length;
-          if(invoices.length != 0){
-            for(var i = Number(skip); i < Number(skip) + Number(limit); i++ ){
-              if(i < invoices.length)
-                supplierInvoiceReport.invoices.push(invoices[i]);
-            }
-          }else{
-            supplierInvoiceReport.invoices = [];
-          }
-          console.log(supplierInvoiceReport);
+          });
+          supplierInvoiceReport.numberOfInvoices = supplierInvoiceReport.invoices.length;
           callback(null, supplierInvoiceReport);
         }else{
           supplierInvoiceReport.invoices = [];
@@ -327,10 +318,8 @@ function getNumberInvoices(req, supplierInvoiceReport,skip, limit, callback){
                 }
               });
             });
-            Invoice.find(query).then((acceptedInvoices) => {
-              supplierInvoiceReport.numberOfInvoices = acceptedInvoices.length;
-              callback(null, supplierInvoiceReport);
-            });
+            supplierInvoiceReport.numberOfInvoices = supplierInvoiceReport.invoices.length;
+            callback(null, supplierInvoiceReport);
           })         
         }else{
           supplierInvoiceReport.invoices = [];
@@ -440,7 +429,11 @@ function getInvoice(req, res){
                 // res.download(`report.${req.query.export}`, `SUPReport.${req.query.export}`);
               }
             }else{
-              res.json(Response.success(invoiceDetail));    
+              QRCode.toDataURL(req.headers.referer, function (err, url) {
+                invoiceDetail['qrcode'] = url;
+                res.json(Response.success(invoiceDetail));
+              })
+                  
             }
           });
       })
