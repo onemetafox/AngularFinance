@@ -60,14 +60,13 @@ function exportReceiptFile(headerPath, bodyPath, dataObject, title, description,
 }
 
 function exportFile(headerPath, bodyPath, dataObject, title, description, type, res) {
-  console.log(dataObject);
+  
   try {
     // const htmlHeaderContent = fs.readFileSync('report_template/transaction/pdf-transaction-report-header-arabic.html', 'utf8');
     // const htmlBodyContent = fs.readFileSync('report_template/transaction/pdf-transaction-report-body-arabic.html', 'utf8');
     if (type === 'pdf') {
       const htmlHeaderContent = fs.readFileSync(path.resolve(__dirname, '../../../' + headerPath), 'utf8');
       const htmlBodyContent = fs.readFileSync(path.resolve(__dirname, '../../../' + bodyPath), 'utf8');
-
       jsreport.init().then(() => {
 
         jsreport.render({
@@ -95,7 +94,9 @@ function exportFile(headerPath, bodyPath, dataObject, title, description, type, 
         }).then((resp) => {
           // write report buffer to a file
           fs.writeFileSync('report.pdf', resp.content);
+          res.setHeader('Content-Type', 'application/pdf');
           // res.download('report.pdf');
+          
           res.send(resp.content);
           // const fileToSend = fs.readFileSync('report.pdf');
           // // res.send('report.pdf');
