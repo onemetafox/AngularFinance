@@ -424,7 +424,7 @@ function getInvoice(req, res){
                   if (req.user.language === 'en') {
                     ExportService.exportFile(`report_template/invoice/invoice-header-english.html`,
                       `report_template/invoice/invoice-body-english.html`, invoiceDetail._doc,
-                      'Invoice Detail', ``, req.query.export, res
+                      invoiceDetail._doc.invoiceId, ``, req.query.export, res
                       );
                     // res.download(`report.${req.query.export}`, `SUPReport.${req.query.export}`);
                   } else {
@@ -436,7 +436,7 @@ function getInvoice(req, res){
                 }else{
                   ExportService.exportFile(`report_template/invoice/invoice-header-english.html`,
                       `report_template/invoice/invoice-body-english.html`, invoiceDetail._doc,
-                      'Invoice Detail', ``, req.query.export, res
+                      invoiceDetail._doc.invoiceId, ``, req.query.export, res
                   );
                   // res.download(`report.${req.query.export}`, `SUPReport.${req.query.export}`);
                 }

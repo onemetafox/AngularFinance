@@ -93,9 +93,10 @@ function exportFile(headerPath, bodyPath, dataObject, title, description, type, 
           }
         }).then((resp) => {
           // write report buffer to a file
-          fs.writeFileSync('report.pdf', resp.content);
+          fs.writeFileSync(title+'.pdf', resp.content);
+          res.set("Content-Disposition", "attachment;filename="+title+".pdf");
           res.setHeader('Content-Type', 'application/pdf');
-          // res.download('report.pdf');
+          // res.download(title+'.pdf');
           
           res.send(resp.content);
           // const fileToSend = fs.readFileSync('report.pdf');
