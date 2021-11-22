@@ -26,11 +26,14 @@ router.route('/create/:orderId')
     session: false
   }), invoiceCtrl.createInvoice);
 
-router.route('/getInvoice')
-  .get(passport.authenticate('jwt', {
-    session: false
-  }), invoiceCtrl.getInvoice);
+// router.route('/getInvoice')
+//   .get(passport.authenticate('jwt', {
+//     session: false
+//   }), invoiceCtrl.getInvoice);
 
+router.route('/getInvoice')
+  .get(invoiceCtrl.getInvoice);
+  
 router.param('invoiceId', invoiceCtrl.load);
 
 export default router;
