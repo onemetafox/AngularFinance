@@ -220,10 +220,11 @@ function getNumberInvoices(req, supplierInvoiceReport,skip, limit, callback){
           path: 'order',
           match: branchMatch
       })
-      .skip(Number(skip))
-      .limit(Number(limit))
+      //.skip(Number(skip))
+      //.limit(Number(limit))
       .then((acceptedInvoices) => {
         if(acceptedInvoices){
+          var invoices = [];
           acceptedInvoices.forEach((acceptedInvoicesObj) => {
             if((acceptedInvoicesObj.customer.customer == req.query.customerId || acceptedInvoicesObj.customer._id == req.query.customerId) && acceptedInvoicesObj.order){
               let invoice = {};
@@ -241,10 +242,16 @@ function getNumberInvoices(req, supplierInvoiceReport,skip, limit, callback){
                 VAT: acceptedInvoicesObj.VAT,
                 createdAt: acceptedInvoicesObj.createdAt
               };
-              supplierInvoiceReport.invoices.push(invoice);
+              invoices.push(invoice);
             }
           });
-          supplierInvoiceReport.numberOfInvoices = supplierInvoiceReport.invoices.length;
+          for (var i = skip; i < skip + limit; i ++){
+            if(invoices[i]){
+              supplierInvoiceReport.invoices.push(invoices[i]);
+            }
+            
+          }
+          supplierInvoiceReport.numberOfInvoices = invoices.length;
           callback(null, supplierInvoiceReport);
         }else{
           supplierInvoiceReport.invoices = [];
@@ -260,8 +267,8 @@ function getNumberInvoices(req, supplierInvoiceReport,skip, limit, callback){
           path: 'order',
           match: branchMatch
       })
-      .skip(Number(skip))
-      .limit(Number(limit))
+      //.skip(Number(skip))
+      // .limit(Number(limit))
       .then((acceptedInvoices) => {
         if(acceptedInvoices){
            Customer.aggregate(
@@ -277,6 +284,7 @@ function getNumberInvoices(req, supplierInvoiceReport,skip, limit, callback){
             {$match : {type: 'Customer'}}
             
           ).then((customers)=>{
+            var invoices = [];
             customers.forEach(customer => {
               acceptedInvoices.forEach(acceptedInvoicesObj => {
                 if(customer._id.toString() == acceptedInvoicesObj.customer.toString()){
@@ -294,7 +302,7 @@ function getNumberInvoices(req, supplierInvoiceReport,skip, limit, callback){
                     VAT: acceptedInvoicesObj.VAT,
                     createdAt: acceptedInvoicesObj.createdAt
                   };
-                  supplierInvoiceReport.invoices.push(invoice);
+                  invoices.push(invoice);
                 }else{
                   customer.Staffs.forEach(staff => {
                     if(staff._id.toString() == acceptedInvoicesObj.customer.toString()){
@@ -312,13 +320,19 @@ function getNumberInvoices(req, supplierInvoiceReport,skip, limit, callback){
                         VAT: acceptedInvoicesObj.VAT,
                         createdAt: acceptedInvoicesObj.createdAt
                       };
-                      supplierInvoiceReport.invoices.push(invoice);
+                      invoices.push(invoice);
                     }
                   });
                 }
               });
             });
-            supplierInvoiceReport.numberOfInvoices = supplierInvoiceReport.invoices.length;
+            for (var i = skip; i < skip + limit; i ++){
+              if(invoices[i]){
+                supplierInvoiceReport.invoices.push(invoices[i]);
+              }
+              
+            }
+            supplierInvoiceReport.numberOfInvoices = invoices.length;
             callback(null, supplierInvoiceReport);
           })         
         }else{
