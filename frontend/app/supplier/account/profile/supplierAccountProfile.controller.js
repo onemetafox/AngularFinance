@@ -93,6 +93,7 @@ export default class SupplierAccountProfileCtrl {
                         new Date(this.supplier.commercialRegisterExpireDate)).format('YYYY-MM-DD'));
                 }
                 if(this.supplier.commercialRegisterExpireDateIslamic !== null) {
+                    
                     this.supplier.commercialRegisterExpireDateIslamic = new Date(moment(
                         new Date(this.supplier.commercialRegisterExpireDateIslamic)).format('YYYY-MM-DD'));
                 }
