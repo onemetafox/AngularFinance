@@ -107,6 +107,7 @@ export default class SupplierAccountProfileCtrl {
                 this.message = 'supplier.account.profile.message.failure';
             }
         };
+        
         const _onError = (err) => {
             this.errors = err.data.data;
         };
