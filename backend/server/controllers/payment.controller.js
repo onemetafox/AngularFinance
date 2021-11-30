@@ -802,7 +802,8 @@ function getPaymentsCount(req, res) {
       if (error) {
         res.json(error);
       }
-      res.json(Response.success(resultObject));
+      console.log(resultObject);
+      // res.json(Response.success(resultObject));
     });
   }
 }
