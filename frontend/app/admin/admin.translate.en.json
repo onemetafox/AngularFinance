@@ -32,6 +32,7 @@
     "settings": "Settings",
     "messages": "Messages",
     "suppliersList": "Suppliers List",
+    "customersList" : "Customers List",
     "payments": "Payments",
     "paymentsClaims": "Payments Claims"
   },

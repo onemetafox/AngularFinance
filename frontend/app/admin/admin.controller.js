@@ -39,6 +39,8 @@ export default class AdminCtrl {
                         this._$state.go('app.admin.supplier.list');
                     } else if (this.permissions.managePayments) {
                         this._$state.go('app.admin.supplier.payment');
+                    } else if (this.permissions.manageCustomers){
+                        this._$state.go('app.admin.customer.list');
                     }
                 } else if (toState.name === 'app.admin.report') {
                     if (this.permissions.manageOrdersReports) {
@@ -66,6 +68,8 @@ export default class AdminCtrl {
             if (this.permissions.manageSuppliers) {
                 this._$state.go('app.admin.supplier.list');
             } else if (this.permissions.managePayments) {
+                this._$state.go('app.admin.supplier.payment');
+            } else if (this.permissions.manageCustomers) {
                 this._$state.go('app.admin.supplier.payment');
             }
         } else if (this._$state.is('app.admin.report')) {

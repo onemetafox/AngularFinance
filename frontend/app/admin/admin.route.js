@@ -222,7 +222,7 @@ export default function adminConfig(
             },
             data: {
                 permissions: {
-                    only: ['manageSuppliers', 'managePayments'],
+                    only: ['manageSuppliers', 'managePayments', 'manageCustomers'],
                     redirectTo: AuthorizationMethods.redirectTo404(),
                 },
             },
@@ -233,6 +233,35 @@ export default function adminConfig(
             controller: 'adminSupplierListCtrl as $ctrl',
             ncyBreadcrumb: {
                 label: 'm.suppliersList',
+            },
+            resolve: {
+                deps: [
+                    '$ocLazyLoad',
+                    function ($ocLazyLoad) {
+                        return $ocLazyLoad
+                            .load(
+                            [
+                                'switchery',
+                                'select',
+                                'moment',
+                                'datepicker',
+                                'daterangepicker',
+                            ],
+                            {
+                                insertBefore: '#lazyload_placeholder',
+                            }
+                            )
+                            .then(() => true);
+                    },
+                ],
+            },
+        })
+        .state('app.admin.customer.list', {
+            url: '/list',
+            templateUrl: 'app/admin/supplier/customer-list/customers.html',
+            controller: 'adminCustomerListCtrl as $ctrl',
+            ncyBreadcrumb: {
+                label: 'm.customersList',
             },
             resolve: {
                 deps: [

@@ -23,11 +23,15 @@
                         <span class="title">{{"m.suppliersList" | translate }}</span>
                     </a>
                 </li>
+                <li permission permission-only="'manageCustomers'" ui-sref-active="active top-level bold">
+                    <a ui-sref="app.admin.customer.list" class=" m-l-25">
+                        <span class="title">{{"m.customersList" | translate }}</span>
+                    </a>
+                </li>
                 <li permission permission-only="'managePayments'" ui-sref-active="active top-level bold">
                     <a ui-sref="app.admin.supplier.payment" class="m-l-25 p-r-5">
                         <span class="title">{{"m.paymentsClaims" | translate }}</span>
                         <span class="badge badge-success pull-right">{{$ctrl.pendingPaymentsCount}}</span>
-
                     </a>
                 </li>
             </ul>
