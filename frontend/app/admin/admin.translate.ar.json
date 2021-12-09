@@ -29,6 +29,7 @@
     "ingredients": "مكونات",
     "select_ingredients": "حدد المكونات",
     "suppliersList": "قائمة الموردين",
+    "customersList" : "قائمة العملاء",
     "payments": "المدفوعات",
     "paymentsClaims": "مطالبات الدفع"
   },
