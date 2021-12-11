@@ -326,7 +326,6 @@ function list(req, res) {
   const statusMatch = {};
   const paymentMatch = {};
   let nameMatch = {};
-
   const nameOnly = req.query.nameOnly || false;
 
   if (req.query.city && req.user && req.user.type === 'Admin') {
@@ -345,6 +344,9 @@ function list(req, res) {
       statusMatch.status = {
         $in: req.query.status
       };
+      match.status = {
+        $in: req.query.status
+      };
     }
   }
   if (req.query.missedPayment) {
@@ -355,6 +357,7 @@ function list(req, res) {
       nameMatch = {
         representativeName: new RegExp(`.*${req.query.customerName.trim()}.*`, 'i')
       };
+      match.representativeName = RegExp(`.*${req.query.customerName.trim()}.*`, 'i');
     }
   }
 
@@ -366,6 +369,7 @@ function list(req, res) {
   }
 
   if (req.user && req.user.type === 'Admin') {
+    console.log(match);
     Customer.find(match)
       .populate('user')
       .sort({

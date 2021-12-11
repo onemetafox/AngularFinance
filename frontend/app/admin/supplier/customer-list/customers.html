@@ -29,7 +29,7 @@
 <div class="card">
     <div class="gray-container">
         <div class="row">
-            <div class="col-sm-6">
+            <!-- <div class="col-sm-6">
                 <p class="w600">{{'admin.customers.list.search.supplier.label' | translate}}</p>
                 <div style="z-index:1;" class="form-group-default form-group-default-select2">
                     <select ng-model="$ctrl.searchCriteria.supplierId" ng-change="$ctrl.onFilterChange($ctrl.searchCriteria)" id="supplierSelect"
@@ -38,6 +38,23 @@
                         <option value="All">{{"admin.customers.list.search.supplier.All" | translate }}</option>
                         <option ng-repeat="item in $ctrl.suppliers" value="{{item.supplier._id}}">{{item.supplier.representativeName}}</option>
                     </select>
+                </div>
+            </div> -->
+            <div class="col-sm-6">
+                <p class="w600">{{'admin.suppliers.list.search.status.label' | translate}}</p>
+                <div class="checkbox check-primary">
+                    <span ng-repeat="item in $ctrl.status">
+                        <input type="checkbox"
+                                checklist-model="$ctrl.searchCriteria.status"
+                                checklist-value="item"
+                                checked="checked"
+                                name="check" id="check{{$index}}"
+                                ng-change="$ctrl.check(item, checked)">
+                        <label ng-if="item==='Active'" class="small-text" for="check{{$index}}">{{'admin.suppliers.list.search.status.active' | translate}}</label>
+                        <label ng-if="item==='Suspended'" class="small-text" for="check{{$index}}">{{'admin.suppliers.list.search.status.suspended' | translate}}</label>
+                        <label ng-if="item==='Blocked'" class="small-text" for="check{{$index}}">{{'admin.suppliers.list.search.status.blocked' | translate}}</label>
+                        <label ng-if="item==='Deleted'" class="small-text" for="check{{$index}}">{{'admin.suppliers.list.search.status.deleted' | translate}}</label>
+                    </span>
                 </div>
             </div>
             <div class="col-sm-6">
@@ -63,8 +80,8 @@
                 <div class="col-12">
                     <div class="form-group">
                         <input type="text" ng-model="$ctrl.searchCriteria.customerName"
-                               placeholder="{{'admin.customers.list.search.supplier.customerName' | translate}}"
-                               ng-change="$ctrl.getCustomers($ctrl.searchCriteria)" class="form-control">
+                            placeholder="{{'admin.customers.list.search.supplier.customerName' | translate}}"
+                            ng-change="$ctrl.getCustomers($ctrl.searchCriteria)" class="form-control">
                     </div>
                 </div>
             </div>
