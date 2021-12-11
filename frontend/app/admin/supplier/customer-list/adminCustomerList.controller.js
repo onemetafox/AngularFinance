@@ -1,5 +1,6 @@
 export default class adminCustomerListCtrl {
-    constructor(SupplierService, $rootScope, $translate) {
+    constructor(CustomerService, SupplierService, $rootScope, $translate) {
+        this._CustomerService = CustomerService;
         this._SupplierService = SupplierService;
         this.$rootScope = $rootScope;
         this.$translate = $translate;
@@ -19,11 +20,27 @@ export default class adminCustomerListCtrl {
         };
         this.currentPage = 1;
         this.getSuppliers(this.searchCriteria);
+        this.getCustomers();
         this.$rootScope.$on('getSuppliers', () => {
             ctrl.getSuppliers(ctrl.searchCriteria);
         });
     }
-
+    getCustomers(){
+        this.cusSearchCriteria = {
+            skip: 0,
+            limit: 100,
+            customerName: '',
+            nameOnly: true
+        };
+        const _onSuccess = (res) => {
+            this.customers = res.data.data.customers;
+        };
+        const _onError = (err) => {
+            this.errors = err.data.data;
+        };
+        this._CustomerService.getCustomers(this.cusSearchCriteria)
+            .then(_onSuccess, _onError);
+    }
     getSuppliers(searchCriteria) {
         const _onSuccess = (res) => {
             this.suppliers = res.data.data.suppliers;
@@ -73,4 +90,4 @@ export default class adminCustomerListCtrl {
         this._SupplierService.exportSupplierList(type, this.searchCriteria);
     }
 }
-adminCustomerListCtrl.$inject = ['SupplierService', '$rootScope', '$translate'];
+adminCustomerListCtrl.$inject = ['CustomerService', 'SupplierService', '$rootScope', '$translate'];

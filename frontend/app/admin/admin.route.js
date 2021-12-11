@@ -256,8 +256,8 @@ export default function adminConfig(
                 ],
             },
         })
-        .state('app.admin.customer.list', {
-            url: '/list',
+        .state('app.admin.supplier.customer', {
+            url: '/customer',
             templateUrl: 'app/admin/supplier/customer-list/customers.html',
             controller: 'adminCustomerListCtrl as $ctrl',
             ncyBreadcrumb: {
