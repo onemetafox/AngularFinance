@@ -12,20 +12,34 @@ export default class adminCustomerListCtrl {
         this.status = ['Active', 'Suspended', 'Blocked', 'Deleted'];
         this.searchCriteria = {
             skip: 0,
-            limit: 10,
-            status: ['Active', 'Suspended', 'Blocked', 'Deleted'],
-            supplierName: '',
+            limit: 15,
+            type: 'All',
             payingSoon: false,
             missedPayment: false
         };
         this.currentPage = 1;
-        this.getSuppliers(this.searchCriteria);
-        this.getCustomers();
-        this.$rootScope.$on('getSuppliers', () => {
-            ctrl.getSuppliers(ctrl.searchCriteria);
+        this.getSuppliers();
+        this.getCustomers(this.searchCriteria);
+        this.$rootScope.$on('getCustomers', () => {
+            ctrl.getCustomers(ctrl.searchCriteria);
         });
     }
-    getCustomers(){
+    getCustomers(searchCriteria){
+        const _onSuccess = (res) => {
+            this.customers = res.data.data.customers;
+            console.log("customers", this.customers);
+            this.totalPages = Math.ceil(res.data.data.count / searchCriteria.limit);
+        };
+        const _onError = (err) => {
+            this.errors = err.data.data;
+        };
+        const _onFinal = () => {
+            this.customersAreLoaded = true;
+        };
+        this._CustomerService.getCustomers(searchCriteria)
+            .then(_onSuccess, _onError).finally(_onFinal);
+    }
+    getSuppliers() {
         this.cusSearchCriteria = {
             skip: 0,
             limit: 100,
@@ -33,33 +47,20 @@ export default class adminCustomerListCtrl {
             nameOnly: true
         };
         const _onSuccess = (res) => {
-            this.customers = res.data.data.customers;
-        };
-        const _onError = (err) => {
-            this.errors = err.data.data;
-        };
-        this._CustomerService.getCustomers(this.cusSearchCriteria)
-            .then(_onSuccess, _onError);
-    }
-    getSuppliers(searchCriteria) {
-        const _onSuccess = (res) => {
             this.suppliers = res.data.data.suppliers;
 
-            this.totalPages = Math.ceil(res.data.data.count / this.searchCriteria.limit);
         };
         const _onError = (err) => {
             this.errors = err.data.data;
         };
-        const _onFinal = () => {
-            this.suppliersAreLoaded = true;
-        };
-        this._SupplierService.getSuppliers(searchCriteria).then(_onSuccess, _onError).finally(_onFinal);
+        
+        this._SupplierService.getSuppliers(this.cusSearchCriteria).then(_onSuccess, _onError);
     }
 
     setPage(pageNumber) {
         this.currentPage = pageNumber;
         this.searchCriteria.skip = (pageNumber - 1) * this.searchCriteria.limit;
-        this.getSuppliers(this.searchCriteria);
+        this.getCustomers(this.searchCriteria);
     }
 
     check(value, checked) {

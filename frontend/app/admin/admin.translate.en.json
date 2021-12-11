@@ -340,6 +340,249 @@
       },
       "Role": "Role"
     },
+    "customers": {
+      "breadcrumb": {
+        "customerDetails": "Customer Detail"
+      },
+      "list": {
+        "title": "Customers",
+        "export": {
+          "title": "Export",
+          "pdf": "pdf",
+          "xls": "xls"
+        },
+        "button": {
+          "new_customer": "New Customer",
+          "showDetails": "Show Details"
+        },
+        "search": {
+          "status": {
+            "label": "Status",
+            "placeholder": "status",
+            "active": "Active",
+            "suspended": "Suspended",
+            "blocked": "Blocked",
+            "deleted": "Deleted"
+          },
+          "supplier":{
+            "All" : "All",
+            "label": "Suppliers",
+            "customerName": "Input Customer Name"
+          },
+          "payment": {
+            "label": "Payment",
+            "placeholder": "Payment",
+            "payingSoon": {
+              "label": "Paying Soon",
+              "placeholder": "Paying Soon"
+            },
+            "missedPayment": {
+              "label": "Missed Payment",
+              "placeholder": "Missed Payment"
+            }
+          },
+          "customerName": {
+            "label": "Customer Name",
+            "placeholder": "Customer Name"
+          }
+        },
+        "table": {
+          "header": {
+            "name": "Name",
+            "status": "Status",
+            "type": "Type",
+            "remainingTillLimit": "Remaining till limit",
+            "paymentDue": "Payment Due"
+          }
+        }
+      },
+      "create-customer": {
+        "button": {
+          "close": "close",
+          "save": "Save",
+          "reset": "Reset"
+        },
+        "title": "New Customer",
+        "field": {
+          "email": {
+            "invalid": "Invalid Email format",
+            "label": "Email",
+            "placeholder": "Email@supplieson.com",
+            "required": "This field is required"
+          },
+          "company_name": {
+            "invalid": "contains invalid characters",
+            "required": "This field is required",
+            "label": "Company name",
+            "placeholder": "Company name"
+          },
+          "mobile": {
+            "invalid": "Invalid phone format",
+            "label": "Mobile",
+            "placeholder": "9665XXXXXXXX",
+            "required": "This field is required"
+          },
+          "first_name": {
+            "invalid": "Contains invalid characters",
+            "required": "This field is required",
+            "placeholder": "First name",
+            "label": "First name"
+          },
+          "last_name": {
+            "invalid": "Contains invalid characters ",
+            "placeholder": "Last name",
+            "label": "Last name",
+            "required": "This field is required"
+          },
+          "cr_number": {
+            "required": "This field is required",
+            "placeholder": "C.R. Number",
+            "label": "Commercial Register Number",
+            "invalid": "should contain 10 numbers only "
+          },
+          "cr_photo": {
+            "invalid": "Accepted formats  PNG - GIF - JPEG - JPG and maximum size of 4 MB",
+            "label": "C.R. Photo",
+            "required": "This field is required",
+            "placeholder": "No file chosen"
+          },
+          "password": {
+            "invalid": "password must be from 6 to 20 characters long including numbers",
+            "required": "This field is required",
+            "label": "Password",
+            "placeholder": "password",
+            "min_length": "Minimum length 6",
+            "max_length": "Maximum length 20"
+          },
+          "select_date": {
+            "label": "Select date :",
+            "hijri": "Hijri",
+            "gregorian": "Gregorian"
+          },
+          "cr_expdate": {
+            "required": "This field is required",
+            "placeholder": "DD/MM/YYYY",
+            "label": "Expire date Gregorian",
+            "labelHijri": "Expire date Hijri"
+          },
+          "VAT": {
+            "required": "This field is required",
+            "label": "VAT",
+            "placeholder": "VAT",
+            "invalid": "vat must be number or decimal"
+          },
+          "vatPhoto": {
+            "invalid": "Accepted formats  PNG - GIF - JPEG - JPG and maximum size of 4 MB",
+            "label": "VAT Photo",
+            "required": "This field is required",
+            "photoErr": "image size exceeded 4 MB",
+            "placeholder": "No file chosen"
+          },
+          "confirm_password": {
+            "label": "Confirm password",
+            "placeholder": "Confirm password",
+            "invalid": "Password and confirm password must be identical",
+            "required": "This field is required"
+          }
+        },
+        "message": {
+          "success_creation": "Account created successfully",
+          "failed_creation": "Failure occurred , please try again later",
+          "already_have_account": "You Already have Account",
+          "invalidFile": "Only images are allowed (Formats supported: png, jpg, jpeg).",
+          "commercialRegisterIsDuplicate": "Commercial Register is duplicate",
+          "emailOrMobilePhoneIsDuplicate": "Email Or MobilePhone Is Duplicate",
+          "expireDate_exceed": "Gregorian Expire Date Exceeds 5 Years",
+          "expireDate_todayOrLess": "Gregorian Expire Date can't be today's date or before",
+          "expireDateHijri_exceed": "Hijri Expire Date Exceeds 5 Years",
+          "expireDateHijri_todayOrLess": "Hijri Expire Date can't be today's date or before"
+        }
+      },
+      "payment": {
+        "repName": "Rep. Name",
+        "phone": "Phone",
+        "email": "Email",
+        "save": "Save",
+        "cr_photo": "CR",
+        "vat_photo": "VAT",
+        "billingDes": "The is the account billing between you and SuppliesON.com",
+        "balance": "Balance",
+        "record_payment": "Record Payment",
+        "search": "Search By Customer",
+        "status": "Status",
+        "payment_installment": "Payment Cycle",
+        "payment_added": "Your payment has been recorded successfully, The admin will verify the payment and notify you soon.",
+        "payment_failed": "Failed to add your payment record",
+        "allow_exceed_billing_limit": "Allow this customer to exceed the billing date payment",
+        "allow_exceed_credit_limit": "Allow this customer to exceed the monthly credit limit",
+        "payment": "Payment",
+        "payments": "Payments",
+        "paymentsClaims": "Payments Claims",
+        "specialPrices": "Special Prices",
+        "creditThisMonth": "This Month Credit",
+        "limitThisMonth": "This Month Limit",
+        "nextPayment": "Next payment",
+        "nextInvoice": "Next invoice",
+        "updateInfo": "Information has been updated",
+        "creditLimit": "Credit Limit",
+        "sar": "SAR",
+        "approved": "Approved",
+        "pending": "Pending",
+        "rejected": "Rejected",
+        "cash": "Cash",
+        "cheque": "Cheque",
+        "bank": "Bank",
+        "billingHistory": "Billing History",
+        "paymentClaims": "Payment Claims",
+        "every": "Every",
+        "Day": "{value, plural, =0 { this day } one{ 1 day } other{ # day }}",
+        "Week": "{value, plural, =0 { this week } one{ 1 week } other{ # weeks }}",
+        "Month": "{value, plural, =0 { this month } one{ 1 month } other{ # months }}",
+        "credit": "credit",
+        "invoice": "invoice",
+        "invoice_for": "Invoice for",
+        "select_period": "Select Period",
+        "details": "Show Details",
+        "detailed_transactions": "Detailed Transactions",
+        "table": {
+          "date": "Date",
+          "description": "Description",
+          "type": "Type",
+          "referenceId": "Reference Id",
+          "status": "Status",
+          "customerName": "Customer Name",
+          "amount": "Amount",
+          "balance": "Balance"
+        },
+        "label": {
+          "search": "Search",
+          "status": "Status"
+        },
+        "required": "This field is required",
+        "invalidPhone": "Invalid phone format",
+        "invalidEmail": "Invalid email format",
+        "invalidUsername": "Invalid Username format"
+      },
+      "status": {
+        "invited": "Invited",
+        "suspended": "Suspended",
+        "active": "Active",
+        "blocked": "Blocked",
+        "deleted": "Deleted",
+        "activate": "Activate",
+        "block": "Block",
+        "suspend": "Suspend",
+        "unblock": "UnBlock",
+        "approve": "Approve",
+        "delete": "Delete",
+        "change_status": "Change status",
+        "reset_password": "Reset password",
+        "customer_updated": "Customer updated successfully",
+        "customer_email_exists": "Email already exists",
+        "customer_mobilePhone_exists": "Mobile Number already exists"
+      }
+    },
+    
     "suppliers": {
       "breadcrumb": {
         "supplierDetails": "Supplier Detail"
