@@ -369,7 +369,6 @@ function list(req, res) {
   }
 
   if (req.user && req.user.type === 'Admin') {
-    console.log(match);
     Customer.find(match)
       .populate('user')
       .sort({
