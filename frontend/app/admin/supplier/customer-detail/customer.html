@@ -28,15 +28,15 @@
                             - {{"admin.customers.payment.invalidUsername" | translate }}.
                         </label>
                         <span ng-if="$ctrl.customer.status === 'Active'"
-                              class="label label-success upper-case">{{"admin.customers.customer.active" | translate}}</span>
+                              class="label label-success upper-case">{{"admin.customers.status.active" | translate}}</span>
                         <span ng-if="$ctrl.customer.status === 'Invited'"
-                              class="label label-warning upper-case">{{"admin.customers.customer.invited" | translate}}</span>
+                              class="label label-warning upper-case">{{"admin.customers.status.invited" | translate}}</span>
                         <span ng-if="$ctrl.customer.status === 'Suspended'"
-                              class="label label-warning upper-case">{{"admin.customers.customer.suspended" | translate}}</span>
+                              class="label label-warning upper-case">{{"admin.customers.status.suspended" | translate}}</span>
                         <span ng-if="$ctrl.customer.status === 'Blocked'"
-                              class="label label-important upper-case">{{"admin.customers.customer.blocked" | translate}}</span>
+                              class="label label-important upper-case">{{"admin.customers.status.blocked" | translate}}</span>
                         <span ng-if="$ctrl.customer.status === 'Deleted'"
-                              class="label label-important upper-case">{{"admin.customers.customer.deleted" | translate}}</span>
+                              class="label label-important upper-case">{{"admin.customers.status.deleted" | translate}}</span>
                     </h4>
                 </div>
 
@@ -147,7 +147,7 @@
             </div>
         </div>
     </div>
-    <div class="card card-details-table no-margin no-box-shadow">
+    <!-- <div class="card card-details-table no-margin no-box-shadow">
         <div class="card-header p-t-70-important">
             <div class="row">
                 <div class="col-sm-7 col-md-7 col-lg-8 col-xl-9 m-t-10">
@@ -390,7 +390,6 @@
                                                       class="label label-important upper-case">{{"admin.customers.payment.rejected" | translate}}</span>
                                             </td>
 
-                                            <!--<td class="sorting_1"><a href=""  ui-sref="app.customer.customer.payments-details({paymentId:item._id,payment:item})">Show Details</a></td>-->
                                             <td class="sorting_1">
                                                 <a href="" ng-click="$ctrl.openShowDetails(item._id,item)">{{"admin.customers.payment.details"
                                                     | translate }}</a>
@@ -409,7 +408,7 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> -->
 </div>
 
 <payment-record on-save="$ctrl.addPayment(payment)" show-actions="true" view-mode="$ctrl.disableRecordPaymentForm"

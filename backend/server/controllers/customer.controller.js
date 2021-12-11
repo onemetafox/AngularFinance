@@ -47,6 +47,7 @@ const upload = multer({
  * @returns {Customer}
  */
 function get(req, res) {
+  console.log(req.user);
   // Check if the user is a supplier and has access to this customer, or an admin or current user.
   if (req.user.type === 'Supplier') {
     async.waterfall([
@@ -75,6 +76,22 @@ function get(req, res) {
             });
         }
       });
+  } else if (req.user.type === 'Admin') {
+    const resultObject = {
+      _id: req.customer._id,
+      representativeName: req.customer.representativeName,
+      commercialRegister: req.customer.commercialRegister,
+      commercialRegisterPhoto: req.customer.commercialRegisterPhoto,
+      commercialRegisterExpireDate: req.customer.commercialRegisterExpireDate,
+      photo: req.customer.photo,
+      coverPhoto: req.customer.coverPhoto,
+      status: req.customer.status,
+      location: req.customer.location,
+      user: req.customer.user,
+      VATRegisterNumber: req.customer.VATRegisterNumber,
+      VATRegisterPhoto: req.customer.VATRegisterPhoto
+    };
+    res.json(Response.success(resultObject));
   } else if (req.customer.user._id.toString() === req.user._id.toString()) {
     const resultObject = {
       _id: req.customer._id,

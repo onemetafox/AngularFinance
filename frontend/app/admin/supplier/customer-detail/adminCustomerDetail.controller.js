@@ -28,35 +28,35 @@ export default class adminCustomerDetailCtrl {
         this.selectPeriod = { interval: 'Month', frequency: 1 };
 
         this.getCustomer(this.$stateParams.customerId);
-        this.customerId = this.$stateParams.customerId;
-        this.billingHistoryQuery = {
-            customerId: this.$stateParams.customerId,
-            skip: 0,
-            limit: 10,
-            currentPage: 1,
-            totalPages: 1
-        };
-        this.customerPaymentClaimsQuery = {
-            customerId: this.$stateParams.customerId,
-            status: ['pending', 'rejected'],
-            skip: 0,
-            limit: 10,
-            currentPage: 1,
-            totalPages: 1,
-            isAdminFees: true
-        };
-        this.getBillingHistory(this.billingHistoryQuery);
-        if (permissions.managePayments) {
-            this.getCustomerPaymentClaims(this.customerPaymentClaimsQuery);
-        }
-        this._$rootScope.$on('acceptPayment', (evt, data) => {
-            this.getBillingHistory(this.billingHistoryQuery);
-            this.getCustomerPaymentClaims(this.customerPaymentClaimsQuery);
-        });
-        this._$rootScope.$on('rejectPayment', (evt, data) => {
-            this.getBillingHistory(this.billingHistoryQuery);
-            this.getCustomerPaymentClaims(this.customerPaymentClaimsQuery);
-        });
+        // this.customerId = this.$stateParams.customerId;
+        // this.billingHistoryQuery = {
+        //     customerId: this.$stateParams.customerId,
+        //     skip: 0,
+        //     limit: 10,
+        //     currentPage: 1,
+        //     totalPages: 1
+        // };
+        // this.customerPaymentClaimsQuery = {
+        //     customerId: this.$stateParams.customerId,
+        //     status: ['pending', 'rejected'],
+        //     skip: 0,
+        //     limit: 10,
+        //     currentPage: 1,
+        //     totalPages: 1,
+        //     isAdminFees: true
+        // };
+        // this.getBillingHistory(this.billingHistoryQuery);
+        // if (permissions.managePayments) {
+        //     this.getCustomerPaymentClaims(this.customerPaymentClaimsQuery);
+        // }
+        // this._$rootScope.$on('acceptPayment', (evt, data) => {
+        //     this.getBillingHistory(this.billingHistoryQuery);
+        //     this.getCustomerPaymentClaims(this.customerPaymentClaimsQuery);
+        // });
+        // this._$rootScope.$on('rejectPayment', (evt, data) => {
+        //     this.getBillingHistory(this.billingHistoryQuery);
+        //     this.getCustomerPaymentClaims(this.customerPaymentClaimsQuery);
+        // });
     }
     getCustomer(id) {
         const _onSuccess = (res) => {
