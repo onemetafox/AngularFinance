@@ -1,6 +1,6 @@
 export default class adminCustomerDetailCtrl {
-    constructor(SupplierService, TransactionsService, $stateParams, $translate, $rootScope, PermPermissionStore) {
-        this._SupplierService = SupplierService;
+    constructor(CustomerService, TransactionsService, $stateParams, $translate, $rootScope, PermPermissionStore) {
+        this._CustomerService = CustomerService;
         this._TransactionsService = TransactionsService;
         this.$stateParams = $stateParams;
         this._$rootScope = $rootScope;
@@ -27,17 +27,17 @@ export default class adminCustomerDetailCtrl {
 
         this.selectPeriod = { interval: 'Month', frequency: 1 };
 
-        this.getSupplier(this.$stateParams.supplierId);
-        this.supplierId = this.$stateParams.supplierId;
+        this.getCustomer(this.$stateParams.customerId);
+        this.customerId = this.$stateParams.customerId;
         this.billingHistoryQuery = {
-            supplierId: this.$stateParams.supplierId,
+            customerId: this.$stateParams.customerId,
             skip: 0,
             limit: 10,
             currentPage: 1,
             totalPages: 1
         };
-        this.supplierPaymentClaimsQuery = {
-            supplierId: this.$stateParams.supplierId,
+        this.customerPaymentClaimsQuery = {
+            customerId: this.$stateParams.customerId,
             status: ['pending', 'rejected'],
             skip: 0,
             limit: 10,
@@ -47,25 +47,25 @@ export default class adminCustomerDetailCtrl {
         };
         this.getBillingHistory(this.billingHistoryQuery);
         if (permissions.managePayments) {
-            this.getSupplierPaymentClaims(this.supplierPaymentClaimsQuery);
+            this.getCustomerPaymentClaims(this.customerPaymentClaimsQuery);
         }
         this._$rootScope.$on('acceptPayment', (evt, data) => {
             this.getBillingHistory(this.billingHistoryQuery);
-            this.getSupplierPaymentClaims(this.supplierPaymentClaimsQuery);
+            this.getCustomerPaymentClaims(this.customerPaymentClaimsQuery);
         });
         this._$rootScope.$on('rejectPayment', (evt, data) => {
             this.getBillingHistory(this.billingHistoryQuery);
-            this.getSupplierPaymentClaims(this.supplierPaymentClaimsQuery);
+            this.getCustomerPaymentClaims(this.customerPaymentClaimsQuery);
         });
     }
-    getSupplier(id) {
+    getCustomer(id) {
         const _onSuccess = (res) => {
-            this.supplier = res.data.data;
-            this.representativeName = this.supplier.representativeName;
-            this.userName = `${this.supplier.user.firstName} ${this.supplier.user.lastName}`;
-            this.phoneNumberUpdated = this.supplier.user.mobileNumber;
-            this.emailUpdated = this.supplier.user.email;
-            switch (this.supplier.status) {
+            this.customer = res.data.data;
+            this.representativeName = this.customer.representativeName;
+            this.userName = `${this.customer.user.firstName} ${this.customer.user.lastName}`;
+            this.phoneNumberUpdated = this.customer.user.mobileNumber;
+            this.emailUpdated = this.customer.user.email;
+            switch (this.customer.status) {
                 case 'Suspended':
                     this.statusOptions = ['Approve', 'Delete'];
                     break;
@@ -82,9 +82,9 @@ export default class adminCustomerDetailCtrl {
             this.errors = err.data.data;
         };
         const _onFinal = (err) => {
-            this.supplierIsLoaded = true;
+            this.customerIsLoaded = true;
         };
-        this._SupplierService.getSupplier(id).then(_onSuccess, _onError).finally(_onFinal);
+        this._CustomerService.getCustomer(id).then(_onSuccess, _onError).finally(_onFinal);
     }
     getBillingHistory(query) {
         const _onSuccess = (res) => {
@@ -105,20 +105,20 @@ export default class adminCustomerDetailCtrl {
         const _onFinal = (err) => {
             this.billingHistoryIsLoaded = true;
         };
-        this._SupplierService.getBillingHistory(query).then(_onSuccess, _onError).finally(_onFinal);
+        this._CustomerService.getBillingHistory(query).then(_onSuccess, _onError).finally(_onFinal);
     }
     setBillingHistoryPage(pageNumber) {
         this.billingHistoryQuery.currentPage = pageNumber;
         this.billingHistoryQuery.skip = (pageNumber - 1) * this.billingHistoryQuery.limit;
         this.getBillingHistory(this.billingHistoryQuery);
     }
-    getSupplierPaymentClaims(query) {
+    getCustomerPaymentClaims(query) {
         const _onSuccess = (res) => {
             if (res.status === 200) {
                 this.paymentsClaims = res.data.data.payments;
-                this.supplierPaymentClaimsQuery.totalPages = Math.ceil(
+                this.customerPaymentClaimsQuery.totalPages = Math.ceil(
                     res.data.data.count
-                    / this.supplierPaymentClaimsQuery.limit);
+                    / this.customerPaymentClaimsQuery.limit);
             }
         };
         const _onError = (err) => {
@@ -127,14 +127,14 @@ export default class adminCustomerDetailCtrl {
         const _onFinal = (err) => {
             this.paymentsClaimsIsLoaded = true;
         };
-        this._SupplierService.getSupplierPaymentClaims(query)
+        this._CustomerService.getCustomerPaymentClaims(query)
             .then(_onSuccess, _onError).finally(_onFinal);
     }
     setPaymentClaimsPage(pageNumber) {
-        this.supplierPaymentClaimsQuery.currentPage = pageNumber;
-        this.supplierPaymentClaimsQuery.skip = (pageNumber - 1) *
-            this.supplierPaymentClaimsQuery.limit;
-        this.getSupplierPaymentClaims(this.supplierPaymentClaimsQuery);
+        this.customerPaymentClaimsQuery.currentPage = pageNumber;
+        this.customerPaymentClaimsQuery.skip = (pageNumber - 1) *
+            this.customerPaymentClaimsQuery.limit;
+        this.getCustomerPaymentClaims(this.customerPaymentClaimsQuery);
     }
     getInvoiceSum(transactions) {
         let sum = 0;
@@ -160,103 +160,103 @@ export default class adminCustomerDetailCtrl {
         $('#view-payment').modal('show');
     }
 
-    blockSupplier(id) {
+    blockCustomer(id) {
         const _onSuccess = (res) => {
-      // this.supplier = res.data.data;
-            this.supplier.status = 'Blocked';
+      // this.customer = res.data.data;
+            this.customer.status = 'Blocked';
             this.statusOptions = ['Unblock'];
             this.getBillingHistory(this.billingHistoryQuery);
         };
         const _onError = (err) => {
             this.errors = err.data.data;
         };
-        this._SupplierService.blockSupplier(id).then(_onSuccess, _onError);
+        this._CustomerService.blockCustomer(id).then(_onSuccess, _onError);
     }
-    unblockSupplier(id) {
+    unblockCustomer(id) {
         const _onSuccess = (res) => {
-      // this.supplier = res.data.data;
-            this.supplier.status = 'Active';
+      // this.customer = res.data.data;
+            this.customer.status = 'Active';
             this.statusOptions = ['Block'];
             this.getBillingHistory(this.billingHistoryQuery);
         };
         const _onError = (err) => {
             this.errors = err.data.data;
         };
-        this._SupplierService.unblockSupplier(id).then(_onSuccess, _onError);
+        this._CustomerService.unblockCustomer(id).then(_onSuccess, _onError);
     }
-    approveSupplier(id) {
+    approveCustomer(id) {
         const _onSuccess = (res) => {
-      // this.supplier = res.data.data;
-            this.supplier.status = 'Active';
+      // this.customer = res.data.data;
+            this.customer.status = 'Active';
             this.statusOptions = ['Block'];
             this.getBillingHistory(this.billingHistoryQuery);
         };
         const _onError = (err) => {
             this.errors = err.data.data;
         };
-        this._SupplierService.approveSupplier(id).then(_onSuccess, _onError);
+        this._CustomerService.approveCustomer(id).then(_onSuccess, _onError);
     }
-    deleteSupplier(id) {
+    deleteCustomer(id) {
         const _onSuccess = (res) => {
-      // this.supplier = res.data.data;
-            this.supplier.status = 'Deleted';
+      // this.customer = res.data.data;
+            this.customer.status = 'Deleted';
             this.statusOptions = ['Approve'];
             this.getBillingHistory(this.billingHistoryQuery);
         };
         const _onError = (err) => {
             this.errors = err.data.data;
         };
-        this._SupplierService.deleteSupplier(id).then(_onSuccess, _onError);
+        this._CustomerService.deleteCustomer(id).then(_onSuccess, _onError);
     }
-    changeSupplierInfo() {
-        this.supplier.representativeName = this.representativeName;
+    changeCustomerInfo() {
+        this.customer.representativeName = this.representativeName;
         if (this.userName) {
-            this.supplier.user.firstName = this.userName.split(' ')[0] || '';
-            this.supplier.user.lastName = this.userName.split(' ')[1] ? this.userName.split(' ')[1] : '';
+            this.customer.user.firstName = this.userName.split(' ')[0] || '';
+            this.customer.user.lastName = this.userName.split(' ')[1] ? this.userName.split(' ')[1] : '';
         }
 
         if (this.phoneNumberUpdated) {
-            this.supplier.user.mobileNumber = this.phoneNumberUpdated;
+            this.customer.user.mobileNumber = this.phoneNumberUpdated;
         }
 
         if (this.emailUpdated) {
-            this.supplier.user.email = this.emailUpdated;
+            this.customer.user.email = this.emailUpdated;
         }
         const _onSuccess = (res) => {
-      // this.supplier = res.data.data;
-            this.notify('admin.suppliers.supplier.supplier_updated', 'success', 3000);
+      // this.customer = res.data.data;
+            this.notify('admin.customers.customer.customer_updated', 'success', 3000);
 
-            this.getSupplier(this.supplierId);
+            this.getCustomer(this.customerId);
         };
         const _onError = (err) => {
             this.errors = err.data.data;
-            // this.getSupplier(this.supplierId);
+            // this.getCustomer(this.customerId);
             if (err.data.errorCode === 29) {
-                this.notify('admin.suppliers.supplier.supplier_email_exists', 'danger', 8000);
+                this.notify('admin.customers.customer.customer_email_exists', 'danger', 8000);
             } else if (err.data.errorCode === 30) {
-                this.notify('admin.suppliers.supplier.supplier_mobilePhone_exists', 'danger', 8000);
+                this.notify('admin.customers.customer.customer_mobilePhone_exists', 'danger', 8000);
             }
         };
-        this._SupplierService.adminUpdateSupplier(this.supplier).then(_onSuccess, _onError);
+        this._CustomerService.adminUpdateCustomer(this.customer).then(_onSuccess, _onError);
     }
-    changeSupplierStatus(supplierId, toStatus) {
+    changeCustomerStatus(customerId, toStatus) {
         if (toStatus === 'Approve') {
-            this.approveSupplier(supplierId);
+            this.approveCustomer(customerId);
         } else if (toStatus === 'Block') {
-            this.blockSupplier(supplierId);
+            this.blockCustomer(customerId);
         } else if (toStatus === 'Unblock') {
-            this.unblockSupplier(supplierId);
+            this.unblockCustomer(customerId);
         } else if (toStatus === 'Delete') {
-            this.deleteSupplier(supplierId);
+            this.deleteCustomer(customerId);
         }
     }
 
     addPayment(payment) {
-        payment.supplierId = this.$stateParams.supplierId;
+        payment.customerId = this.$stateParams.customerId;
         $('#payment').modal('hide');
         this.addPaymendFinal = false;
         const _onSuccess = (res) => {
-            this.notify('admin.suppliers.payment.message.add.success', 'success', 1000);
+            this.notify('admin.customers.payment.message.add.success', 'success', 1000);
             this.getBillingHistory(this.billingHistoryQuery);
         };
         const _onError = (err) => {
@@ -265,7 +265,7 @@ export default class adminCustomerDetailCtrl {
             } else if (err.code === 501) {
                 this.noInternetConnection = true;
             }
-            this.notify('admin.suppliers.payment.message.add.failure', 'danger', 1000);
+            this.notify('admin.customers.payment.message.add.failure', 'danger', 1000);
         };
         const _onFinal = () => {
             this.addPaymendFinal = true;
@@ -287,7 +287,7 @@ export default class adminCustomerDetailCtrl {
     }
     updateBalanceDetails() {
         this.updatePacket = {
-            status: this.supplier.status,
+            status: this.customer.status,
             creditLimit: this.balanceDetails.creditLimit,
             exceedCreditLimit: this.balanceDetails.exceedCreditLimit,
             exceedPaymentDate: this.balanceDetails.exceedPaymentDate,
@@ -295,7 +295,7 @@ export default class adminCustomerDetailCtrl {
             paymentInterval: this.selectPeriod.interval
         };
         const _onSuccess = (res) => {
-            this.notify('admin.suppliers.payment.updateInfo', 'success', 1000);
+            this.notify('admin.customers.payment.updateInfo', 'success', 1000);
             this.getBillingHistory(this.billingHistoryQuery);
         };
         const _onError = (err) => {
@@ -305,21 +305,21 @@ export default class adminCustomerDetailCtrl {
                 this.noInternetConnection = true;
             }
         };
-        this._SupplierService.updateSupplierRelation(this.supplierId, this.updatePacket)
+        this._CustomerService.updateCustomerRelation(this.customerId, this.updatePacket)
             .then(_onSuccess, _onError);
     }
 
     changeStatus(status) {
-        this.supplier.status = status;
+        this.customer.status = status;
         this.updateBalanceDetails();
     }
     customOp(item) {
-        return this.$translate.instant('admin.suppliers.payment.every')
-            + this.$translate.instant(`admin.suppliers.payment.${item.interval}`, { value: item.frequency });
+        return this.$translate.instant('admin.customers.payment.every')
+            + this.$translate.instant(`admin.customers.payment.${item.interval}`, { value: item.frequency });
     }
     openPhoto(url){
         window.open(url, '_blank', 'Download');
     }
 
 }
-adminSupplierDetailCtrl.$inject = ['SupplierService', 'TransactionsService', '$stateParams', '$translate', '$rootScope', 'PermPermissionStore'];
+adminCustomerDetailCtrl.$inject = ['CustomerService', 'TransactionsService', '$stateParams', '$translate', '$rootScope', 'PermPermissionStore'];

@@ -293,6 +293,14 @@ export default function adminConfig(
                 label: 'admin.suppliers.breadcrumb.supplierDetails',
             },
         })
+        .state('app.admin.customer.detail', {
+            url: '/detail/:customerId',
+            templateUrl: 'app/admin/supplier/customer-detail/customer.html',
+            controller: 'adminCustomerDetailCtrl as $ctrl',
+            ncyBreadcrumb: {
+                label: 'admin.customers.breadcrumb.customerDetails',
+            },
+        })
         .state('app.admin.supplier.payment', {
             url: '/payments',
             templateUrl: 'app/admin/supplier/payment/payment-list/payments.html',
