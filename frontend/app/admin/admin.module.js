@@ -25,6 +25,7 @@ import AdminAccountOthersCtrl from './account/others/adminAccountOthers.controll
 import adminSupplierListCtrl from './supplier/supplier-list/adminSupplierList.controller';
 import adminCustomerListCtrl from './supplier/customer-list/adminCustomerList.controller';
 import adminSupplierDetailCtrl from './supplier/supplier-detail/adminSupplierDetail.controller';
+import adminCustomerDetailCtrl from './supplier/customer-detail/adminCustomerDetail.controller';
 import supplierFormComponent from './supplier/supplier-form/supplier-form.component';
 import customerFormComponent from './supplier/customer-form/customer-form.component';
 import AdminReportOrderDetailsCtrl from './reports/orders/details/AdminReportOrderDetails.controller';
@@ -55,6 +56,7 @@ adminModule.controller('AdminSupplierCtrl', AdminSupplierCtrl);
 adminModule.controller('adminSupplierListCtrl', adminSupplierListCtrl);
 adminModule.controller('adminCustomerListCtrl', adminCustomerListCtrl);
 adminModule.controller('adminSupplierDetailCtrl', adminSupplierDetailCtrl);
+adminModule.controller('adminCustomerDetailCtrl', adminCustomerDetailCtrl);
 adminModule.controller(
     'AdminSupplierPaymentListCtrl',
     AdminSupplierPaymentListCtrl

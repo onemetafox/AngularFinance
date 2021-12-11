@@ -33,7 +33,6 @@ export default class adminCustomerListCtrl {
     getCustomers(searchCriteria){
         const _onSuccess = (res) => {
             this.customers = res.data.data.customers;
-            console.log("customers", this.customers);
             this.totalPages = Math.ceil(res.data.data.count / searchCriteria.limit);
         };
         const _onError = (err) => {

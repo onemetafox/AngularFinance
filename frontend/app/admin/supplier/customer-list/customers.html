@@ -112,7 +112,7 @@
                             </thead>
                             <tbody>
                             <tr ng-repeat="item in $ctrl.customers" class="gradeX odd content-table-payment cursor"
-                                role="row" ui-sref="app.admin.customer.detail({customerId:item._id})">
+                                role="row" ui-sref="app.admin.supplier.customer-detail({customerId:item._id})">
                                 <td class="sorting_1 mn-120">
                                             <span ng-if="item.status === 'Active'"
                                                   class="label label-success upper-case">{{"admin.customers.status.active" | translate}}</span>
