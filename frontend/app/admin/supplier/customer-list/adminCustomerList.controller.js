@@ -13,9 +13,9 @@ export default class adminCustomerListCtrl {
         this.searchCriteria = {
             skip: 0,
             limit: 15,
-            type: 'All',
             payingSoon: false,
-            missedPayment: false
+            missedPayment: false,
+            supplierId: ''
         };
         this.currentPage = 1;
         this.getSuppliers();
@@ -24,6 +24,12 @@ export default class adminCustomerListCtrl {
             ctrl.getCustomers(ctrl.searchCriteria);
         });
     }
+    onFilterChange(searchCriteria) {
+        this.currentPage = 1;
+        this.searchCriteria.skip = 0;
+        this.getCustomers(searchCriteria);
+    }
+    
     getCustomers(searchCriteria){
         const _onSuccess = (res) => {
             this.customers = res.data.data.customers;
@@ -73,22 +79,22 @@ export default class adminCustomerListCtrl {
         if (idx < 0 && checked) {
             this.searchCriteria.status.push(value);
         }
-        this.getSuppliers(this.searchCriteria);
+        this.getCustomers(this.searchCriteria);
     }
 
     checkPayment() {
-        this.getSuppliers(this.searchCriteria);
+        this.getCustomers(this.searchCriteria);
     }
 
-    openSupplierFormPoup() {
+    openCustomerFormPoup() {
         this.formData = {};
         this.mode = 'new';
-        $('#supplierFormModal').modal('show');
+        $('#customerFormModal').modal('show');
         $.Pages.init();
     }
 
-    exportSupplierList(type) {
-        this._SupplierService.exportSupplierList(type, this.searchCriteria);
+    exportCustomerList(type) {
+        this._CustomerService.exportCustomerList(type, this.searchCriteria);
     }
 }
 adminCustomerListCtrl.$inject = ['CustomerService', 'SupplierService', '$rootScope', '$translate'];

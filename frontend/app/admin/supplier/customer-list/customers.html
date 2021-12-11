@@ -9,10 +9,10 @@
                     translate}}</p>
                 <div class="btn-toolbar" role="toolbar">
                     <div class="btn-group btn-group-sm">
-                        <button type="button" class="btn btn-transparent" ng-click="$ctrl.exportSupplierList('pdf')">
+                        <button type="button" class="btn btn-transparent" ng-click="$ctrl.exportCustomerList('pdf')">
                             {{'admin.customers.list.export.pdf' | translate}}
                         </button>
-                        <button type="button" class="btn btn-transparent" ng-click="$ctrl.exportSupplierList('xls')">
+                        <button type="button" class="btn btn-transparent" ng-click="$ctrl.exportCustomerList('xls')">
                             {{'admin.customers.list.export.xls' | translate}}
                         </button>
                     </div>
@@ -21,7 +21,7 @@
         </div>
     </div>
     <div class="col-sm-5 col-md-5 col-lg-4 col-xl-3">
-        <button class="btn btn-primary btn-block" ng-click="$ctrl.openSupplierFormPoup()">
+        <button class="btn btn-primary btn-block" ng-click="$ctrl.openCustomerFormPoup()">
             {{'admin.customers.list.button.new_customer' | translate}}
         </button>
     </div>
@@ -64,7 +64,7 @@
                     <div class="form-group">
                         <input type="text" ng-model="$ctrl.searchCriteria.customerName"
                                placeholder="{{'admin.customers.list.search.supplier.customerName' | translate}}"
-                               ng-change="$ctrl.getcustomers($ctrl.searchCriteria)" class="form-control">
+                               ng-change="$ctrl.getCustomers($ctrl.searchCriteria)" class="form-control">
                     </div>
                 </div>
             </div>
