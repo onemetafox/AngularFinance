@@ -29,7 +29,7 @@
 <div class="card">
     <div class="gray-container">
         <div class="row">
-            <!-- <div class="col-sm-6">
+            <div class="col-sm-3">
                 <p class="w600">{{'admin.customers.list.search.supplier.label' | translate}}</p>
                 <div style="z-index:1;" class="form-group-default form-group-default-select2">
                     <select ng-model="$ctrl.searchCriteria.supplierId" ng-change="$ctrl.onFilterChange($ctrl.searchCriteria)" id="supplierSelect"
@@ -39,8 +39,8 @@
                         <option ng-repeat="item in $ctrl.suppliers" value="{{item.supplier._id}}">{{item.supplier.representativeName}}</option>
                     </select>
                 </div>
-            </div> -->
-            <div class="col-sm-6">
+            </div>
+            <div class="col-sm-5">
                 <p class="w600">{{'admin.suppliers.list.search.status.label' | translate}}</p>
                 <div class="checkbox check-primary">
                     <span ng-repeat="item in $ctrl.status">
@@ -57,7 +57,7 @@
                     </span>
                 </div>
             </div>
-            <div class="col-sm-6">
+            <div class="col-sm-4">
                 <p class="w600"> {{'admin.customers.list.search.payment.label' | translate}}</p>
                 <div class="checkbox check-primary">
                     <input type="checkbox" value="1" id="checkbox4" ng-model="$ctrl.searchCriteria.payingSoon"
