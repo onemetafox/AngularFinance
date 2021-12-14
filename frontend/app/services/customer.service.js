@@ -77,9 +77,9 @@ export default class CustomerService {
             if (query.customerName && query.customerName !== '') {
                 url = `${url}&customerName=${query.customerName}`;
             }
-            // if (query.supplierId && query.supplierId !== '') {
-            //     url = `${url}&supplierId=${query.supplierId}`;
-            // }
+            if (query.supplierId && query.supplierId !== '') {
+                url = `${url}&supplierId=${query.supplierId}`;
+            }
             if (query.status && query.status.length > 0) {
                 let status = '[';
                 for (let i = 0; i < query.status.length; i += 1) {

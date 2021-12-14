@@ -386,7 +386,58 @@ function list(req, res) {
   }
 
   if (req.user && req.user.type === 'Admin') {
-    Customer.find(match)
+    if(req.query.supplierId && req.query.supplierId != "All"){
+      console.log(req.query.supplierId);
+      CustomerInvite.find({
+        supplier: req.query.supplierId,
+        status : 'Active'
+      }).select('customerEmail')
+        .then((customerInvites) => {
+          const customerInvitesArr = customerInvites.map(c => c.customerEmail);
+          User.find()
+            .where('email').in(customerInvitesArr)
+            .then((users) => {
+              const usersArr = users.map(c => c._id.toString());
+              Customer.find()
+                .populate('user')
+                .where('user').in(usersArr)
+                .then((customers) => {
+                  if (customers.length <= 0) {
+                    res.json(Response.failure("No record exist"));
+                  }else {
+                    customers.forEach((customerArrObj) => {
+                      customerArrObj.photo = `${appSettings.imagesUrl}${customerArrObj.photo}`;
+                      customerArrObj.coverPhoto = `${appSettings.imagesUrl}${customerArrObj.coverPhoto}`;
+                    });
+                    Customer.count()
+                      .where('user').in(usersArr)
+                      .then((customerCount) => {
+                        const customersObject = {
+                          customers: customers,
+                          count: customerCount
+                        };
+                        if (req.query.export) {
+                          if (req.user.language === 'en') {
+                            ExportService.exportFile(`report_template/customer/${req.query.export}-customer-report-header-english.html`,
+                              `report_template/customer/${req.query.export}-customer-report-body-english.html`, customersArr,
+                              'Customers Report', '', req.query.export, res);
+                            // res.download(`report.${req.query.export}`, `SUPReport.${req.query.export}`);
+                          } else {
+                            ExportService.exportFile(`report_template/customer/${req.query.export}-customer-report-header-arabic.html`,
+                              `report_template/customer/${req.query.export}-customer-report-body-arabic.html`, customersArr,
+                              'تقرير العملاء', '', req.query.export, res);
+                            // res.download(`report.${req.query.export}`, `SUPReport.${req.query.export}`);
+                          }
+                        } else {
+                          res.json(Response.success(customersObject));
+                        }
+                      });
+                  }
+                });
+            });
+        });
+    }else{
+      Customer.find(match)
       .populate('user')
       .sort({
         createdAt: -1
@@ -422,6 +473,8 @@ function list(req, res) {
           });
       })
       .catch(e => res.status(httpStatus.INTERNAL_SERVER_ERROR).json(Response.failure(e)));
+    }
+    
   }
   if (req.user && req.user.type === 'Supplier') {
     if (req.query.city) {
