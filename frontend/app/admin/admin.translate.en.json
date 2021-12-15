@@ -391,8 +391,9 @@
             "name": "Name",
             "status": "Status",
             "type": "Type",
-            "remainingTillLimit": "Remaining till limit",
-            "paymentDue": "Payment Due"
+            "createdAt": "Register Date",
+            "paymentDue": "Payment Due",
+            "address" : "City"
           }
         }
       },

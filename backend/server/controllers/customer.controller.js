@@ -386,8 +386,8 @@ function list(req, res) {
   }
 
   if (req.user && req.user.type === 'Admin') {
+    match.type = "Customer";
     if(req.query.supplierId && req.query.supplierId != "All"){
-      console.log(req.query.supplierId);
       CustomerInvite.find({
         supplier: req.query.supplierId,
         status : 'Active'
@@ -398,7 +398,9 @@ function list(req, res) {
             .where('email').in(customerInvitesArr)
             .then((users) => {
               const usersArr = users.map(c => c._id.toString());
-              Customer.find()
+              Customer.find({
+                type: "Customer"
+              })
                 .populate('user')
                 .where('user').in(usersArr)
                 .then((customers) => {

@@ -103,10 +103,10 @@
                                     {{'admin.customers.list.table.header.type' | translate}}
                                 </th>
                                 <th class="text-center mn-150">
-                                    {{'admin.customers.list.table.header.remainingTillLimit' | translate}}
+                                    {{'admin.customers.list.table.header.createdAt' | translate}}
                                 </th>
                                 <th class="text-center">
-                                    {{'admin.customers.list.table.header.paymentDue'| translate}}
+                                    {{'admin.customers.list.table.header.city'| translate}}
                                 </th>
                             </tr>
                             </thead>
@@ -124,16 +124,9 @@
                                           class="label label-important upper-case">{{"admin.customers.status.deleted" | translate}}</span>
                                 </td>
                                 <td class="sorting_1 mn-120">{{item.representativeName}}</td>
-                                <td class="sorting_1 text-center mn-100">{{item.type}}
-                                </td>
-                                <td class="sorting_1 text-center mn-100">{{item.remainingTillLimit | currency : "" : 2}}
-                                    <small>{{"admin.customers.payment.sar" | translate }}</small>
-                                </td>
-                                <td class="sorting_1 text-center mn-150"
-                                    ng-class="{ 'text-danger' : item.dueDateMissed }">
-                                    <span ng-if="$ctrl.$translate.use() === 'ar'">{{item.nextPaymentDueDate  | amDateFormat:'YYYY-MM-DD':null:locale}}</span>
-                                    <span ng-if="$ctrl.$translate.use() === 'en'">{{item.nextPaymentDueDate  | amDateFormat:'DD-MM-YYYY'}}</span>
-                                </td>
+                                <td class="sorting_1 text-center mn-100">{{item.type}}</td>
+                                <td class="sorting_1 text-center mn-100">{{item.createdAt | amDateFormat:'DD-MM-YYYY'}}</td>
+                                <td class="sorting_1 text-center mn-150">{{item.location.address}} </td>
                             </tr>
                             </tbody>
                         </table>
