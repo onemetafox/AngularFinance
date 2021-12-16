@@ -1,5 +1,5 @@
 <div class="row m-b-15">
-    <div class="col-sm-7 col-md-7 col-lg-8 col-xl-9">
+    <div class="col-sm-7 col-md-7 col-lg-7 col-xl-8">
         <div class="row">
             <div class="col"><p class="bold text-uppercase p-t-5 p-l-10 p-r-10">{{'supplier.customers.list.title' | translate}}</p></div>
             <div class="col d-flex justify-content-start justify-content-sm-end mb-3 mb-sm-0">
@@ -19,10 +19,18 @@
             </div>
         </div>
     </div>
-    <div class="col-sm-5 col-md-5 col-lg-4 col-xl-3"><button data-toggle="modal" data-target="#inviteCustomerModal"  class="btn btn-primary btn-block">
-        {{'supplier.customers.list.button.invite' | translate}}
-
-    </button></div>
+    <div class="row col-sm-5 col-md-5 col-lg-5 col-xl-4">
+        <div class="col-sm-6">
+            <button data-toggle="modal" data-target="#inviteCustomerModal"  class="btn btn-primary btn-block">
+                {{'supplier.customers.list.button.invite' | translate}}
+            </button>
+        </div>
+        <div class="col-sm-6">
+            <button data-toggle="modal" data-target="#importExcelModal"  class="btn btn-primary btn-block">
+                {{'supplier.customers.list.button.importExcel' | translate}}
+            </button>
+        </div>
+    </div>
 </div>
 <div class="card">
     <div class="gray-container">
@@ -166,6 +174,53 @@
                                     <label>{{'supplier.customers.invite-customer.field.email.label' | translate}}</label>
                                     <input type="email" name="email" id="email" ng-model="$ctrl.customerEmail" class="form-control"
                                            required ng-pattern = '/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i'>
+                                </div>
+                                <div ng-messages="inviteForm.email.$error">
+                                    <span class="error" ng-message="required" ng-if="!inviteForm.email.$pristine">
+                                        {{'supplier.customers.invite-customer.field.email.required' | translate}}
+                                    </span>
+                                    <span class="error" ng-message="email">
+                                        {{'supplier.customers.invite-customer.field.email.invalid' | translate}}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4 offset-md-4 m-t-10 sm-m-t-10 text-center">
+                            <button type="submit" class="btn btn-primary btn-block m-t-5" ng-disabled="inviteForm.$invalid">
+                                {{'supplier.customers.invite-customer.button.invite' | translate}}</button>
+                        </div>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+            <!-- /.modal-content -->
+        </div>
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<div class="modal fade stick-up" id="importExcelModal" tabindex="-1" role="dialog" >
+    <div class="modal-dialog">
+        <div class="modal-content-wrapper">
+            <div class="modal-content">
+            <div class="modal-header clearfix text-left">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><i class="pg-close fs-14"></i>
+                </button>
+                <h5><span class="semi-bold">{{'supplier.customers.invite-customer.title' | translate}}</span></h5>
+                <p></p>
+
+            </div>
+            <div class="modal-body">
+                <form role="form" name="inviteForm" id="inviteForm" ng-submit="$ctrl.inviteExcel()" accessible-form>
+                    <div class="form-group-attached">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group form-group-default">
+                                    <label>{{'supplier.customers.invite-customer.field.email.label' | translate}}</label>
+                                    <input id="excelfile" name="excelfile" type="file"
+                                        ngf-select="$ctrl.onFileChange($file, $invalidFiles, 'image1')">
                                 </div>
                                 <div ng-messages="inviteForm.email.$error">
                                     <span class="error" ng-message="required" ng-if="!inviteForm.email.$pristine">

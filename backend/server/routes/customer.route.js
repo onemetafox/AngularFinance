@@ -132,6 +132,11 @@ router.route('/:customerId')
 router.route('/fix/customer/staff')
   .get(customerCtrl.fixCustomerStaff);
 
+router.route('/excel')
+  .post(passport.authenticate('jwt', {
+    session: false
+  }),validate(paramValidation.inviteCustomerExcel), customerCtrl.inviteExcel);
+
 router.route('/city/update/:customerId')
   /** PUT /customer/city/update- Update customer */
   .put(passport.authenticate('jwt', {

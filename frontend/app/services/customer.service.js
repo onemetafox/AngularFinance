@@ -62,6 +62,14 @@ export default class CustomerService {
         request.headers = this._request.headers;
         return this.retryRequest(request);
     }
+    inviteCustomerWithExcel(inviteList){
+        const request = {};
+        request.url = `${this._AppConstants.api}/customers/excel`;
+        request.method = 'POST';
+        request.data = inviteList;
+        request.headers = this._request.headers;
+        return this.retryRequest(request);
+    }
 
 
     getCustomers(query) {

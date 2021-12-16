@@ -390,6 +390,12 @@ export default {
       customerId: Joi.string().hex().required()
     }
   },
+  // POST /api/customer/excel
+  inviteCustomerExcel: {
+    body: {
+      // customerId: Joi.string().hex().required()
+    }
+  },
   // POST/api/customers/specialPrices
   createProductPrice: {
     body: {

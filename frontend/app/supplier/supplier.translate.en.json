@@ -663,7 +663,8 @@
         "button": {
           "add_payment": "Record Payment",
           "invite": "Invite Customer",
-          "showDetails": "Show Details"
+          "showDetails": "Show Details",
+          "importExcel" : "Import Excel"
         },
         "search": {
           "status": {

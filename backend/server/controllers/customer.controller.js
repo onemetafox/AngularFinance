@@ -40,6 +40,85 @@ const upload = multer({
   }
 }).single('file');
 
+function inviteExcel(req, res){
+  const data = req.body;
+  for (const [key, sheet] of Object.entries(data)) {
+    sheet.forEach(element => {
+      async.waterfall([
+        // Function that passes the parameters to the second function.
+      function passParamters(callback) {
+        callback(null, req.user._id, element.EMAIL, null, null, null);
+      },
+        // Gets the logged in supplier
+      getSupplierFromUser,
+        // Gets the customer with this email
+      getCustomerFromEmail,
+        // Creates the supplier relationship and credit.
+      initalizeSupplierRelation
+    ],
+      (err, result) => {
+        if (err) {
+          console.log(err);
+          // err.code
+          // res.status(httpStatus.INTERNAL_SERVER_ERROR).json(Response.failure(err));
+        } else {
+          User.findOne({
+            email: element.EMAIL
+          })
+            .then((user) => {
+              Supplier.findOne({
+                _id: result.supplier
+              })
+                .then((supplier) => {
+                  if (supplier) {
+                    if (user) {
+                      const notification = {
+                        refObjectId: user,
+                        level: 'info',
+                        user,
+                        userType: 'Customer',
+                        key: 'inviteCustomer',
+                        stateParams: null
+                      };
+                      notificationCtrl.createNotification('user', notification, null, null, supplier.representativeName, null);
+                      if (appSettings.emailSwitch) {
+                        Customer.findOne({
+                          user
+                        })
+                          .then((ci) => {
+                            const content = {
+                              recipientName: UserService.toTitleCase(ci.representativeName),
+                              supplier: supplier.representativeName,
+                              loginPageUrl: `<a href=\'${appSettings.mainUrl}/customer/product/category/${supplier._id}\'>${appSettings.mainUrl}/customer/product/category/${supplier._id}</a>`, // eslint-disable-line no-useless-escape
+                            };
+                            EmailHandler.sendEmail(element.EMAIL, content, 'INVITATION', user.language);
+                          });
+                      }
+                    } else if (appSettings.emailSwitch) {
+                      const content = {
+                        recipientName: UserService.toTitleCase(element.EMAIL),
+                        supplier: supplier.representativeName,
+                        landingPageUrl: `<a href=\'${appSettings.mainUrl}\'>${req.user.language === 'en' ? 'Landing Page' : 'الصفحة الرئيسية'}</a>`, // eslint-disable-line no-useless-escape
+                        signUpPage: `<a href=\'${appSettings.mainUrl}/auth/register/customer\'>${appSettings.mainUrl}/auth/register/customer</a>`, // eslint-disable-line no-useless-escape
+                        userEmail: element.EMAIL
+                      };
+                      EmailHandler.sendEmail(element.EMAIL, content, 'INVITECUSTOMER', req.user.language);
+                    }
+                  }
+                });
+            });
+          // res.json(Response.success(result));
+        }
+      });
+    });
+  }
+  // data.forEach((sheet) => {
+  //   sheet.forEach(element => {
+  //     console.log(element.EMAIL);
+  //   });
+  // });
+  
+}
 // const moment = require('moment-timezone');
 
 /**
@@ -3020,5 +3099,6 @@ export default {
   deleteSpecialPrices,
   fixCustomerStaff,
   updateCustomerCity,
-  updateCustomerAddress
+  updateCustomerAddress,
+  inviteExcel
 };

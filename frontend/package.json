@@ -59,7 +59,8 @@
     "ngmap": "^1.18.4",
     "oclazyload": "^1.1.0",
     "raven-js": "^3.24.1",
-    "ui-select": "^0.19.8"
+    "ui-select": "^0.19.8",
+    "xlsx": "^0.17.4"
   },
   "devDependencies": {
     "angular-animate": "^1.6.9",

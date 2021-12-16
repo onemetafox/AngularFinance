@@ -1,3 +1,5 @@
+import * as XLSX from 'xlsx';
+
 export default class SupplierCustomerListCtrl {
     constructor(CustomerService, $translate, notifications, SystemService) {
         this._CustomerService = CustomerService;
@@ -11,6 +13,7 @@ export default class SupplierCustomerListCtrl {
         // this.status = ['Active', 'Suspended', 'Blocked'];
         this.status = ['Active', 'Blocked'];
         this.currentPage = 1;
+        this.excelData = "";
         this.customerQuery = {
             skip: 0,
             limit: 100,
@@ -25,7 +28,14 @@ export default class SupplierCustomerListCtrl {
         this.getSystemCities();
         this.citySelect = {};
     }
+    inviteExcel(){
+        this._CustomerService.inviteCustomerWithExcel(this.excelData).then((res)=> {
 
+        },
+        (err) => {
+            
+        });
+    }
     getCustomers(query) {
         this._CustomerService.getCustomers(query).then(
             // on Success
@@ -123,6 +133,22 @@ export default class SupplierCustomerListCtrl {
         };
         this._SystemService.getSystemCities()
             .then(_onSuccess, _onError).finally(_onFinal);
+    }
+    onFileChange(ev){
+        let workBook = null;
+        let jsonData = null;
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            const data = reader.result;
+            workBook = XLSX.read(data, { type: 'binary' });
+            jsonData = workBook.SheetNames.reduce((initial, name) => {
+                const sheet = workBook.Sheets[name];
+                initial[name] = XLSX.utils.sheet_to_json(sheet);
+                return initial;
+            }, {});
+            this.excelData = JSON.stringify(jsonData);
+        }
+        reader.readAsBinaryString(ev);
     }
 
     onChangeCity() {
