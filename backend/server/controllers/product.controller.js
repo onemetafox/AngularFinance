@@ -118,7 +118,7 @@ function update(req, res) {
       callback(null, req.user._id, product);
     },
     getSupplierFromUser,
-    checkSKUAlreadyExists,
+    // checkSKUAlreadyExists,
     function passParameter(supplier, updatedProduct, callback) {
       callback(null, supplier, updatedProduct, currentProductCategory);
     },
