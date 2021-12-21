@@ -6,6 +6,14 @@
     </ol>
 </div>
 <shimmer hide="!$ctrl.isLoading" col="3"></shimmer>
+<div class="row m-b-10">
+    <div class="col-12">
+        <div class="form-group">
+            <input type="text" ng-model="$ctrl.query.keyword" placeholder="{{'supplier.product.search' | translate}}" 
+                    ng-change="$ctrl.getProducts($ctrl.query)" class="form-control">
+        </div>
+    </div>
+</div>
 <div ng-if="!$ctrl.isLoading"   class="row">
     <div ng-repeat="product in $ctrl.productList.products" class="col-lg-4 col-sm-6 d-flex flex-column"
          ui-sref="app.supplier.product.detail({productId : product._id})">

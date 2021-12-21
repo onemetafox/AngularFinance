@@ -282,12 +282,17 @@ function list(req, res) {
       if (err) {
         res.status(httpStatus.INTERNAL_SERVER_ERROR).json(Response.failure(err));
       }
-
-      Product.find({ deleted: false })
+      
+      Product.find({ deleted: false,$or: [
+          { englishName: new RegExp(req.query.keyword, 'i') },
+          { arabicName: new RegExp(req.query.keyword ,'i') },
+          { englishDescription : new RegExp(req.query.keyword ,'i') },
+          { arabicDescription : new RegExp(req.query.keyword ,'i') }
+        ]})
         .populate({
           path: 'categories',
           select: '_id arabicName englishName parentCategory status',
-          match: { status: 'Active' },
+          match: { status: 'Active'},
           populate: {
             path: 'parentCategory',
             select: '_id arabicName englishName status'

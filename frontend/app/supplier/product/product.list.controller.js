@@ -19,7 +19,7 @@ export default class ProductListCtrl {
 
     $onInit() {
         this.productCurrentPage = 1;
-        this.query = { skip: 0, limit: 10 };
+        this.query = { skip: 0, limit: 10, keyword: ""};
         this.query.categoryId = this._$stateParams.categoryId; // if "All" get All products
         this.getProducts(this.query);
     }

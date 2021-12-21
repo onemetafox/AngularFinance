@@ -27,6 +27,9 @@ export default class ProductService {
         if (query.supplierId) {
             url = `${url}&supplierId=${query.supplierId}`;
         }
+        if (query.keyword || query.keyword == "") {
+            url = `${url}&keyword=${query.keyword}`;
+        }
         request.url = url;
         request.method = 'GET';
         request.headers = this._request.headers;
