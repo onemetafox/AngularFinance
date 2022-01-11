@@ -369,6 +369,7 @@ function updateName(req, res) {
  * @returns {Supplier}
  */
 function update(req, res) {
+  console.log("this is the test of updat of supplier");
   const staffArray = req.supplier.staff.map(c => c);
   const staffIndex = staffArray.findIndex(c => c._id.toString() === req.user._id.toString());
   User.findOne({ _id: req.supplier.staff[staffIndex] })
