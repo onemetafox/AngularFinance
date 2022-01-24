@@ -117,7 +117,7 @@
                                 <!--</div>-->
                             <!--</div>-->
                         <!--</div>-->
-                        <div class="col-md-12 no-margin no-padding" ng-show="$ctrl.customer.commercialRegisterExpireDate">
+                        <div class="col-md-6 no-margin no-padding" ng-show="$ctrl.customer.commercialRegisterExpireDate">
                                 <div class="form-group form-group-default required "
                                      ng-class="{ 'has-error' : profileForm.commercialRegisterExpireDate.$invalid && !profileForm.commercialRegisterExpireDate.$pristine }">
                                     <label>{{'customer.account.profile.field.cr_Expdate.label' | translate}}</label>
@@ -132,7 +132,7 @@
                                     {{"customer.account.profile.field.cr_Expdate.invalid" | translate }}.
                                 </label>
                         </div>
-                        <div class="col-md-12 no-margin no-padding" ng-show="$ctrl.customer.commercialRegisterExpireDateIslamic">
+                        <div class="col-md-6 no-margin no-padding" ng-show="$ctrl.customer.commercialRegisterExpireDateIslamic">
                             <div class="form-group form-group-default required "
                                  ng-class="{ 'has-error' : profileForm.commercialRegisterExpireDateIslamic.$invalid && !profileForm.commercialRegisterExpireDateIslamic.$pristine }">
                                 <label>{{'customer.account.profile.field.cr_Expdate.labelHijri' | translate}}</label>
@@ -147,6 +147,27 @@
                                 {{"customer.account.profile.field.commercialRegisterExpireDateIslamic.invalid" | translate }}.
                             </label>
                         </div>
+                        <div pg-form-group class="form-group form-group-default"
+                                ng-class="{ 'has-error' : profileForm.VATRegisterNumber.$invalid && !profileForm.VATRegisterNumber.$pristine }">
+                            <label>{{"supplier.account.profile.field.VAT.label" | translate }}</label>
+                            <div class="controls">
+                                <input type="text" class="form-control" name="VATRegisterNumber"
+                                        id="VATRegisterNumber"
+                                        placeholder='{{"supplier.account.profile.field.VAT.placeholder" | translate }}'
+                                        ng-model="$ctrl.customer.VATRegisterNumber"
+                                        ng-minlength="1"
+                                        ng-maxlength="20"
+                                        ng-pattern="/^(?:[0-9]+(?:\.[0-9]{0,10})?)?$/">
+                            </div>
+                        </div>
+                        <label id="VATRegisterNumberRequired" class="error" for="VATRegisterNumber"
+                                ng-show="profileForm.VATRegisterNumber.$error.required && !profileForm.VATRegisterNumber.$pristine">
+                            - {{"supplier.account.profile.field.VAT.required" | translate }}.
+                        </label>
+                        <label id="VATRegisterNumberInvalid" class="error" for="VATRegisterNumber"
+                                ng-show="profileForm.VATRegisterNumber.$error.pattern && !profileForm.VATRegisterNumber.$pristine">
+                            - {{"supplier.account.profile.field.VAT.invalid" | translate }}.
+                        </label>
                 </div>
 
                 <!--<div class="form-group-attached m-t-20 sm-no-padding" id="address">-->
@@ -280,7 +301,7 @@
                             <div class="form-group form-group-default no-margin required"
                                  ng-class="{ 'has-error' : profileForm.email.$invalid && !profileForm.email.$pristine }">
                                 <label>{{"customer.account.profile.field.email.label" | translate }}.</label>
-                                <input ng-disabled="true" ng-model="$ctrl.customer.user.email" class="form-control" id="email" name="email" type="text"                                                ng-pattern = '/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i'
+                                <input ng-disabled="false" ng-model="$ctrl.customer.user.email" class="form-control" id="email" name="email" type="text"                                                ng-pattern = '/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i'
                                        ng-pattern = '/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i'
                                        required>
                             </div>

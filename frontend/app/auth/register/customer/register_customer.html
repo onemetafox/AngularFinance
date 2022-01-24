@@ -258,6 +258,32 @@
                                 <!-- END Form Control-->
 
                             </div>
+                            <div class="col-sm-12">
+                                <!-- START Form Control-->
+                                <div pg-form-group class="form-group form-group-default required"
+                                     ng-class="{ 'has-error' : registerForm.VATRegisterNumber.$invalid && !registerForm.VATRegisterNumber.$pristine }">
+                                    <label>{{"auth.register.supplier.field.VAT.label" | translate }}</label>
+                                    <div class="controls">
+                                        <input type="text" class="form-control" name="VATRegisterNumber"
+                                               id="VATRegisterNumber"
+                                               placeholder='{{"auth.register.supplier.field.VAT.placeholder" | translate }}'
+                                               ng-model="$ctrl.formData.VATRegisterNumber"
+                                               ng-minlength="1"
+                                               ng-maxlength="20"
+                                               ng-pattern="/^(?:[0-9]+(?:\.[0-9]{0,10})?)?$/" required>
+                                    </div>
+                                </div>
+                                <label id="VATRegisterNumberRequired" class="error" for="VATRegisterNumber"
+                                       ng-show="registerForm.VATRegisterNumber.$error.required && !registerForm.VATRegisterNumber.$pristine">
+                                    - {{"auth.register.supplier.field.VAT.required" | translate }}.
+                                </label>
+                                <label id="VATRegisterNumberInvalid" class="error" for="VATRegisterNumber"
+                                       ng-show="registerForm.VATRegisterNumber.$error.pattern && !registerForm.VATRegisterNumber.$pristine">
+                                    - {{"auth.register.supplier.field.VAT.invalid" | translate }}.
+                                </label>
+                                <!-- END Form Control-->
+    
+                            </div>
                             <div class="col-sm-6">
                                 <div class="d-flex flex-wrap radio radio-success">
                                     <div class="m-r-20">

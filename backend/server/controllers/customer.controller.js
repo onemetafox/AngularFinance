@@ -347,6 +347,7 @@ function update(req, res) {
         customer.representativeName = req.body.representativeName.toLowerCase();
         customer.location.address = req.body.location.address;
         customer.location.coordinates = req.body.location.coordinates;
+        customer.VATRegisterNumber = req.body.VATRegisterNumber;
         customer.commercialRegister = req.body.commercialRegister;
         customer.commercialRegisterPhoto = req.body.commercialRegisterPhoto;
         customer.commercialRegisterExpireDate = req.body.commercialRegisterExpireDate ? moment(req.body.commercialRegisterExpireDate) : '';

@@ -26,6 +26,11 @@ const CustomerSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Customer'
   },
+  VATRegisterNumber: {
+    type: Number,
+    trim: true,
+    required: false
+  },
   photo: {
     type: String,
     required: false,
