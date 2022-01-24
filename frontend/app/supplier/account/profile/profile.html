@@ -332,7 +332,7 @@
                                                  ng-class="{ 'has-error' : profileForm.email.$invalid && !profileForm.email.$pristine }">
                                                 <label>{{"supplier.account.profile.field.email.label" | translate
                                                     }}</label>
-                                                <input ng-disabled="true" ng-model="$ctrl.supplier.user.email"
+                                                <input ng-disabled="false" ng-model="$ctrl.supplier.user.email"
                                                        class="form-control" id="email" name="email" type="text"
                                                        ng-pattern='/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i'
                                                        ng-pattern='/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i'

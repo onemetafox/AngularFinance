@@ -12,7 +12,7 @@
             <div id="loading3" ng-if="$ctrl.photoloading" style="position: absolute;" class="progress-circle-indeterminate"></div>
         </div>-->
         <div id="xyz"  class="card-header text-center header-bg cover_photo padding-0"
-             background="{{$ctrl.coverPhoto}}" style="high:100%">
+             background="{{$ctrl.coverPhoto}}" style="height:100%">
             <!--nv-file-over="" uploader="uploader"-->
             <div   class="image-overlay">
                 <div class="custom-image-input"   data-pages-bg-image="">
@@ -65,7 +65,7 @@
                                     {{"customer.account.profile.field.cr_number.label" | translate }}
                                 </label>
                                 <input ng-disabled="true"  ng-model="$ctrl.customer.commercialRegister" name="commercialRegister"
-                                       id="commercialRegister" class="form-control"  type="text" placeholder="1952C14"
+                                       id="commercialRegister" class="form-control"  type="text" placeholder="1234567890"
                                        ng-pattern="/^\d{10}$$/" required>
                             </div>
                             <label class="error" for="commercialRegister" ng-show="profileForm.commercialRegister.$error.required && !profileForm.commercialRegister.$pristine">
