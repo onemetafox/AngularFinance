@@ -82,10 +82,11 @@
             "labelHijri": "Expire date Hijri",
             "placeholder": "DD\/MM\/YYYY"
           },
-          "vat": {
+          "VAT": {
             "required": "This field is required",
-            "label": "Vat",
-            "placeholder": "11"
+            "label": "VAT",
+            "placeholder": "VAT",
+            "invalid": "vat must be number or decimal"
           },
           "CRDateIslamic": {
             "required": "This field is required",

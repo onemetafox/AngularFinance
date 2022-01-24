@@ -149,11 +149,11 @@
                         </div>
                         <div pg-form-group class="form-group form-group-default"
                                 ng-class="{ 'has-error' : profileForm.VATRegisterNumber.$invalid && !profileForm.VATRegisterNumber.$pristine }">
-                            <label>{{"supplier.account.profile.field.VAT.label" | translate }}</label>
+                            <label>{{"customer.account.profile.field.VAT.label" | translate }}</label>
                             <div class="controls">
                                 <input type="text" class="form-control" name="VATRegisterNumber"
                                         id="VATRegisterNumber"
-                                        placeholder='{{"supplier.account.profile.field.VAT.placeholder" | translate }}'
+                                        placeholder='{{"customer.account.profile.field.VAT.placeholder" | translate }}'
                                         ng-model="$ctrl.customer.VATRegisterNumber"
                                         ng-minlength="1"
                                         ng-maxlength="20"
