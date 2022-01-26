@@ -329,6 +329,7 @@ function update(req, res) {
   user.firstName = req.body.user.firstName.toLowerCase();
   user.lastName = req.body.user.lastName.toLowerCase();
   user.language = req.body.user.language;
+  user.email = req.body.user.email.toLowerCase();
   user.save();
 
   async.waterfall([
