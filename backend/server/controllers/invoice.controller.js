@@ -409,6 +409,7 @@ function create(req, res) {
     });
   }
 }
+
 function getInvoice(req, res){
 
   const QRUrl = "http://dev.supplieson.com/api/invoices/getInvoice?";

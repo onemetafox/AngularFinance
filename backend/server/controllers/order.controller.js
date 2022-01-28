@@ -4220,32 +4220,7 @@ function getReport(req, res) {
   const queryCond = {};
 
   queryCond.createdAt = { $gte: startDate, $lte: endDate };
-  MonthlyInvoice.find({startDate: startDate, endDate: endDate}, function(err, result){
-    if(result.length != 0){
-      Invoice.find({createdAt : {$gte: startDate, $lte: endDate}}, function(err, invoices){
-        let price = 0;
-        let temp = [];
-        if(invoices.length != 0){
-          invoices.forEach((invoice)=>{
-            price += invoice.price;
-            temp.push(invoice._id);
-          })
-          const monthlyInvoiceObj = new MonthlyInvoice({
-            invoiceId: `${appSettings.invoicePrefix}${nextInvoiceId}`,
-            supplier: req.query.supplierId,
-            customer: req.query.customerId,
-            createdAt: moment().tz(appSettings.timeZone).format(appSettings.momentFormat),
-            startDate: startDate,
-            endDate: endDate,
-            price: price,
-            invoices: temp
-          });
-          monthlyInvoiceObj.save();
-        }
-      })
-    }
-    
-  })
+  
   
   if (req.query.export === 'pdf') {
     skip = 0;

@@ -75,24 +75,36 @@ function list(req, res) {
 }
 function createInvoice(req, res){
   const supplierId = req.user._id;
-  const orderId = req.params.orderId;
-  Order.findById(orderId)
-  .then((order)=> {
-    const nextInvoiceId = moment().tz(appSettings.timeZone).format('x');
-    const invoice = new Invoice({
-      invoiceId: `${appSettings.invoicePrefix}${nextInvoiceId}`,
-      supplier : supplierId,
-      order : orderId,
-      customer : order.customer,
-      dueDate: moment().add(Number(appSettings.duePaymentDays), 'days').tz(appSettings.timeZone).format(appSettings.momentFormat),
-      createdAt: moment().tz(appSettings.timeZone).format(appSettings.momentFormat),
-      price : order.price,
-      VAT : order.VAT
-    });
-     invoice.save(function(err,result){
-      res.json(Response.success(result));
-     });
-  })
+  function createMonthlyInvoice(req, res){
+    MonthlyInvoice.find({startDate: startDate, endDate: endDate}, function(err, result){
+      if(result.length != 0){
+        Invoice.find({createdAt : {$gte: startDate, $lte: endDate}}, function(err, invoices){
+          let price = 0;
+          let temp = [];
+          if(invoices.length != 0){
+            invoices.forEach((invoice)=>{
+              price += invoice.price;
+              temp.push(invoice._id);
+            })
+            const monthlyInvoiceObj = new MonthlyInvoice({
+              invoiceId: `${appSettings.invoicePrefix}${nextInvoiceId}`,
+              supplier: supplierId,
+              customer: req.query.customerId,
+              createdAt: moment().tz(appSettings.timeZone).format(appSettings.momentFormat),
+              startDate: startDate,
+              endDate: endDate,
+              price: price,
+              invoices: temp
+            });
+            monthlyInvoiceObj.save(function(err, result){
+              res.json(Response.success(result));
+            });
+          }
+        })
+      }
+      
+    })
+  }
 }
 function getInvoices(req, res){
   const startDate = new Date(req.query.startDate.toString());
