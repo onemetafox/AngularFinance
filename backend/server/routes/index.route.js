@@ -23,6 +23,7 @@ import notificationRoutes from './notification.route';
 import branchRoutes from './branch.route';
 import inventoryRoutes from './inventory.route';
 import systemCitiesRoutes from './city.route';
+import MonthlyInvoiceRoutes from './monthlyInvoice.route';
 import apiRoutes from './api.route'
 const router = express.Router(); // eslint-disable-line new-cap
 
@@ -88,6 +89,9 @@ router.use('/systemVariables', systemVariablesRoutes);
 
 // mount invoices router as/invoices
 router.use('/invoices', invoiceRoutes);
+
+// mount monthlyinvoices router as/invoices
+router.use('/monthlyinvoices', MonthlyInvoiceRoutes);
 
 // mount notifications router as/notifications
 router.use('/notifications', notificationRoutes);
