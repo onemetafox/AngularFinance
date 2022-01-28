@@ -831,7 +831,8 @@
           "type": "Type",
           "selectCustomer": "Select Customer",
           "All": "All",
-          "period": "Period"
+          "period": "Period",
+          "monthlyinvoice": "Monthly Invoice"
         },
         "table": {
           "date": "Date",

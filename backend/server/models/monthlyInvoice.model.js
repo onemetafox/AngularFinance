@@ -21,6 +21,11 @@ const MonthlyInvoice = new mongoose.Schema({
     ref: 'Customer',
     required: false
   },
+  branchId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Branch',
+    required: false
+  },
   createdAt: {
     type: Date,
     default: moment().tz(appSettings.timeZone).format(appSettings.momentFormat)

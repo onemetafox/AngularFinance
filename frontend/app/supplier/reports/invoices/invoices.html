@@ -1,3 +1,11 @@
+<div ng-if="$ctrl.validation" class="alert alert-danger" role="alert">
+    <button class="close" data-dismiss="alert"></button>
+    {{$ctrl.message| translate}}
+</div>
+<div ng-if="$ctrl.createSuccess" class="alert alert-success" role="alert">
+    <button class="close" data-dismiss="alert"></button>
+    {{$ctrl.message| translate}}
+</div>
 <div class="container">
     <ol class="breadcrumb breadcrumb-alt">
         <li class="breadcrumb-item"><a ui-sref="app.supplier.report.orders">{{"supplier.reports.transactions.stats.reports" | translate }}</a></li>
@@ -66,8 +74,14 @@
                 <small class="text-uppercase p-t-10 p-l-10 p-r-10">{{"supplier.reports.transactions.filter.export" | translate }}</small>
                 <div class="btn-toolbar" role="toolbar">
                     <div dir="ltr" class="btn-group btn-group-sm">
-                        <button type="button" class="btn btn-primary" ng-click="$ctrl.exportFile()"><i
-                                class="fa fa-file-pdf-o"></i> PDF
+                        <button type="button" class="btn btn-primary" ng-click="$ctrl.exportFile()"><iclass="fa fa-file-pdf-o"></i> PDF
+                        </button>
+                    </div>
+                </div>
+                <small class="text-uppercase p-t-10 p-l-10 p-r-10">{{"supplier.reports.transactions.filter.monthlyinvoice" | translate }}</small>
+                <div class="btn-toolbar" role="toolbar">
+                    <div dir="ltr" class="btn-group btn-group-sm">
+                        <button type="button" class="btn btn-primary" ng-click="$ctrl.createMonthlyInvoice()"><iclass="fa fa-file-pdf-o"></i> CREATE
                         </button>
                     </div>
                 </div>

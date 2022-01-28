@@ -1,12 +1,13 @@
 import moment from 'moment';
 
 export default class SupplierReportInvoicesCtrl {
-    constructor(TransactionsService, CustomerService, SupplierService, $state, $rootScope) {
+    constructor(TransactionsService, CustomerService, SupplierService, $state, $rootScope,$translate) {
         this._TransactionsService = TransactionsService;
         this._CustomerService = CustomerService;
         this._SupplierService = SupplierService;
         this._$state = $state;
         this._$rootScope = $rootScope;
+        this._$translate = $translate;
     }
 
     $onInit() {
@@ -22,7 +23,9 @@ export default class SupplierReportInvoicesCtrl {
                 .format('YYYY-MM-DD'),
             endDate: moment()
                 .add(1, 'day')
-                .format('YYYY-MM-DD')
+                .format('YYYY-MM-DD'),
+            customerId: 'All',
+            branchId: 'All'
         };
         this.date = moment().format('dddd, MMM DD');
         $('#daterangepicker')
@@ -95,13 +98,48 @@ export default class SupplierReportInvoicesCtrl {
     getBranchesLookup(customerId) {
         const _onSuccess = (res) => {
             this.branches = res.data.data;
-            console.log(this.branches);
         };
         const _onError = (err) => {
             this.errors = err;
         };
         this._SupplierService.getBranchesByCustomerId(customerId)
             .then(_onSuccess, _onError);    
+    }
+    createMonthlyInvoice(){
+        const _onSuccess = (res) => {
+            if(res.data.status == "success"){
+                this.createSuccess = true;
+                this.message = 'supplier.account.profile.message.success';
+                this.notify(this.message, 'danger', 5000);
+            }
+        };
+        const _onError = (err) => {
+            this.error = err.data.data;
+        };
+        const _onFinal = (err) => {
+            this.reportIsLoaded = true;
+        };
+        console.log(this.searchCriteria);
+        if(this.searchCriteria.customerId == "All"){
+            this.validation = true;
+            this.message = 'supplier.account.profile.message.failure';
+            this.notify(this.message, 'danger', 5000);
+        }else{
+            this._TransactionsService.createMonthlyInvoice(this.searchCriteria).then(_onSuccess, _onError).finally(_onFinal);
+        }
+    }
+    notify(message, type, timeout) {
+        this._$translate(message).then((translation) => {
+            $('body')
+                .pgNotification({
+                    style: 'bar',
+                    message: translation,
+                    position: 'top',
+                    timeout,
+                    type
+                })
+                .show();
+        });
     }
     openReportDetails(transactionsDetails) {
         /* $('#payment').modal('show');

@@ -145,6 +145,28 @@ export default class TransactionsService {
             }
         );
     }
+    createMonthlyInvoice(param){
+        const request = {};
+        request.url = `${this._AppConstants.api}/monthlyinvoices/create/?customerId=${result.data.data._id}&startDate=&endDate=`;
+        request.method = 'GET';
+        request.headers = this._request.headers;
+        this.retryRequest(request1).then(
+            // (result) => {
+            //     let url =  `${this._AppConstants.api}/invoices/getInvoice?id=${result.data.data._id}&export=pdf`;
+            //     const request2 = {
+            //         url,
+            //         headers: this._request.headers,
+            //         responseType: 'arraybuffer',
+            //         method: 'GET',
+            //     };
+            //     this.retryRequest(request2).then(
+            //         (result1) => {
+            //             suppliesOnHelper.createBlob(result1, 'SupOn-Report', 'pdf');
+            //         }
+            //     );
+            // }
+        );
+    }
     listInvoices(query) {
         const request = {};
         request.url = `${this._AppConstants.api}/invoices?startDate=${query.startDate}&endDate=${query.endDate}&skip=${query.skip}&limit=${query.limit}`;
@@ -190,4 +212,4 @@ export default class TransactionsService {
     }
 }
 
-TransactionsService.$inject = ['AppConstants', 'JwtService', 'RetryRequest'];
+TransactionsService.$inject = ['AppConstants', 'JwtService', 'RetryRequest','$translate'];
