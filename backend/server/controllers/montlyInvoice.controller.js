@@ -10,6 +10,7 @@ import Customer from '../models/customer.model';
 import Order from '../models/order.model';
 import ExportService from './exportFileService';
 import OrderProduct from '../models/orderProduct.model';
+import MonthlyInvoice from '../models/monthlyInvoice.model';
 
 var QRCode = require('qrcode')
 // const moment = require('moment-timezone');
@@ -74,6 +75,8 @@ function list(req, res) {
     });
 }
 function createInvoice(req, res){
+  const startDate = new Date(req.query.startDate.toString());
+  const endDate = new Date(req.query.endDate.toString());
   const supplierId = req.user._id;
   const supplierInvoiceReport = {
     supplierId: '',
@@ -121,9 +124,13 @@ function createInvoice(req, res){
               monthlyInvoiceObj.save(function(err, result){
                 res.json(Response.success(result));
               });
+            }else{
+              res.json(Response.failure("Invoice is not existed"));
             }
         }
       });
+    }else{
+      res.json(Response.failure("Invoice already created"))
     }
   })
 }
@@ -146,8 +153,7 @@ function getInvoices(req, res){
   
   async.waterfall([
     function passParameter(callback) {
-      callback(null, req, supplierInvoiceReport,
-        req.query.skip, req.query.limit);
+      callback(null, req, supplierInvoiceReport);
     },
     getNumberInvoices,
     function getRevenue(supplierInvoiceReport, callback) {
@@ -226,7 +232,7 @@ function getInvoices(req, res){
     
 }
 
-function getNumberInvoices(req, invoices, callback){
+function getNumberInvoices(req, supplierInvoiceReport, callback){
 
   const startDate = new Date(req.query.startDate.toString());
   const endDate = new Date(req.query.endDate.toString());
@@ -276,12 +282,7 @@ function getNumberInvoices(req, invoices, callback){
               invoices.push(invoice);
             }
           });
-          for (var i = skip; i < skip + limit; i ++){
-            if(invoices[i]){
-              supplierInvoiceReport.invoices.push(invoices[i]);
-            }
-            
-          }
+          supplierInvoiceReport.invoices = invoices;
           supplierInvoiceReport.numberOfInvoices = invoices.length;
           callback(null, supplierInvoiceReport);
         }else{
@@ -357,12 +358,9 @@ function getNumberInvoices(req, invoices, callback){
                 }
               });
             });
-            for (var i = skip; i < skip + limit; i ++){
-              if(invoices[i]){
-                supplierInvoiceReport.invoices.push(invoices[i]);
-              }
-              
-            }
+            
+            supplierInvoiceReport.invoices = invoices;
+             
             supplierInvoiceReport.numberOfInvoices = invoices.length;
             callback(null, supplierInvoiceReport);
           })         

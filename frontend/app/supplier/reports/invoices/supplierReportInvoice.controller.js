@@ -119,7 +119,6 @@ export default class SupplierReportInvoicesCtrl {
         const _onFinal = (err) => {
             this.reportIsLoaded = true;
         };
-        console.log(this.searchCriteria);
         if(this.searchCriteria.customerId == "All"){
             this.validation = true;
             this.message = 'supplier.account.profile.message.failure';
@@ -180,4 +179,4 @@ export default class SupplierReportInvoicesCtrl {
     }
 }
 
-SupplierReportInvoicesCtrl.$inject = ['TransactionsService', 'CustomerService', 'SupplierService', '$state', '$rootScope'];
+SupplierReportInvoicesCtrl.$inject = ['TransactionsService', 'CustomerService', 'SupplierService', '$state', '$rootScope','$translate'];

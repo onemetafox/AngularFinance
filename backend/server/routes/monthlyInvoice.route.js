@@ -2,7 +2,7 @@ import express from 'express';
 import passport from 'passport';
 import validate from 'express-validation';
 
-import invoiceCtrl from '../controllers/invoice.controller';
+import invoiceCtrl from '../controllers/montlyInvoice.controller';
 import paramValidation from '../../config/param-validation';
 // import authorization from '../services/authorization.service';
 
@@ -21,7 +21,7 @@ router.route('/')
 //     session: false
 //   }), validate(paramValidation.getInvoice), invoiceCtrl.get);
 
-router.route('/create/:orderId')
+router.route('/create')
   .get(passport.authenticate('jwt', {
     session: false
   }), invoiceCtrl.createInvoice);
