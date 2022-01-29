@@ -102,15 +102,20 @@ function createInvoice(req, res){
         if (err) {
           res.status(httpStatus.INTERNAL_SERVER_ERROR).json(Response.failure(err));
         } else {
-            let price = 0;
-            let temp = [];
+            var price = 0;
+            var VAT = 0;
+            var total = 0;
+            var temp = [];
             if(result.invoices.length != 0){
               result.invoices.forEach((invoice)=>{
                 price += invoice.price;
-                temp.push(invoice._id);
+                total += invoice.total;
+                VAT += invoice.VAT;
+                temp.push(invoice.invoice_id);
               })
+              const nextInvoiceId = moment().tz(appSettings.timeZone).format('x');
               const monthlyInvoiceObj = new MonthlyInvoice({
-                invoiceId: `${appSettings.invoicePrefix}${nextInvoiceId}`,
+                invoiceId: `${appSettings.monthlyPrefix}${nextInvoiceId}`,
                 supplier: supplierId,
                 customer: req.query.customerId,
                 branchId: req.query.branchId,
@@ -118,8 +123,11 @@ function createInvoice(req, res){
                 startDate: startDate,
                 endDate: endDate,
                 price: price,
+                total: total,
+                VAT: VAT,
                 invoices: temp
               });
+              console.log(monthlyInvoiceObj);
               monthlyInvoiceObj.save(function(err, result){
                 res.json(Response.success(result));
               });
@@ -259,10 +267,10 @@ function getNumberInvoices(req, supplierInvoiceReport, callback){
           match: branchMatch
       })
       .then((acceptedInvoices) => {
+        var invoices = [];
         if(acceptedInvoices.length != 0){
-          var invoices = [];
           acceptedInvoices.forEach((acceptedInvoicesObj) => {
-            if((acceptedInvoicesObj.customer.customer == req.query.customerId || acceptedInvoicesObj.customer._id == req.query.customerId) && acceptedInvoicesObj.order){
+            if((acceptedInvoicesObj.customer.customer == req.query.customerId || acceptedInvoicesObj.customer._id == req.query.customerId)){
               let invoice = {};
               invoice = {
                 invoice_id: acceptedInvoicesObj._id,

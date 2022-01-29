@@ -47,6 +47,11 @@ const MonthlyInvoice = new mongoose.Schema({
     required: false,
     default: 0
   },
+  price: {
+    type: Number,
+    required: false,
+    default: 0
+  },
   VAT: {
     type: Number,
     required: false,

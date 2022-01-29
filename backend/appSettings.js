@@ -238,6 +238,7 @@ const appSettings = {
   maxImageSize: 12000000,
   systemTitle: 'SuppliesOn.com',
   orderPrefix: 'SUPOn-',
+  monthlyPrefix: 'SUPMonth-',
   transactionPrefix: 'SUPTr-',
   paymentPrefix: 'SUPay-',
   invoicePrefix: 'SUPIv-',
