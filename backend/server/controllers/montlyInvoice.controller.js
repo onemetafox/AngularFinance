@@ -88,10 +88,13 @@ function createInvoice(req, res){
     avgDailyRevenue:0
   };
   let query = {
-    createdAt: { $gte: startDate, $lte: endDate },
-    $and: [{ supplier: req.user._id }]
+    $and: [{ supplier: req.user._id },{startDate: startDate}, {endDate: endDate}, {customer:req.query.customerId}]
   };
-  MonthlyInvoice.find({branchId: req.query.branchId, customerId: req.query.customerId, startDate: startDate, endDate: endDate}, function(err, result){
+  if(req.query.branchId){
+    query.branch = req.query.branchId
+  }
+  
+  MonthlyInvoice.find(query, function(err, result){
     if(result.length == 0){
       async.waterfall([
         function passParameter(callback) {
@@ -118,7 +121,7 @@ function createInvoice(req, res){
                 invoiceId: `${appSettings.monthlyPrefix}${nextInvoiceId}`,
                 supplier: supplierId,
                 customer: req.query.customerId,
-                branchId: req.query.branchId,
+                branch: req.query.branchId,
                 createdAt: moment().tz(appSettings.timeZone).format(appSettings.momentFormat),
                 startDate: startDate,
                 endDate: endDate,
@@ -127,7 +130,6 @@ function createInvoice(req, res){
                 VAT: VAT,
                 invoices: temp
               });
-              console.log(monthlyInvoiceObj);
               monthlyInvoiceObj.save(function(err, result){
                 res.json(Response.success(result));
               });
