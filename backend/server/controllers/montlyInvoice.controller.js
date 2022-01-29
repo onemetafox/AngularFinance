@@ -95,8 +95,7 @@ function createInvoice(req, res){
     if(result.length == 0){
       async.waterfall([
         function passParameter(callback) {
-          callback(null, req, supplierInvoiceReport,
-            req.query.skip, req.query.limit);
+          callback(null, req, supplierInvoiceReport);
         },
         getNumberInvoices,
       ], (err, result) => {
@@ -260,7 +259,7 @@ function getNumberInvoices(req, supplierInvoiceReport, callback){
           match: branchMatch
       })
       .then((acceptedInvoices) => {
-        if(acceptedInvoices){
+        if(acceptedInvoices.length != 0){
           var invoices = [];
           acceptedInvoices.forEach((acceptedInvoicesObj) => {
             if((acceptedInvoicesObj.customer.customer == req.query.customerId || acceptedInvoicesObj.customer._id == req.query.customerId) && acceptedInvoicesObj.order){
