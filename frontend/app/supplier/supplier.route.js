@@ -359,6 +359,49 @@ export default function supplierConfig($stateProvider, $urlRouterProvider, $loca
                 label: 'supplier.reports.breadcrumb.invoiceDetail'
             }
         })
+        .state('app.supplier.report.monthly', {
+            url: '/monthly',
+            templateUrl: 'app/supplier/reports/monthly/invoices.html',
+            controller: 'SupplierReportMonthlyCtrl as $ctrl',
+            resolve: {
+                deps: ['$ocLazyLoad', function ($ocLazyLoad) {
+                    return $ocLazyLoad.load([
+                        'switchery',
+                        'select',
+                        'moment',
+                        'datepicker',
+                        'daterangepicker'
+                    ], {
+                        insertBefore: '#lazyload_placeholder'
+                    })
+                        .then(() => true// $ocLazyLoad.load('assets/js/controllers/forms_elements.js');
+                        );
+                }]
+            },
+            data: {
+                permissions: {
+                    only: ['manageTransactionsReports'],
+                    redirectTo: AuthorizationMethods.redirectTo404()
+                }
+            },
+            ncyBreadcrumb: {
+                label: 'supplier.reports.breadcrumb.monthly'
+            }
+        })
+        .state('app.supplier.report.monthlyDetails', {
+            url: '/invoices/:id',
+            templateUrl: 'app/supplier/reports/monthly/invoice-detail/invoice-detail.html',
+            controller: 'SupplierReportMonthlyDetailsCtrl as $ctrl',
+            data: {
+                permissions: {
+                    only: ['manageTransactionsReports'],
+                    redirectTo: AuthorizationMethods.redirectTo404()
+                }
+            },
+            ncyBreadcrumb: {
+                label: 'supplier.reports.breadcrumb.monthlyDetail'
+            }
+        })
         .state('app.supplier.report.detailed', {
             url: '/detailed',
             templateUrl: 'app/supplier/reports/detailed/reports.html',

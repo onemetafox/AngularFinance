@@ -25,6 +25,11 @@
                         <span class="title">{{"supplier.reports.invoices.title" | translate }}</span>
                     </a>
                 </li>
+                <li permission permission-only="'manageTransactionsReports'" ui-sref-active="active top-level bold">
+                    <a ui-sref="app.supplier.report.invoices" class="m-l-25">
+                        <span class="title">{{"supplier.reports.monthly.title" | translate }}</span>
+                    </a>
+                </li>
 
                 <li permission permission-only="'manageTransactionsReports'" ui-sref-active="active top-level bold">
                     <a ui-sref="app.supplier.report.detailed" class="m-l-25">

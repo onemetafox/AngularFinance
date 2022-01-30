@@ -15,6 +15,10 @@ import SupplierReportOrderDetailsCtrl from './reports/orders/order-detail/suppli
 import SupplierReportTransactionsCtrl from './reports/transactions/supplierReportTransaction.controller';
 import SupplierReportInvoicesCtrl from './reports/invoices/supplierReportInvoice.controller';
 import SupplierReportInvoiceDetailsCtrl from './reports/invoices/invoice-detail/supplierReportInvoiceDetails.controller';
+
+import SupplierReportMonthlyCtrl from './reports/monthly/supplierReportInvoice.controller';
+import SupplierReportMonthlyDetailsCtrl from './reports/monthly/invoice-detail/supplierReportInvoiceDetails.controller';
+
 import SupplierAccountProfileCtrl from './account/profile/supplierAccountProfile.controller';
 import SupplierAccountPaymentsCtrl from './account/payments/supplierAccountPayments.controller';
 import SupplierAccountRolesCtrl from './account/role/supplierAccountRoles.controller';
@@ -89,6 +93,9 @@ supplierModule.controller('SupplierDetailedReportsCtrl', supplierDetailedReports
 supplierModule.controller('SupplierSummaryReportsCtrl', supplierSummaryReportsCtrl);
 supplierModule.controller('SupplierReportInvoicesCtrl', SupplierReportInvoicesCtrl);
 supplierModule.controller('SupplierReportInvoiceDetailsCtrl', SupplierReportInvoiceDetailsCtrl);
+
+supplierModule.controller('SupplierReportMonthlyCtrl', SupplierReportMonthlyCtrl);
+supplierModule.controller('SupplierReportMonthlyDetailsCtrl', SupplierReportMonthlyDetailsCtrl);
 
 supplierModule.component('supplierReceiptFormComponent', ReceiptFormComponent);
 supplierModule.component('supplierIngredientFormComponent', ingredientFormComponent);
