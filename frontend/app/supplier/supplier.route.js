@@ -389,7 +389,7 @@ export default function supplierConfig($stateProvider, $urlRouterProvider, $loca
             }
         })
         .state('app.supplier.report.monthlyDetails', {
-            url: '/invoices/:id',
+            url: '/monthly/:id',
             templateUrl: 'app/supplier/reports/monthly/invoice-detail/invoice-detail.html',
             controller: 'SupplierReportMonthlyDetailsCtrl as $ctrl',
             data: {

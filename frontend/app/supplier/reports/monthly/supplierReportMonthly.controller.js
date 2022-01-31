@@ -1,8 +1,8 @@
 import moment from 'moment';
 
-export default class SupplierReportInvoicesCtrl {
-    constructor(TransactionsService, CustomerService, SupplierService, $state, $rootScope,$translate) {
-        this._TransactionsService = TransactionsService;
+export default class SupplierReportMonthlyCtrl {
+    constructor(MonthlyService, CustomerService, SupplierService, $state, $rootScope,$translate) {
+        this._MonthlyService = MonthlyService;
         this._CustomerService = CustomerService;
         this._SupplierService = SupplierService;
         this._$state = $state;
@@ -76,7 +76,7 @@ export default class SupplierReportInvoicesCtrl {
         const _onFinal = (err) => {
             this.reportIsLoaded = true;
         };
-        this._TransactionsService.listInvoices(searchCriteria).then(_onSuccess, _onError).finally(_onFinal);
+        this._MonthlyService.listInvoices(searchCriteria).then(_onSuccess, _onError).finally(_onFinal);
     }
 
     getCustomersLookup() {
@@ -124,7 +124,7 @@ export default class SupplierReportInvoicesCtrl {
             this.message = 'supplier.account.profile.message.failure';
             this.notify(this.message, 'danger', 5000);
         }else{
-            this._TransactionsService.createMonthlyInvoice(this.searchCriteria).then(_onSuccess, _onError).finally(_onFinal);
+            this._MonthlyService.createMonthlyInvoice(this.searchCriteria).then(_onSuccess, _onError).finally(_onFinal);
         }
     }
     notify(message, type, timeout) {
@@ -167,7 +167,7 @@ export default class SupplierReportInvoicesCtrl {
     }
 
     exportFile() {
-        this._TransactionsService.exportInvoiceFile(this.searchCriteria);
+        this._MonthlyService.exportInvoiceFile(this.searchCriteria);
     }
     selected(item) {
         const invoice = { id: item.invoice_id };
@@ -179,4 +179,4 @@ export default class SupplierReportInvoicesCtrl {
     }
 }
 
-SupplierReportInvoicesCtrl.$inject = ['TransactionsService', 'CustomerService', 'SupplierService', '$state', '$rootScope','$translate'];
+SupplierReportMonthlyCtrl.$inject = ['MonthlyService', 'CustomerService', 'SupplierService', '$state', '$rootScope','$translate'];

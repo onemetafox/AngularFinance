@@ -16,8 +16,8 @@ import SupplierReportTransactionsCtrl from './reports/transactions/supplierRepor
 import SupplierReportInvoicesCtrl from './reports/invoices/supplierReportInvoice.controller';
 import SupplierReportInvoiceDetailsCtrl from './reports/invoices/invoice-detail/supplierReportInvoiceDetails.controller';
 
-import SupplierReportMonthlyCtrl from './reports/monthly/supplierReportInvoice.controller';
-import SupplierReportMonthlyDetailsCtrl from './reports/monthly/invoice-detail/supplierReportInvoiceDetails.controller';
+import SupplierReportMonthlyCtrl from './reports/monthly/supplierReportMonthly.controller';
+import SupplierReportMonthlyDetailsCtrl from './reports/monthly/invoice-detail/supplierReportMonthlyDetails.controller';
 
 import SupplierAccountProfileCtrl from './account/profile/supplierAccountProfile.controller';
 import SupplierAccountPaymentsCtrl from './account/payments/supplierAccountPayments.controller';

@@ -1,8 +1,8 @@
-export default class SupplierReportInvoiceDetailsCtrl {
-    constructor(TransactionsService, $stateParams, SupplierService) {
+export default class SupplierReportMonthlyDetailsCtrl {
+    constructor(MonthlyService, $stateParams, SupplierService) {
         this.$stateParams = $stateParams;
         this._SupplierService = SupplierService;
-        this._TransactionsService = TransactionsService;
+        this._MonthlyService = MonthlyService;
     }
     $onInit() {
         $.Pages.init();
@@ -19,14 +19,14 @@ export default class SupplierReportInvoiceDetailsCtrl {
             this.errors = err.data.data;
         };
 
-        this._TransactionsService.getInvoice(searchCriteria).then(_onSuccess, _onError);
+        this._MonthlyService.getInvoice(searchCriteria).then(_onSuccess, _onError);
     }
     exportFile() {
-        this._TransactionsService.exportInvoiceDetailsFile(this.searchCriteria);
+        this._MonthlyService.exportInvoiceDetailsFile(this.searchCriteria);
     }
     printFile(query) {
         this._SupplierService.printFile(this.$stateParams.id, query);
     }
 }
 
-SupplierReportInvoiceDetailsCtrl.$inject = ['TransactionsService', '$stateParams', 'SupplierService'];
+SupplierReportMonthlyDetailsCtrl.$inject = ['MonthlyService', '$stateParams', 'SupplierService'];

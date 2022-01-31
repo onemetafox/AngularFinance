@@ -2,18 +2,18 @@
 <div class="container">
     <ol class="breadcrumb breadcrumb-alt">
         <li class="breadcrumb-item"><a ui-sref="app.supplier.report.orders">{{"supplier.reports.transactions.stats.reports" | translate }}</a></li>
-        <li class="breadcrumb-item active">{{"supplier.reports.invoices.title" | translate }}</li>
+        <li class="breadcrumb-item active">{{"supplier.reports.monthly.title" | translate }}</li>
     </ol>
 </div>
 <div class="row">
     <div class="col-xl-3 col-sm-6 m-b-20">
         <div class="border-top-balance-card">
             <div class="p-t-10 p-b-10 p-l-15 p-r-15">
-                <h6>{{"supplier.reports.invoices.title" | translate }}</h6>
+                <h6>{{"supplier.reports.monthly.title" | translate }}</h6>
                 <shimmer hide="$ctrl.reportIsLoaded" row="1" clipped="true"></shimmer>
                 <h5 ng-if="$ctrl.reportIsLoaded" class="bold">{{$ctrl.numberOfInvoices}}
                     <small>
-                        <small class="w300 sm-text-left upper-case">{{"supplier.reports.invoices.invoiceTitle" | translate }}</small>
+                        <small class="w300 sm-text-left upper-case">{{"supplier.reports.monthly.invoiceTitle" | translate }}</small>
                     </small>
                 </h5>
             </div>
@@ -35,11 +35,11 @@
     <div class="col-xl-3 col-sm-6 m-b-20">
         <div class="border-top-balance-card">
             <div class="p-t-10 p-b-10 p-l-15 p-r-15">
-                <h6>{{"supplier.reports.invoices.averageInvoices" | translate }}</h6>
+                <h6>{{"supplier.reports.monthly.averageInvoices" | translate }}</h6>
                 <shimmer hide="$ctrl.reportIsLoaded" row="1" clipped="true"></shimmer>
                 <h5 ng-if="$ctrl.reportIsLoaded" class="bold">{{$ctrl.avgDailyNumberOfInvoices | number:1}}
                     <small>
-                        <small class="w300 sm-text-left upper-case">{{"supplier.reports.invoices.invoiceTitle" | translate }}</small>
+                        <small class="w300 sm-text-left upper-case">{{"supplier.reports.monthly.invoiceTitle" | translate }}</small>
                     </small>
                 </h5>
             </div>
@@ -62,7 +62,7 @@
 <div class="card">
     <div class="gray-container">
         <div class="row">
-            <div class="col"><p class="bold text-uppercase p-t-5 p-l-10 p-r-10">{{"supplier.reports.invoices.title" | translate }}</p></div>
+            <div class="col"><p class="bold text-uppercase p-t-5 p-l-10 p-r-10">{{"supplier.reports.monthly.title" | translate }}</p></div>
             <div class="col d-flex justify-content-start justify-content-sm-end mb-3 mb-sm-0">
                 <small class="text-uppercase p-t-10 p-l-10 p-r-10">{{"supplier.reports.transactions.filter.export" | translate }}</small>
                 <div class="btn-toolbar" role="toolbar">
@@ -71,15 +71,7 @@
                         </button>
                     </div>
                 </div>
-                <small class="text-uppercase p-t-10 p-l-10 p-r-10">{{"supplier.reports.transactions.filter.monthlyinvoice" | translate }}</small>
-                <div class="btn-toolbar" role="toolbar">
-                    <div dir="ltr" class="btn-group btn-group-sm">
-                        <button type="button" class="btn btn-primary" ng-click="$ctrl.createMonthlyInvoice()"><iclass="fa fa-file-pdf-o"></i> CREATE
-                        </button>
-                    </div>
-                </div>
             </div>
-
         </div>
         <div class="card-header p-t-0" style="min-height: 20px">
             <div class="card-title">
@@ -103,7 +95,7 @@
             </div>
             <div class="col-sm-4">
                 <div style="z-index:1;" class="form-group form-group-custom form-group-default form-group-default-select2">
-                    <label class="label-custom">{{"supplier.reports.invoices.branchName" | translate }}</label>
+                    <label class="label-custom">{{"supplier.reports.monthly.branchName" | translate }}</label>
                     <select ng-model="$ctrl.searchCriteria.branchId" ng-change="$ctrl.onBranchFilterChange($ctrl.searchCriteria)" id="branchSelect"
                             class="full-width" data-placeholder="Select Branch" data-init-plugin="select2">
                         <option value="">اختر</option>
@@ -136,11 +128,11 @@
                     <table class="table table-striped table-compact table-hover">
                         <thead>
                         <tr role="row">
-                            <th class="bold" width="100">{{"supplier.reports.invoices.number" | translate }}</th>
+                            <th class="bold" width="100">{{"supplier.reports.monthly.number" | translate }}</th>
                             <th class="bold">{{"supplier.reports.transactions.table.date" | translate }}</th>
                             <th class="bold">{{"supplier.reports.transactions.filter.customer" | translate }}</th>
                             <th class="bold">{{"supplier.reports.transactions.table.amount" | translate }}</th>
-                            <th class="bold">{{"supplier.reports.invoices.branchName" | translate }}</th>
+                            <th class="bold">{{"supplier.reports.monthly.branchName" | translate }}</th>
                         </tr></thead>
                         <tbody>
 
