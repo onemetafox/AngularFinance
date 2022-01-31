@@ -3,7 +3,6 @@ import httpStatus from 'http-status';
 import moment from 'moment-timezone';
 import appSettings from '../../appSettings';
 import Response from '../services/response.service';
-import Invoice from '../models/invoice.model';
 import Payments from '../models/pendingPayment.model';
 import Supplier from '../models/supplier.model';
 import Customer from '../models/customer.model';
@@ -180,7 +179,7 @@ function getInvoices(req, res){
       const differencems = date2ms - date1ms;
       // Convert back to days and return
       const diff = Math.round(differencems / oneday);
-      Invoice.aggregate([
+      MonthlyInvoice.aggregate([
         {
           $match: query
         },{
@@ -242,7 +241,6 @@ function getInvoices(req, res){
 }
 
 function getNumberInvoices(req, supplierInvoiceReport, callback){
-
   const startDate = new Date(req.query.startDate.toString());
   const endDate = new Date(req.query.endDate.toString());
   endDate.setDate(endDate.getDate() + 1);
@@ -252,134 +250,20 @@ function getNumberInvoices(req, supplierInvoiceReport, callback){
     $and: [{ supplier: req.user._id }]
   };
   
-  let branchMatch = {};
   if(req.query.branchId !== "All"){
-    branchMatch = {branch : req.query.branchId};
-  }else{
-    branchMatch = {};
+    query.branchId=  req.query.branchId;
   }
-  
   if(req.query.customerId !== "All"){
-    Customer.findById(req.query.customerId).then((customer)=>{
-      Invoice.find(query)
-      .populate('supplier')
-      .populate('customer')
-      .populate({
-          path: 'order',
-          match: branchMatch
-      })
-      .then((acceptedInvoices) => {
-        var invoices = [];
-        if(acceptedInvoices.length != 0){
-          acceptedInvoices.forEach((acceptedInvoicesObj) => {
-            if((acceptedInvoicesObj.customer.customer == req.query.customerId || acceptedInvoicesObj.customer._id == req.query.customerId)){
-              let invoice = {};
-              invoice = {
-                invoice_id: acceptedInvoicesObj._id,
-                invoiceId: acceptedInvoicesObj.invoiceId,
-                supplier: acceptedInvoicesObj.supplier,
-                // customer: acceptedInvoicesObj.customer,
-                customer: customer,
-                order : acceptedInvoicesObj.order,
-                isPaid: acceptedInvoicesObj.isPaid,
-                total: acceptedInvoicesObj.total,
-                close: acceptedInvoicesObj.close,
-                price : acceptedInvoicesObj.price,
-                VAT: acceptedInvoicesObj.VAT,
-                createdAt: acceptedInvoicesObj.createdAt
-              };
-              invoices.push(invoice);
-            }
-          });
-          supplierInvoiceReport.invoices = invoices;
-          supplierInvoiceReport.numberOfInvoices = invoices.length;
-          callback(null, supplierInvoiceReport);
-        }else{
-          supplierInvoiceReport.invoices = [];
-          supplierInvoiceReport.numberOfInvoices = 0;
-          callback(null, supplierInvoiceReport);
-        }
-      });
-    })
-  }else{
-    Invoice.find(query)
-      .populate('supplier')
-      .populate({
-          path: 'order',
-          match: branchMatch
-      })
-      //.skip(Number(skip))
-      // .limit(Number(limit))
-      .then((acceptedInvoices) => {
-        if(acceptedInvoices){
-           Customer.aggregate(
-            {
-              $lookup: {
-                from: 'customers',
-                localField: '_id',
-                foreignField: 'customer',
-                as: 'Staffs'
-              }
-              
-            },
-            {$match : {type: 'Customer'}}
-            
-          ).then((customers)=>{
-            var invoices = [];
-            customers.forEach(customer => {
-              acceptedInvoices.forEach(acceptedInvoicesObj => {
-                if(customer._id.toString() == acceptedInvoicesObj.customer.toString()){
-                  let invoice = {};
-                  invoice = {
-                    invoice_id: acceptedInvoicesObj._id,
-                    invoiceId: acceptedInvoicesObj.invoiceId,
-                    supplier: acceptedInvoicesObj.supplier,
-                    customer: customer,
-                    order : acceptedInvoicesObj.order,
-                    isPaid: acceptedInvoicesObj.isPaid,
-                    total: acceptedInvoicesObj.total,
-                    close: acceptedInvoicesObj.close,
-                    price : acceptedInvoicesObj.price,
-                    VAT: acceptedInvoicesObj.VAT,
-                    createdAt: acceptedInvoicesObj.createdAt
-                  };
-                  invoices.push(invoice);
-                }else{
-                  customer.Staffs.forEach(staff => {
-                    if(staff._id.toString() == acceptedInvoicesObj.customer.toString()){
-                      let invoice = {};
-                      invoice = {
-                        invoice_id: acceptedInvoicesObj._id,
-                        invoiceId: acceptedInvoicesObj.invoiceId,
-                        supplier: acceptedInvoicesObj.supplier,
-                        customer: customer,
-                        order : acceptedInvoicesObj.order,
-                        isPaid: acceptedInvoicesObj.isPaid,
-                        total: acceptedInvoicesObj.total,
-                        close: acceptedInvoicesObj.close,
-                        price : acceptedInvoicesObj.price,
-                        VAT: acceptedInvoicesObj.VAT,
-                        createdAt: acceptedInvoicesObj.createdAt
-                      };
-                      invoices.push(invoice);
-                    }
-                  });
-                }
-              });
-            });
-            
-            supplierInvoiceReport.invoices = invoices;
-             
-            supplierInvoiceReport.numberOfInvoices = invoices.length;
-            callback(null, supplierInvoiceReport);
-          })         
-        }else{
-          supplierInvoiceReport.invoices = [];
-          supplierInvoiceReport.numberOfInvoices = 0;
-          callback(null, supplierInvoiceReport);
-        }
-      });
+    query.customer = req.query.customerId;
   }
+  MonthlyInvoice.find(query)
+  .populate('customer')
+  .populate('branch')
+  .then((result)=>{
+    supplierInvoiceReport.invoices = result;
+    supplierInvoiceReport.numberOfInvoices = result.length;
+    callback(null, supplierInvoiceReport);
+  })
 }
 function create(req, res) {
   if (req.user.type === 'Admin') {
