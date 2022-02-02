@@ -124,8 +124,7 @@ export default class SupplierReportInvoicesCtrl {
             this.message = 'supplier.account.profile.message.failure';
             this.notify(this.message, 'danger', 5000);
         }else{
-            console.log(this.searchCriteria);
-            // this._TransactionsService.createMonthlyInvoice(this.searchCriteria).then(_onSuccess, _onError).finally(_onFinal);
+            this._TransactionsService.createMonthlyInvoice(this.searchCriteria).then(_onSuccess, _onError).finally(_onFinal);
         }
     }
     notify(message, type, timeout) {

@@ -21,7 +21,7 @@ const MonthlyInvoice = new mongoose.Schema({
     ref: 'Customer',
     required: false
   },
-  branchId: {
+  branch: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Branch',
     required: false

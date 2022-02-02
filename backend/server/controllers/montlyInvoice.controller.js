@@ -11,6 +11,7 @@ import Order from '../models/order.model';
 import ExportService from './exportFileService';
 import OrderProduct from '../models/orderProduct.model';
 import MonthlyInvoice from '../models/monthlyInvoice.model';
+import { query } from 'winston';
 
 var QRCode = require('qrcode')
 // const moment = require('moment-timezone');
@@ -90,57 +91,72 @@ function createInvoice(req, res){
   let query = {
     $and: [{ supplier: req.user._id },{startDate: startDate}, {endDate: endDate}, {customer:req.query.customerId}]
   };
-  if(req.query.branchId){
-    query.branchId = req.query.branchId
+  var branch = null;
+  if(req.query.branchId !== "All"){
+    query.branch = req.query.branchId
+    branch = req.query.branchId;
+  }else{
+    query.branch = {$eq: null }
+    branch = null;
   }
-  
-  MonthlyInvoice.find(query, function(err, result){
-    if(result.length == 0){
-      async.waterfall([
-        function passParameter(callback) {
-          callback(null, req, supplierInvoiceReport);
-        },
-        getNumberInvoices,
-      ], (err, result) => {
-        if (err) {
-          res.status(httpStatus.INTERNAL_SERVER_ERROR).json(Response.failure(err));
-        } else {
-            var price = 0;
-            var VAT = 0;
-            var total = 0;
-            var temp = [];
-            console.log(result.invoices);
-            if(result.invoices.length != 0){
-              result.invoices.forEach((invoice)=>{
-                price += invoice.price;
-                total += invoice.total;
-                VAT += invoice.VAT;
-                temp.push(invoice.invoice_id);
-              })
-              const nextInvoiceId = moment().tz(appSettings.timeZone).format('x');
-              const monthlyInvoiceObj = new MonthlyInvoice({
-                invoiceId: `${appSettings.monthlyPrefix}${nextInvoiceId}`,
-                supplier: supplierId,
-                customer: req.query.customerId,
-                branchId: req.query.branchId,
-                createdAt: moment().tz(appSettings.timeZone).format(appSettings.momentFormat),
-                startDate: startDate,
-                endDate: endDate,
-                price: price,
-                total: total,
-                VAT: VAT,
-                invoices: temp
-              });
-              monthlyInvoiceObj.save(function(err, result){
-                res.json(Response.success(result));
-              });
-            }else{
-              res.json(Response.failure("Invoice is not existed"));
-            }
-        }
-      });
-    }else{
-      res.json(Response.failure("Invoice already created"))
+  MonthlyInvoice.find(query, function(err, data){
+    if(err){
+      console.log(err);
+    }else {
+      if(data.length == 0){
+        async.waterfall([
+          function passParameter(callback) {
+            callback(null, req, supplierInvoiceReport);
+          },
+          getNumberInvoices,
+        ], (err, result) => {
+          if (err) {
+            res.status(httpStatus.INTERNAL_SERVER_ERROR).json(Response.failure(err));
+          } else {
+
+              var price = 0;
+              var VAT = 0;
+              var total = 0;
+              var temp = [];
+              if(result.invoices.length != 0){
+                result.invoices.forEach((invoice)=>{
+                  price += invoice.price;
+                  total += invoice.total;
+                  VAT += invoice.VAT;
+                  temp.push(invoice.invoice_id);
+                })
+                const nextInvoiceId = moment().tz(appSettings.timeZone).format('x');
+
+                const monthlyInvoiceObj = new MonthlyInvoice({
+                  invoiceId: `${appSettings.monthlyPrefix}${nextInvoiceId}`,
+                  supplier: supplierId,
+                  customer: req.query.customerId,
+                  branch: branch,
+                  createdAt: moment().tz(appSettings.timeZone).format(appSettings.momentFormat),
+                  startDate: startDate,
+                  endDate: endDate,
+                  price: price,
+                  total: total,
+                  VAT: VAT,
+                  invoices: temp
+                });
+                console.log(monthlyInvoiceObj);
+
+                monthlyInvoiceObj.save(function(err, result){
+                  if(err){
+                    console.log(error)
+                  }else{
+                    res.json(Response.success(result));  
+                  }
+                });
+              }else{
+                res.json(Response.failure("Invoice is not existed"));
+              }
+          }
+        });
+      }else{
+        res.json(Response.failure("Invoice already created"))
+      }
     }
   })
 }
@@ -165,7 +181,7 @@ function getInvoices(req, res){
     function passParameter(callback) {
       callback(null, req, supplierInvoiceReport);
     },
-    getNumberInvoices,
+    getMonthlyInvoices,
     function getRevenue(supplierInvoiceReport, callback) {
       const revenue = supplierInvoiceReport.invoices
         .reduce((sum, row) => sum + row.price, 0);
@@ -273,7 +289,7 @@ function getNumberInvoices(req, supplierInvoiceReport, callback){
         if(acceptedInvoices){
           var invoices = [];
           acceptedInvoices.forEach((acceptedInvoicesObj) => {
-            if((acceptedInvoicesObj.customer.customer == req.query.customerId || acceptedInvoicesObj.customer._id == req.query.customerId)){
+            if((acceptedInvoicesObj.customer.customer == req.query.customerId || acceptedInvoicesObj.customer._id == req.query.customerId) && acceptedInvoicesObj.order){
               let invoice = {};
               invoice = {
                 invoice_id: acceptedInvoicesObj._id,
@@ -428,7 +444,31 @@ function getInvoice(req, res){
     });
   });
 }
+function getMonthlyInvoices(req, supplierInvoiceReport, callback){
+  const startDate = new Date(req.query.startDate.toString());
+  const endDate = new Date(req.query.endDate.toString());
+  endDate.setDate(endDate.getDate() + 1);
 
+  let query = {
+    createdAt: { $gte: startDate, $lte: endDate },
+    $and: [{ supplier: req.user._id }]
+  };
+
+  if(req.query.branchId !== "All"){
+    query.branchId=  req.query.branchId;
+  }
+  if(req.query.customerId !== "All"){
+    query.customer = req.query.customerId;
+  }
+  MonthlyInvoice.find(query)
+  .populate('customer')
+  .populate('branch')
+  .then((result)=>{
+    supplierInvoiceReport.invoices = result;
+    supplierInvoiceReport.numberOfInvoices = result.length;
+    callback(null, supplierInvoiceReport);
+  })
+}
 function load(req, res, next, id) {
   Invoice.findById(id)
     .populate({
