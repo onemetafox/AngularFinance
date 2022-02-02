@@ -105,28 +105,7 @@ export default class SupplierReportMonthlyCtrl {
         this._SupplierService.getBranchesByCustomerId(customerId)
             .then(_onSuccess, _onError);    
     }
-    createMonthlyInvoice(){
-        const _onSuccess = (res) => {
-            if(res.data.status == "success"){
-                this.createSuccess = true;
-                this.message = 'supplier.account.profile.message.success';
-                this.notify(this.message, 'danger', 5000);
-            }
-        };
-        const _onError = (err) => {
-            this.error = err.data.data;
-        };
-        const _onFinal = (err) => {
-            this.reportIsLoaded = true;
-        };
-        if(this.searchCriteria.customerId == "All"){
-            this.validation = true;
-            this.message = 'supplier.account.profile.message.failure';
-            this.notify(this.message, 'danger', 5000);
-        }else{
-            this._MonthlyService.createMonthlyInvoice(this.searchCriteria).then(_onSuccess, _onError).finally(_onFinal);
-        }
-    }
+    
     notify(message, type, timeout) {
         this._$translate(message).then((translation) => {
             $('body')

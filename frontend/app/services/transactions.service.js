@@ -147,7 +147,7 @@ export default class TransactionsService {
     }
     createMonthlyInvoice(param){
         const request = {};
-        request.url = `${this._AppConstants.api}/monthlyinvoices/create?customerId=${param.customerId}&startDate=${param.startDate}&endDate=${param.endDate}`;
+        request.url = `${this._AppConstants.api}/monthlyinvoices/create?customerId=${param.customerId}&branchId=${param.branchId}&startDate=${param.startDate}&endDate=${param.endDate}`;
         request.method = 'GET';
         request.headers = { 'Content-Type': 'application/json' };
         request.headers.Authorization = `Bearer ${this._JwtService.get()}`;
