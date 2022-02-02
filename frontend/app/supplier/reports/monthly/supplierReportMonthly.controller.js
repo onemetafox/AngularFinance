@@ -57,11 +57,7 @@ export default class SupplierReportMonthlyCtrl {
             var i;
             for(var i= 0; i<res.data.data.invoices.length;i++) {
                 var inv_item = res.data.data.invoices[i];
-
-                if(inv_item.order!==null){
-                    tempArray.push(inv_item);
-                }
-
+                tempArray.push(inv_item);
             } 
             this.invoice = tempArray;
             this.numberOfInvoices = res.data.data.numberOfInvoices;

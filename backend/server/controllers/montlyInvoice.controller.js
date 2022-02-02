@@ -140,7 +140,6 @@ function createInvoice(req, res){
                   VAT: VAT,
                   invoices: temp
                 });
-                console.log(monthlyInvoiceObj);
 
                 monthlyInvoiceObj.save(function(err, result){
                   if(err){
@@ -455,7 +454,7 @@ function getMonthlyInvoices(req, supplierInvoiceReport, callback){
   };
 
   if(req.query.branchId !== "All"){
-    query.branchId=  req.query.branchId;
+    query.branch =  req.query.branchId;
   }
   if(req.query.customerId !== "All"){
     query.customer = req.query.customerId;
