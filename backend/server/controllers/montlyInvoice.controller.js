@@ -120,7 +120,7 @@ function createInvoice(req, res){
                 invoiceId: `${appSettings.monthlyPrefix}${nextInvoiceId}`,
                 supplier: supplierId,
                 customer: req.query.customerId,
-                branch: req.query.branchId,
+                branchId: req.query.branchId,
                 createdAt: moment().tz(appSettings.timeZone).format(appSettings.momentFormat),
                 startDate: startDate,
                 endDate: endDate,
