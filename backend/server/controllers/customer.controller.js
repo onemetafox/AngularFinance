@@ -325,13 +325,13 @@ function create(req, res) {
  */
 function update(req, res) {
   // Update the customer user.
+  const email = req.user.email;
   const user = req.user;
   user.firstName = req.body.user.firstName.toLowerCase();
   user.lastName = req.body.user.lastName.toLowerCase();
   user.language = req.body.user.language;
   user.email = req.body.user.email.toLowerCase();
   user.save();
-
   async.waterfall([
       // updatedUser: parallelCallback => updateUser(user, parallelCallback),
       // customer: parallelCallback => getCustomer(user._id, parallelCallback)
@@ -356,6 +356,9 @@ function update(req, res) {
         customer.photo = req.body.photo;
         customer.branch = req.body.branchId ? req.body.branchId : customer.branch;
         customer.coverPhoto = req.body.coverPhoto;
+        if(customer.type == "Staff"){
+          customer.representativeEmail = req.body.email.toLowerCase();
+        }
         if (req.body.commercialRegisterExpireDate && (moment(req.body.commercialRegisterExpireDate).diff(moment(), 'days') > appSettings.dateExpireValidation)) {
           res.status(httpStatus.BAD_REQUEST).json(Response.failure(20));
         } else if (req.body.commercialRegisterExpireDate && (moment(req.body.commercialRegisterExpireDate).isSameOrBefore(moment()))) {
@@ -401,9 +404,19 @@ function update(req, res) {
                 };
                 EmailHandler.sendEmail(updatedCustomer.user.email, content, 'UPDATEUSER', updatedCustomer.user.language);
               }
-              res.json(Response.success(resultObject));
+              if(updatedCustomer.type == "Staff"){
+                resultObject.representativeEmail = updatedCustomer.representativeEmail.toLowerCase();
+                res.json(Response.success(resultObject));
+              }else{
+                CustomerInvite.update({customerEmail : email},{customerEmail: user.email})
+                .then((result)=>{
+                  res.json(Response.success(resultObject));
+                })
+                .catch(e=>res.status(httpStatus.INTERNAL_SERVER_ERROR).json(e));
+              }
             })
-            .catch(e => res.status(httpStatus.INTERNAL_SERVER_ERROR).json(e));
+            // .catch(e => res.status(httpStatus.INTERNAL_SERVER_ERROR).json(e));
+            .catch((e)=> {console.log(e)});
         }
       }
     });
