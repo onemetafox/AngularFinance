@@ -239,14 +239,14 @@ function getInvoices(req, res){
       res.status(httpStatus.INTERNAL_SERVER_ERROR).json(Response.failure(err));
     } else if (req.query.export) {
       if (req.user.language === 'en') {
-        ExportService.exportFile(`report_template/invoiceReport/invoice-report-header-english.html`,
-          `report_template/invoiceReport/invoice-report-body-english.html`, result,
+        ExportService.exportFile(`report_template/monthlyReport/invoice-report-header-english.html`,
+          `report_template/monthlyReport/invoice-report-body-english.html`, result,
           'Invoice Report', `From: ${moment(startDate).tz(appSettings.timeZone).format('DD-MM-YYYY')} To: ${moment(endDate).tz(appSettings.timeZone).subtract(1, 'days').format('DD-MM-YYYY')}`, req.query.export, res
           );
         // res.download(`report.${req.query.export}`, `SUPReport.${req.query.export}`);
       } else {
-        ExportService.exportFile(`report_template/invoiceReport/invoice-report-header-arabic.html`,
-          `report_template/invoiceReport/invoice-report-body-arabic.html`, result,
+        ExportService.exportFile(`report_template/monthlyReport/invoice-report-header-arabic.html`,
+          `report_template/monthlyReport/invoice-report-body-arabic.html`, result,
           'تقرير المعاملات النقدية', `من: ${moment(startDate).tz(appSettings.timeZone).format('DD-MM-YYYY')} إلى: ${moment(endDate).tz(appSettings.timeZone).subtract(1, 'days').format('DD-MM-YYYY')}`, req.query.export, res);
         // res.download(`report.${req.query.export}`, `SUPReport.${req.query.export}`);
       }
