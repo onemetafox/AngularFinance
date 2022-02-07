@@ -145,12 +145,8 @@ export default class SupplierReportMonthlyCtrl {
         this._MonthlyService.exportInvoiceFile(this.searchCriteria);
     }
     selected(item) {
-        const invoice = { id: item.invoice_id };
-        this._$state.go('app.supplier.report.invoiceDetails', invoice);
-        // if (item.type === 'debit') {
-        // } else {
-        //     this.openReportDetails(item);
-        // }
+        const invoice = { id: item._id };
+        this._$state.go('app.supplier.report.monthlyDetails', invoice);
     }
 }
 
