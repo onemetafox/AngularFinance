@@ -15,7 +15,6 @@ import { query } from 'winston';
 
 var QRCode = require('qrcode')
 // const moment = require('moment-timezone');
-
 function get(req, res) {
   const invoice = req.invoice;
 
@@ -74,6 +73,72 @@ function list(req, res) {
     .then((invoices) => {
       res.json(Response.success(invoices));
     });
+}
+function create(req, res) {
+  if (req.user.type === 'Admin') {
+    Payments.find({ $and: [{ status: 'Pending' }, { customer: null }, { supplier: req.query.supplierId }] })
+      .populate({
+        path: 'supplier',
+        select: '_id representativeName'
+      })
+      .then((payments) => {
+        const invoiceObject = new Invoice({
+          payments,
+          supplier: payments[0].supplier,
+          dueDate: moment().add(Number(appSettings.duePaymentDays), 'days').tz(appSettings.timeZone).format(appSettings.momentFormat),
+          createdAt: moment().tz(appSettings.timeZone).format(appSettings.momentFormat)
+        });
+        invoiceObject.save()
+          .then((invoiceSaved) => {
+            payments.forEach((paymentObj) => {
+              paymentObj.invoice = invoiceSaved._id;
+              paymentObj.save();
+            });
+            res.json(Response.success(invoiceSaved));
+          })
+          .catch(e => res.status(httpStatus.INTERNAL_SERVER_ERROR).json(e));
+      });
+  }
+  if (req.user.type === 'Supplier') {
+    async.waterfall([
+      function passParameter(callback) {
+        callback(null, req.user._id);
+      },
+      getSupplierFromUser
+    ], (err, result) => {
+      Payments.find({ $and: [{ status: 'Pending' }, { supplier: result }, { customer: req.query.customerId }] })
+        .populate({
+          path: 'supplier',
+          select: '_id representativeName'
+        })
+        .populate({
+          path: 'customer',
+          select: '_id representativeName'
+        })
+        .then((payments) => {
+          Customer.findById(req.query.customerId)
+            .select('_id representativeName')
+            .then((customer) => {
+              const invoiceObject = new Invoice({
+                payments,
+                supplier: result,
+                customer,
+                dueDate: moment().add(Number(appSettings.duePaymentDays), 'days').tz(appSettings.timeZone).format(appSettings.momentFormat),
+                createdAt: moment().tz(appSettings.timeZone).format(appSettings.momentFormat)
+              });
+              invoiceObject.save()
+                .then((invoiceSaved) => {
+                  payments.forEach((paymentObj) => {
+                    paymentObj.invoice = invoiceSaved._id;
+                    paymentObj.save();
+                  });
+                  res.json(Response.success(invoiceSaved));
+                })
+                .catch(e => res.status(httpStatus.INTERNAL_SERVER_ERROR).json(e));
+            });
+        });
+    });
+  }
 }
 function createInvoice(req, res){
   const startDate = new Date(req.query.startDate.toString());
@@ -238,10 +303,11 @@ function getInvoices(req, res){
     if (err) {
       res.status(httpStatus.INTERNAL_SERVER_ERROR).json(Response.failure(err));
     } else if (req.query.export) {
+      // console.log(result);
       if (req.user.language === 'en') {
         ExportService.exportFile(`report_template/monthlyReport/invoice-report-header-english.html`,
           `report_template/monthlyReport/invoice-report-body-english.html`, result,
-          'Invoice Report', `From: ${moment(startDate).tz(appSettings.timeZone).format('DD-MM-YYYY')} To: ${moment(endDate).tz(appSettings.timeZone).subtract(1, 'days').format('DD-MM-YYYY')}`, req.query.export, res
+          'Monthly Invoice Report', `From: ${moment(startDate).tz(appSettings.timeZone).format('DD-MM-YYYY')} To: ${moment(endDate).tz(appSettings.timeZone).subtract(1, 'days').format('DD-MM-YYYY')}`, req.query.export, res
           );
         // res.download(`report.${req.query.export}`, `SUPReport.${req.query.export}`);
       } else {
@@ -319,128 +385,80 @@ function getNumberInvoices(req, supplierInvoiceReport, callback){
     })
   }
 }
-function create(req, res) {
-  if (req.user.type === 'Admin') {
-    Payments.find({ $and: [{ status: 'Pending' }, { customer: null }, { supplier: req.query.supplierId }] })
-      .populate({
-        path: 'supplier',
-        select: '_id representativeName'
-      })
-      .then((payments) => {
-        const invoiceObject = new Invoice({
-          payments,
-          supplier: payments[0].supplier,
-          dueDate: moment().add(Number(appSettings.duePaymentDays), 'days').tz(appSettings.timeZone).format(appSettings.momentFormat),
-          createdAt: moment().tz(appSettings.timeZone).format(appSettings.momentFormat)
-        });
-        invoiceObject.save()
-          .then((invoiceSaved) => {
-            payments.forEach((paymentObj) => {
-              paymentObj.invoice = invoiceSaved._id;
-              paymentObj.save();
-            });
-            res.json(Response.success(invoiceSaved));
-          })
-          .catch(e => res.status(httpStatus.INTERNAL_SERVER_ERROR).json(e));
-      });
-  }
-  if (req.user.type === 'Supplier') {
-    async.waterfall([
-      function passParameter(callback) {
-        callback(null, req.user._id);
-      },
-      getSupplierFromUser
-    ], (err, result) => {
-      Payments.find({ $and: [{ status: 'Pending' }, { supplier: result }, { customer: req.query.customerId }] })
-        .populate({
-          path: 'supplier',
-          select: '_id representativeName'
-        })
-        .populate({
-          path: 'customer',
-          select: '_id representativeName'
-        })
-        .then((payments) => {
-          Customer.findById(req.query.customerId)
-            .select('_id representativeName')
-            .then((customer) => {
-              const invoiceObject = new Invoice({
-                payments,
-                supplier: result,
-                customer,
-                dueDate: moment().add(Number(appSettings.duePaymentDays), 'days').tz(appSettings.timeZone).format(appSettings.momentFormat),
-                createdAt: moment().tz(appSettings.timeZone).format(appSettings.momentFormat)
-              });
-              invoiceObject.save()
-                .then((invoiceSaved) => {
-                  payments.forEach((paymentObj) => {
-                    paymentObj.invoice = invoiceSaved._id;
-                    paymentObj.save();
-                  });
-                  res.json(Response.success(invoiceSaved));
-                })
-                .catch(e => res.status(httpStatus.INTERNAL_SERVER_ERROR).json(e));
-            });
-        });
-    });
-  }
-}
+
 function getInvoice(req, res){
 
-  const QRUrl = "http://dev.supplieson.com/api/invoices/getInvoice?";
+  const QRUrl = "http://supplieson.com/api/invoices/getInvoice?";
   
-  Invoice.findOne({_id : req.query.id})
+  MonthlyInvoice.findOne({_id : req.query.id})
   .populate('customer')
-  .populate('order')
+  .populate('branch')
   .then((invoiceDetail) => {
-    var order = invoiceDetail.order;
-    new Promise((resolve, reject) => {
-      OrderProduct.find({order: order._id}).populate('product').then((product) => {
-        order['_doc']['orderProduct'] = product;
-        resolve(invoiceDetail, order);
-      });
-    }).then((invoiceDetail, order)=>{
-      Customer.findById(invoiceDetail.customer.customer).then((customer)=>{
-        invoiceDetail.customer = customer;
-        Supplier.findOne()
-          .where('staff').in([invoiceDetail.supplier])
-          .then((supplier) => {
-            invoiceDetail.supplier = supplier;
-            
-            if(req.query.export){
-              QRCode.toDataURL(QRUrl + "id="+invoiceDetail._doc._id+"&export=pdf", function (err, url) {
-                invoiceDetail._doc.image = url;
-                if(req.user){
-                  if (req.user.language === 'en') {
-                    ExportService.exportFile(`report_template/invoice/invoice-header-english.html`,
-                      `report_template/invoice/invoice-body-english.html`, invoiceDetail._doc,
-                      invoiceDetail._doc.invoiceId, ``, req.query.export, res
-                      );
-                    // res.download(`report.${req.query.export}`, `SUPReport.${req.query.export}`);
-                  } else {
-                    ExportService.exportFile(`report_template/invoice/invoice-header-arabic.html`,
-                      `report_template/invoice/invoice-body-arabic.html`, invoiceDetail._doc,
-                      'تقرير المعاملات النقدية', `من:`, req.query.export, res);
-                    // res.download(`report.${req.query.export}`, `SUPReport.${req.query.export}`);
+    // console.log(invoiceDetail);
+    Supplier.findOne()
+      .where('staff').in([invoiceDetail.supplier])
+      .then((supplier) => {
+        invoiceDetail.supplier = supplier;
+        var orders = [];
+        async.waterfall([
+          function passParameter(callback) {
+            let transIndex = 0;
+            let products = [];
+            invoiceDetail.invoices.forEach((invoice_id) => {
+              Invoice.findOne({_id : invoice_id})
+              .populate('order')
+              .then((invoice) => {
+                var order = invoice.order;
+                new Promise((resolve, reject) => {
+                  OrderProduct.find({order: order._id}).populate('product').then((product) => {
+                    product.forEach((item)=>{
+                      products.push(item);  
+                    })
+                    resolve(invoice, order);
+                  });
+                }).then((invoice, order)=>{
+                  transIndex += 1;
+                  if (transIndex === invoiceDetail.invoices.length) {
+                    callback(null, products);
                   }
-                }else{
+                });
+              });
+            });
+          }
+        ], (err, result) => {
+          invoiceDetail['_doc']['products'] = result;
+          if(req.query.export){
+            QRCode.toDataURL(QRUrl + "id="+invoiceDetail._doc._id+"&export=pdf", function (err, url) {
+              invoiceDetail._doc.image = url;
+              if(req.user){
+                if (req.user.language === 'en') {
                   ExportService.exportFile(`report_template/invoice/invoice-header-english.html`,
-                      `report_template/invoice/invoice-body-english.html`, invoiceDetail._doc,
-                      invoiceDetail._doc.invoiceId, ``, req.query.export, res
-                  );
+                    `report_template/invoice/invoice-body-english.html`, invoiceDetail._doc,
+                    invoiceDetail._doc.invoiceId, ``, req.query.export, res
+                    );
+                  // res.download(`report.${req.query.export}`, `SUPReport.${req.query.export}`);
+                } else {
+                  ExportService.exportFile(`report_template/invoice/invoice-header-arabic.html`,
+                    `report_template/invoice/invoice-body-arabic.html`, invoiceDetail._doc,
+                    'تقرير المعاملات النقدية', `من:`, req.query.export, res);
                   // res.download(`report.${req.query.export}`, `SUPReport.${req.query.export}`);
                 }
-              })
-            }else{
-              QRCode.toDataURL(QRUrl +"id="+invoiceDetail._doc._id+"&export=pdf", function (err, url) {
-                invoiceDetail._doc.image = url;
-                res.json(Response.success(invoiceDetail));
-              })
-                  
-            }
-          });
-      })
-    });
+              }else{
+                ExportService.exportFile(`report_template/invoice/invoice-header-english.html`,
+                    `report_template/invoice/invoice-body-english.html`, invoiceDetail._doc,
+                    invoiceDetail._doc.invoiceId, ``, req.query.export, res
+                );
+                // res.download(`report.${req.query.export}`, `SUPReport.${req.query.export}`);
+              }
+            })
+          }else{
+            QRCode.toDataURL(QRUrl +"id="+invoiceDetail._doc._id+"&export=pdf", function (err, url) {
+              invoiceDetail._doc.image = url;
+              res.json(Response.success(invoiceDetail));
+            })
+          }      
+        });
+      });
   });
 }
 function getMonthlyInvoices(req, supplierInvoiceReport, callback){

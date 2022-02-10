@@ -167,7 +167,7 @@
                             <td>{{"supplier.reports.invoices.taxAmount" | translate}}</td>
                             <td>{{"supplier.reports.invoices.itemSubtotal" | translate}}</td>
                         </tr>
-                        <tr ng-repeat="item in $ctrl.invoice.order.orderProduct" >
+                        <tr ng-repeat="item in $ctrl.invoice.products" >
                             <td>{{item.product.englishName}} - {{item.product.arabicName}}</td>
                             <td>{{item.price | currency:"":2}} <small>{{"supplier.account.payment.sar" | translate }}</small></td>
                             <td>{{item.quantity | currency:"":0}}</td>
