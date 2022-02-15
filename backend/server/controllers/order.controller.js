@@ -4156,7 +4156,6 @@ function deductingFromInventory(orderId, supplierId) {
 
       async.eachOfSeries(completeData, (recipe, key, callback) => {
         recipe.addIngredients.forEach((ingId) => {
-          console.log('ing', ingId);
           Ingredients.update({ _id: ingId.ingredientId }, { $inc: { quantity: parseInt(-1 * ingId.quantity * recipe.quantity) } }).exec();
         });
 

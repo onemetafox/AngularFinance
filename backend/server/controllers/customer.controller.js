@@ -126,7 +126,6 @@ function inviteExcel(req, res){
  * @returns {Customer}
  */
 function get(req, res) {
-  console.log(req.user);
   // Check if the user is a supplier and has access to this customer, or an admin or current user.
   if (req.user.type === 'Supplier') {
     async.waterfall([

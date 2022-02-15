@@ -412,7 +412,7 @@ function getInvoice(req, res){
                 new Promise((resolve, reject) => {
                   OrderProduct.find({order: order._id}).populate('product').then((product) => {
                     product.forEach((item)=>{
-                      products.push(item);  
+                      products.push(item);
                     })
                     resolve(invoice, order);
                   });
@@ -426,7 +426,38 @@ function getInvoice(req, res){
             });
           }
         ], (err, result) => {
-          invoiceDetail['_doc']['products'] = result;
+          var productList = [];
+          var arrayList =  [...new Set(result.map(item => item.product._id))];
+          let counts = {}
+
+          for(let i =0; i < arrayList.length; i++){ 
+            if (counts[arrayList[i]]){
+              counts[arrayList[i]] += 1;
+            } else {
+              counts[arrayList[i]] = 1;
+            }
+          }  
+          for (let prop in counts){
+            if (counts[prop] >= 2){
+              var quantity = 0;
+              var temp = {};
+              result.forEach((item)=>{
+                if(item.product._id == prop){
+                  temp = item;
+                  quantity += item.quantity
+                }
+              })
+              temp.quantity = quantity;
+              productList.push(temp);
+            }else{
+              result.forEach((item)=>{
+                if(item.product._id == prop){
+                  productList.push(item)
+                }
+              });
+            }
+          }
+          invoiceDetail['_doc']['products'] = productList;
           if(req.query.export){
             QRCode.toDataURL(QRUrl + "id="+invoiceDetail._doc._id+"&export=pdf", function (err, url) {
               invoiceDetail._doc.image = url;
