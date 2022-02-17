@@ -71,7 +71,7 @@
                   <td width="25%"></td>
                   <td width="25%"></td>
                   <td width="25%">Branch Name</td>
-                  <td width="25%">{{:data.order.branchName}}</td>
+                  <td width="25%">{{:data.branch.branchName}}</td>
               </tr>
               <tr>
                   <td width="25%">Street Name</td>
@@ -156,7 +156,7 @@
                   <td>Tax Amount</td>
                   <td>Item Subtotal(Including VAT)</td>
               </tr>
-              {{for data.order.orderProduct}}
+              {{for data.products}}
               <tr>
                   <td width="30%">{{:product.englishName}}<br>{{:product.arabicName}}</td>
                   <td>{{:price}} <small>SAR</small></td>
@@ -196,7 +196,7 @@
               </tr>
               <tr>
                   <td>Total Amount Due</td>
-                  <td>{{:data.price * 115/100}} <small>SAR</small></td>
+                  <td>{{:data.price*1.15}} <small>SAR</small></td>
               </tr>
           </tbody>
       </table>

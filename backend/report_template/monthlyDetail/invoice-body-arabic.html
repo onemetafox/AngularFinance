@@ -76,7 +76,7 @@
                   <td width="25%"></td>
                   <td width="25%"></td>
                   <td width="25%">اسم الفرع</td>
-                  <td width="25%">{{:data.order.branchName}}</td>
+                  <td width="25%">{{:data.branch.branchName}}</td>
               </tr>
               <tr>
                   <td width="25%">اسم الشارع</td>
@@ -161,7 +161,7 @@
                   <td>قيمة الضريبة</td>
                   <td>المجموع الفرعي للبند (متضمنًا ضريبة القيمة المضافة)</td>
               </tr>
-              {{for data.order.orderProduct}}
+              {{for data.products}}
               <tr>
                   <td width="30%">{{:product.englishName}}<br>{{:product.arabicName}}</td>
                   <td>{{:price}} <small>SAR</small></td>

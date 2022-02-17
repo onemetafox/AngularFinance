@@ -463,20 +463,20 @@ function getInvoice(req, res){
               invoiceDetail._doc.image = url;
               if(req.user){
                 if (req.user.language === 'en') {
-                  ExportService.exportFile(`report_template/invoice/invoice-header-english.html`,
-                    `report_template/invoice/invoice-body-english.html`, invoiceDetail._doc,
+                  ExportService.exportFile(`report_template/monthlyDetail/invoice-header-english.html`,
+                    `report_template/monthlyDetail/invoice-body-english.html`, invoiceDetail._doc,
                     invoiceDetail._doc.invoiceId, ``, req.query.export, res
                     );
                   // res.download(`report.${req.query.export}`, `SUPReport.${req.query.export}`);
                 } else {
-                  ExportService.exportFile(`report_template/invoice/invoice-header-arabic.html`,
-                    `report_template/invoice/invoice-body-arabic.html`, invoiceDetail._doc,
+                  ExportService.exportFile(`report_template/monthlyDetail/invoice-header-arabic.html`,
+                    `report_template/monthlyDetail/invoice-body-arabic.html`, invoiceDetail._doc,
                     'تقرير المعاملات النقدية', `من:`, req.query.export, res);
                   // res.download(`report.${req.query.export}`, `SUPReport.${req.query.export}`);
                 }
               }else{
-                ExportService.exportFile(`report_template/invoice/invoice-header-english.html`,
-                    `report_template/invoice/invoice-body-english.html`, invoiceDetail._doc,
+                ExportService.exportFile(`report_template/monthlyDetail/invoice-header-english.html`,
+                    `report_template/monthlyDetail/invoice-body-english.html`, invoiceDetail._doc,
                     invoiceDetail._doc.invoiceId, ``, req.query.export, res
                 );
                 // res.download(`report.${req.query.export}`, `SUPReport.${req.query.export}`);
