@@ -899,7 +899,7 @@
         "details": "Details",
         "paid": "Paid",
         "invoiceDetail": "Invoice Details",
-        "taxInvoice": "Tax Invoice",
+        "taxInvoice": "Tax Monthly Invoice",
         "dateOfSupply": "Date of Supply",
         "issueDate": "Invoice Issue Date",
         "seller": "Seller",

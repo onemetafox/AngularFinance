@@ -1,7 +1,7 @@
 <div class="container">
     <ol class="breadcrumb breadcrumb-alt">
         <li class="breadcrumb-item">{{"supplier.reports.orders.stats.reports" | translate }}</li>
-        <li class="breadcrumb-item"><a ui-sref="app.supplier.report.invoices" ui-sref-opts="{reload:false}">{{"supplier.reports.invoices.title" | translate }}</a></li>
+        <li class="breadcrumb-item"><a ui-sref="app.supplier.report.invoices" ui-sref-opts="{reload:false}">{{"supplier.reports.,monthly.title" | translate }}</a></li>
         <li class="breadcrumb-item active">{{"supplier.reports.invoices.details" | translate }}</li>
     </ol>
 </div>
@@ -31,7 +31,7 @@
                     </tr>
                     <tr>
                         <td>{{"supplier.reports.invoices.dateOfSupply" | translate}}</td>
-                        <td>{{$ctrl.invoice.createdAt | amDateFormat:'DD-MM-YYYY'}}</td>
+                        <td>{{$ctrl.invoice.startDate | amDateFormat:'DD-MM-YYYY'}}~{{$ctrl.invoice.endDate | amDateFormat:'DD-MM-YYYY'}}</td>
                     </tr>
                 </table>
             </div>

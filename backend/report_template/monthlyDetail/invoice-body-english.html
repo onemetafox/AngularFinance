@@ -19,7 +19,7 @@
 </head>
 <body>
   <div>
-    <h2 class="text-center">Tax Invoice</h2>
+    <h2 class="text-center">Tax Monthly Invoice</h2>
   </div>
   <div>
     <table cellspacing="1" cellpadding="5" bgcolor="#dddddd" style="width: 100%;">
@@ -37,7 +37,7 @@
               </tr>
               <tr>
                   <td>Date of Supply</td>
-                  <td>{{:~toTime(data.createdAt)}}</td>
+                  <td>{{:~toTime(data.startDate)}}~{{:~toTime(data.endDate)}}</td>
               </tr>
           </tbody>
       </table>
