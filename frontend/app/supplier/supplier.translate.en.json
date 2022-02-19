@@ -898,7 +898,7 @@
         "number": "Invoice Number",
         "details": "Details",
         "paid": "Paid",
-        "invoiceDetail": "Invoice Details",
+        "invoiceDetail": "Monthly Invoice Details",
         "taxInvoice": "Tax Monthly Invoice",
         "dateOfSupply": "Date of Supply",
         "issueDate": "Invoice Issue Date",
