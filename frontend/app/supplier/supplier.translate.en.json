@@ -897,6 +897,7 @@
         "title": "Monthly Invoices",
         "number": "Invoice Number",
         "details": "Details",
+        "action": "Action",
         "paid": "Paid",
         "invoiceDetail": "Monthly Invoice Details",
         "taxInvoice": "Tax Monthly Invoice",
@@ -931,7 +932,8 @@
         "totalAmountDue": "Total Amount Due",
         "branchName": "Branch Name",
         "invoiceTitle": "INVOCE",
-        "averageInvoices":"Daily Avg. Invoices"
+        "averageInvoices":"Daily Avg. Invoices",
+        "delted": "Monthly Invoice Deleted Successfully"
 
       }
     },

@@ -12,6 +12,7 @@ import ExportService from './exportFileService';
 import OrderProduct from '../models/orderProduct.model';
 import MonthlyInvoice from '../models/monthlyInvoice.model';
 import { query } from 'winston';
+import { json } from 'body-parser';
 
 var QRCode = require('qrcode')
 // const moment = require('moment-timezone');
@@ -385,7 +386,15 @@ function getNumberInvoices(req, supplierInvoiceReport, callback){
     })
   }
 }
-
+function delInvoice(req, res){
+  MonthlyInvoice.remove({_id : req.query.id})
+  .then((result)=>{
+    res.json(Response.success(result));
+  })
+  .catch((err)=>{
+    res.json(Response.failure(err));
+  })
+}
 function getInvoice(req, res){
 
   const QRUrl = "http://supplieson.com/api/invoices/getInvoice?";
@@ -571,5 +580,6 @@ export default {
   create,
   getInvoices,
   createInvoice,
-  getInvoice
+  getInvoice,
+  delInvoice
 };

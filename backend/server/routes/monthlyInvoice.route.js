@@ -33,6 +33,9 @@ router.route('/create')
 
 router.route('/getInvoice')
   .get(invoiceCtrl.getInvoice);
+
+router.route('/delInvoice')
+  .get(invoiceCtrl.delInvoice);
   
 router.param('invoiceId', invoiceCtrl.load);
 

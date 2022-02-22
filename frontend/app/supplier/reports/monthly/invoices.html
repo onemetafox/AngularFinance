@@ -133,10 +133,11 @@
                             <th class="bold">{{"supplier.reports.transactions.filter.customer" | translate }}</th>
                             <th class="bold">{{"supplier.reports.transactions.table.amount" | translate }}</th>
                             <th class="bold">{{"supplier.reports.monthly.branchName" | translate }}</th>
+                            <th class="bold">{{"supplier.reports.monthly.action" | translate }}</th>
                         </tr></thead>
                         <tbody>
 
-                        <tr ng-repeat="item in $ctrl.invoice" class="gradeX odd content-table-payment cursor" role="row" ng-click="$ctrl.selected(item)">
+                        <tr ng-repeat="item in $ctrl.invoice" class="gradeX odd content-table-payment cursor" role="row" >
                             <td class="sorting_1 mn-150 p-r-0">{{item.invoiceId}}</td>
                             <td class="sorting_1 mn-50 p-r-0 p-l-0">
                                 <span class="label upper-case">{{item.createdAt | amUtcOffset:'-0000' | amDateFormat:'DD-MM-YYYY'}}</span>
@@ -147,6 +148,10 @@
                             <td class="sorting_1 p-l-5">{{item.price * 1.15 | currency:"":2}} <small>{{"supplier.account.payment.sar" | translate }}</small></td>
                             <td class="sorting_1 p-l-5">
                                 {{item.branch.branchName | translate}}
+                            </td>
+                            <td>
+                                <a class="no-animate p-l-10 p-r-10" href=""  ng-click="$ctrl.deleteInvoice(item)">{{"supplier.account.payment.delete" | translate }}</a>
+                                <a class="no-animate p-l-10 p-r-10" href=""  ng-click="$ctrl.selected(item)">{{"supplier.reports.monthly.details" | translate }}</a>
                             </td>
                         </tr>
 

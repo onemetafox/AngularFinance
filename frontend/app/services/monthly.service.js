@@ -129,6 +129,15 @@ export default class MonthlyService {
 
         return this.retryRequest(request);
     }
+    deleteInvoice(query) {
+        const request = {};
+        request.url = `${this._AppConstants.api}/monthlyinvoices/delInvoice?id=${query.id}`;
+        // request.url = request.url.concat(`&type=${query.type}`);
+        request.method = 'GET';
+        request.headers = { 'Content-Type': 'application/json' };
+        request.headers.Authorization = `Bearer ${this._JwtService.get()}`;
+        return this.retryRequest(request);
+    }
 }
 
 MonthlyService.$inject = ['AppConstants', 'JwtService', 'RetryRequest','$translate'];

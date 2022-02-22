@@ -148,6 +148,19 @@ export default class SupplierReportMonthlyCtrl {
         const invoice = { id: item._id };
         this._$state.go('app.supplier.report.monthlyDetails', invoice);
     }
+    deleteInvoice(item){
+        const _onSuccess = (res) => {
+            this.notify('supplier.reports.monthly.deleted', 'success', 1000);
+            // this.setSpecialPriceMode('viewMode');
+            this.listInvoices(this.searchCriteria);
+        };
+        const _onError = (err) => {
+            this.errors = err;
+        };
+        const invocie = {id: item._id};
+        this._MonthlyService.deleteInvoice(invocie)
+        .then(_onSuccess, _onError);
+    }
 }
 
 SupplierReportMonthlyCtrl.$inject = ['MonthlyService', 'CustomerService', 'SupplierService', '$state', '$rootScope','$translate'];
