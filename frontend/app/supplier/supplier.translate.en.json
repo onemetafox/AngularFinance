@@ -933,7 +933,11 @@
         "branchName": "Branch Name",
         "invoiceTitle": "INVOCE",
         "averageInvoices":"Daily Avg. Invoices",
-        "delted": "Monthly Invoice Deleted Successfully"
+        "deleted": "Monthly Invoice Deleted Successfully",
+        "customerError": "Customer Is Not Selected",
+        "invoiceError": "Invoices Is Not Existed",
+        "createError": "Monthly Invoice Already Exist",
+        "createSuccess": "Monthly Invoice Created Successfully"
 
       }
     },
