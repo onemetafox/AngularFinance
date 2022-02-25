@@ -109,14 +109,14 @@ export default class SupplierReportInvoicesCtrl {
         const _onSuccess = (res) => {
             if(res.data.status == "Success"){
                 this.createSuccess = true;
-                this.message = 'supplier.reposts.monthly.createSuccess';
-                this.notify(this.message, 'danger', 5000);
+                this.message = 'supplier.reports.monthly.createSuccess';
+                this.notify(this.message, 'success', 5000);
             }else{
                 if(res.data.data == "Invoice is not existed"){
                     this.message = 'supplier.reports.monthly.invoiceError';
                     this.notify(this.message, 'danger', 5000);  
                 }else if(res.data.data == "Invoice already created"){
-                    this.message = 'supplier.reposts.monthly.createError';
+                    this.message = 'supplier.reports.monthly.createError';
                     this.notify(this.message, 'danger', 5000);  
                 }
             }
