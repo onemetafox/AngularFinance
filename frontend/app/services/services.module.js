@@ -26,7 +26,7 @@ const testEnv = 'http://167.71.169.109';
 const development = 'http://localhost:3000';
 const dante = "http://192.168.107.183:3000";
 
-const host = dante;
+const host = development;
 // const host = production;
 
 const servicesModule = angular.module('app.servicesModule', []);

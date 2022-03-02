@@ -151,22 +151,7 @@ export default class TransactionsService {
         request.method = 'GET';
         request.headers = { 'Content-Type': 'application/json' };
         request.headers.Authorization = `Bearer ${this._JwtService.get()}`;
-        this.retryRequest(request).then(
-            // (result) => {
-            //     let url =  `${this._AppConstants.api}/invoices/getInvoice?id=${result.data.data._id}&export=pdf`;
-            //     const request2 = {
-            //         url,
-            //         headers: this._request.headers,
-            //         responseType: 'arraybuffer',
-            //         method: 'GET',
-            //     };
-            //     this.retryRequest(request2).then(
-            //         (result1) => {
-            //             suppliesOnHelper.createBlob(result1, 'SupOn-Report', 'pdf');
-            //         }
-            //     );
-            // }
-        );
+        return this.retryRequest(request);
     }
     listInvoices(query) {
         const request = {};
