@@ -123,7 +123,7 @@ function checkDefaultAdmin() {
           mobileNumber: '966512345678',
           firstName: 'Admin',
           lastName: 'Admin',
-          password: '123456789',
+          password: '987654321',
           role: role._id,
           type: 'Admin',
           language: 'en'
