@@ -120,7 +120,36 @@ function inviteExcel(req, res){
   
 }
 // const moment = require('moment-timezone');
+/**
+ * Create new supplier
+ * @property {string} req.query.customerId
+ * @returns {Customer}
+ */
+ function approve(req, res) {
+  const customer = req.customer;
+  customer.status = 'Active';
 
+  User.findById(customer.staff[0]._id)
+    .then((userCustomer) => {
+      userCustomer.status = 'Active';
+      userCustomer.save()
+        .catch(e => res.status(httpStatus.INTERNAL_SERVER_ERROR).json(Response.failure(e)));
+    });
+
+  customer.save()
+    .then((savedCustomer) => {
+      savedCustomer.photo = `${savedCustomer.photo}`;
+      savedCustomer.coverPhoto = `${savedCustomer.coverPhoto}`;
+      if (appSettings.emailSwitch) {
+        const content = {
+          recipientName: UserService.toTitleCase(savedCustomer.representativeName)
+        };
+        EmailHandler.sendEmail(customer.staff[0].email, content, 'APPROVEUSER', customer.staff[0].language);
+      }
+      res.json(Response.success(savedCustomer));
+    })
+    .catch(e => res.status(httpStatus.INTERNAL_SERVER_ERROR).json(Response.failure(e)));
+}
 /**
  * Get customer
  * @returns {Customer}
@@ -1081,6 +1110,7 @@ function removeStaff(req, res) {
  * Block Customer
  */
 function block(req, res) {
+  console.log(req.user._id);
   async.waterfall([
     function passParameters(callback) {
       callback(null, req.user._id, null, null, null, null);
@@ -3114,5 +3144,6 @@ export default {
   fixCustomerStaff,
   updateCustomerCity,
   updateCustomerAddress,
-  inviteExcel
+  inviteExcel,
+  approve
 };

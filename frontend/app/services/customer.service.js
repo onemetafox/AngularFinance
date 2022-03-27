@@ -227,7 +227,28 @@ export default class CustomerService {
         }
         return res;
     }
-
+    blockCustomer(customerId) {
+        const request = {
+            url: `${this._AppConstants.api}/customers/block/${customerId}`,
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${this._JwtService.get()}`
+            },
+        };
+        return this.retryRequest(request);
+    }
+    approveCustomer(customerId) {
+        const request = {
+            url: `${this._AppConstants.api}/customers/approve/${customerId}`,
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${this._JwtService.get()}`
+            },
+        };
+        return this.retryRequest(request);
+    }
     addCustomerSpecialPrices(details) {
         const request = {};
         request.url = `${this._AppConstants.api}/customers/specialPrices`;

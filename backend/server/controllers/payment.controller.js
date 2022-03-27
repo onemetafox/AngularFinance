@@ -803,7 +803,7 @@ function getPaymentsCount(req, res) {
         res.json(error);
       }
       // console.log(resultObject);
-      res.json(Response.success(resultObject));
+      // res.json(Response.success(resultObject));
     });
   }
 }

@@ -20,7 +20,11 @@ router.route('/')
   .put(passport.authenticate('jwt', {
     session: false
   }), auth.can('Access Customers', 'PUT_/api/customers'), validate(paramValidation.updateCustomer), customerCtrl.update);
-
+router.route('/approve/:supplierId')
+  /** PUT /api/suppliers/approve/:supplierId - Update supplier status to Active */
+  .put(passport.authenticate('jwt', {
+    session: false
+  }), auth.can('Manage Customers', 'PUT_/api/customers/approve'), customerCtrl.approve);
 router.route('/invite')
   /** POST /api/customers/invite - Invite customer */
   .post(passport.authenticate('jwt', {

@@ -20,7 +20,7 @@ import notificationCtrl from '../controllers/notification.controller';
  */
 function load(req, res, next, id) {
   User.findById(id)
-  .where('type').equals('Admin')
+  // .where('type').equals('Admin')
   .then((admin) => {
     if (admin) {
       req.admin = admin;
