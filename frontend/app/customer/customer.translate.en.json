@@ -355,6 +355,7 @@
       "breadcrumb": {
         "categories": "Categories"
       },
+      "currency": "SAR",
       "list": {
         "text": {
           "all": "All Categories",
@@ -386,6 +387,7 @@
         "exceedLimit": "Sorry, You exceed your limit",
         "unAuthorized": "Sorry, Unauthorized to order, Contact Your Supplier"
       },
+      "search":"Search Products",
       "field": {
         "categories": {
           "invalid": "contains invalid characters",

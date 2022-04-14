@@ -1,6 +1,7 @@
 export default class CustomerProductCategoryCtrl {
-    constructor(CategoryService, $stateParams, $rootScope, $state, $element) {
+    constructor(CategoryService, ProductService, $stateParams, $rootScope, $state, $element) {
         this._CategoryService = CategoryService;
+        this._ProductService = ProductService;
         this._$stateParams = $stateParams;
         this._$rootScope = $rootScope;
         this._$state = $state;
@@ -29,6 +30,8 @@ export default class CustomerProductCategoryCtrl {
             all: false
         };
         this.getCategories(this.categoryQuery);
+        this.query = { skip: 0, limit: 10, keyword: ""};
+        this.query.categoryId = "All";
     }
 
     setPageCategories(pageNumber) {
@@ -40,6 +43,33 @@ export default class CustomerProductCategoryCtrl {
     requestCategories() {
         this.requestAllCategories = this.categoryQuery.all;
         this.getCategories(this.categoryQuery);
+    }
+    getProducts(query) {
+        this.categoriesLoaded = false;
+        this.isLoading = true;
+        const _onSuccess = (res) => {
+            this.productList = res.data.data;
+            this.productsTotalPages = Math.ceil(
+                this.productList.count / this.query.limit);
+        };
+        const _onError = (err) => {
+            if (err.code === 500) {
+                this.hasError = true;
+            } else if (err.code === 501) {
+                this.noInternetConnection = true;
+            }
+        };
+        const _onFinal = () => {
+            this.isLoading = false;
+        };
+        this._ProductService.getProducts(query)
+            .then(_onSuccess, _onError)
+            .finally(_onFinal);
+    }
+    setProductsCurrentPage(pageNumber) {
+        this.productCurrentPage = pageNumber;
+        this.query.skip = (pageNumber - 1) * this.query.limit;
+        this.getProducts(this.query);
     }
 
     getCategories(query) {
@@ -67,8 +97,9 @@ export default class CustomerProductCategoryCtrl {
         };
         const _onFinal = (err) => {
             this.categoriesLoaded = true;
+            this.isLoading = false;
         };
         this._CategoryService.getCategories(query).then(_onSuccess, _onError).finally(_onFinal);
     }
 }
-CustomerProductCategoryCtrl.$inject = ['CategoryService', '$stateParams', '$rootScope', '$state', '$element'];
+CustomerProductCategoryCtrl.$inject = ['CategoryService','ProductService', '$stateParams', '$rootScope', '$state', '$element'];

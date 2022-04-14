@@ -271,67 +271,131 @@ function get(req, res) {
  * @returns {Product[]}
  */
 function list(req, res) {
-  async.waterfall([
-      // Function that passes the parameters to the second function.
-    function passParamters(callback) {
-      callback(null, req.user._id, null);
-    },
-    getSupplierFromUser
-  ],
-    (err, supplierId) => {
-      if (err) {
-        res.status(httpStatus.INTERNAL_SERVER_ERROR).json(Response.failure(err));
-      }
-      
-      Product.find({ deleted: false,$or: [
-          { englishName: new RegExp(req.query.keyword, 'i') },
-          { arabicName: new RegExp(req.query.keyword ,'i') },
-          { englishDescription : new RegExp(req.query.keyword ,'i') },
-          { arabicDescription : new RegExp(req.query.keyword ,'i') }
-        ]})
-        .populate({
-          path: 'categories',
-          select: '_id arabicName englishName parentCategory status',
-          match: { status: 'Active'},
-          populate: {
-            path: 'parentCategory',
-            select: '_id arabicName englishName status'
-          }
-        })
-        .populate({
-          path: 'unit',
-          select: '_id arabicName englishName'
-        })
-        .where('supplier').equals(supplierId)
-        .sort({
-          createdAt: -1
-        })
-        .then((productsArr) => {
-          const skip = Number(req.query.skip);
-          const limit = Number(req.query.limit);
-          const resultProductsArr = productsArr.map(c => c).filter(c => c.categories.length > 0);
-          let products = [];
-          if (req.query.skip && req.query.limit) {
-            products = resultProductsArr.slice(skip, (limit + skip) > resultProductsArr.length ? (resultProductsArr.length) // eslint-disable-line max-len
-              : (limit + skip));
-          } else {
-            products = resultProductsArr;
-          }
-          products.forEach((productObj) => {
-            productObj.coverPhoto = `${appSettings.imagesUrl}${productObj.coverPhoto}`;
-            let i;
-            for (i = 0; i < productObj.images.length; i += 1) {
-              productObj.images[i] = `${appSettings.imagesUrl}${productObj.images[i]}`;
+  if (req.user.type === 'Supplier') {
+    async.waterfall([
+        // Function that passes the parameters to the second function.
+      function passParamters(callback) {
+        callback(null, req.user._id, null);
+      },
+      getSupplierFromUser
+    ],
+      (err, supplierId) => {
+        if (err) {
+          res.status(httpStatus.INTERNAL_SERVER_ERROR).json(Response.failure(err));
+        }
+        
+        Product.find({ deleted: false,$or: [
+            { englishName: new RegExp(req.query.keyword, 'i') },
+            { arabicName: new RegExp(req.query.keyword ,'i') },
+            { englishDescription : new RegExp(req.query.keyword ,'i') },
+            { arabicDescription : new RegExp(req.query.keyword ,'i') }
+          ]})
+          .populate({
+            path: 'categories',
+            select: '_id arabicName englishName parentCategory status',
+            match: { status: 'Active'},
+            populate: {
+              path: 'parentCategory',
+              select: '_id arabicName englishName status'
             }
-          });
-          const productsObject = {
-            products,
-            count: resultProductsArr.length
-          };
-          res.json(Response.success(productsObject));
-        })
-        .catch(e => res.status(httpStatus.INTERNAL_SERVER_ERROR).json(Response.failure(e)));
-    });
+          })
+          .populate({
+            path: 'unit',
+            select: '_id arabicName englishName'
+          })
+          .where('supplier').equals(supplierId)
+          .sort({
+            createdAt: -1
+          })
+          .then((productsArr) => {
+            const skip = Number(req.query.skip);
+            const limit = Number(req.query.limit);
+            const resultProductsArr = productsArr.map(c => c).filter(c => c.categories.length > 0);
+            let products = [];
+            if (req.query.skip && req.query.limit) {
+              products = resultProductsArr.slice(skip, (limit + skip) > resultProductsArr.length ? (resultProductsArr.length) // eslint-disable-line max-len
+                : (limit + skip));
+            } else {
+              products = resultProductsArr;
+            }
+            products.forEach((productObj) => {
+              productObj.coverPhoto = `${appSettings.imagesUrl}${productObj.coverPhoto}`;
+              let i;
+              for (i = 0; i < productObj.images.length; i += 1) {
+                productObj.images[i] = `${appSettings.imagesUrl}${productObj.images[i]}`;
+              }
+            });
+            const productsObject = {
+              products,
+              count: resultProductsArr.length
+            };
+            res.json(Response.success(productsObject));
+          })
+          .catch(e => res.status(httpStatus.INTERNAL_SERVER_ERROR).json(Response.failure(e)));
+      });
+    } else if(req.user.type === 'Customer'){
+      async.waterfall([
+        // Function that passes the parameters to the second function.
+      function passParamters(callback) {
+        callback(null, req.user._id, null);
+      },
+      getCustomerFromUser
+    ],
+      (err, customerId) => {
+        if (err) {
+          res.status(httpStatus.INTERNAL_SERVER_ERROR).json(Response.failure(err));
+        }
+        
+        Product.find({ deleted: false,$or: [
+            { englishName: new RegExp(req.query.keyword, 'i') },
+            { arabicName: new RegExp(req.query.keyword ,'i') },
+            { englishDescription : new RegExp(req.query.keyword ,'i') },
+            { arabicDescription : new RegExp(req.query.keyword ,'i') }
+          ]})
+          .populate({
+            path: 'categories',
+            select: '_id arabicName englishName parentCategory status',
+            match: { status: 'Active'},
+            populate: {
+              path: 'parentCategory',
+              select: '_id arabicName englishName status'
+            }
+          })
+          .populate({
+            path: 'unit',
+            select: '_id arabicName englishName'
+          })
+          // .where('supplier').equals(supplierId)
+          .sort({
+            createdAt: -1
+          })
+          .then((productsArr) => {
+            const skip = Number(req.query.skip);
+            const limit = Number(req.query.limit);
+            const resultProductsArr = productsArr.map(c => c).filter(c => c.categories.length > 0);
+            let products = [];
+            if (req.query.skip && req.query.limit) {
+              products = resultProductsArr.slice(skip, (limit + skip) > resultProductsArr.length ? (resultProductsArr.length) // eslint-disable-line max-len
+                : (limit + skip));
+            } else {
+              products = resultProductsArr;
+            }
+            products.forEach((productObj) => {
+              productObj.coverPhoto = `${appSettings.imagesUrl}${productObj.coverPhoto}`;
+              let i;
+              for (i = 0; i < productObj.images.length; i += 1) {
+                productObj.images[i] = `${appSettings.imagesUrl}${productObj.images[i]}`;
+              }
+            });
+            const productsObject = {
+              products,
+              count: resultProductsArr.length
+            };
+            res.json(Response.success(productsObject));
+          })
+          .catch(e => res.status(httpStatus.INTERNAL_SERVER_ERROR).json(Response.failure(e)));
+      });
+    }
 }
 
 /**
