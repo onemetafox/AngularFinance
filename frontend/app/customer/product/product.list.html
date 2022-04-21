@@ -21,7 +21,14 @@
         </a>
     </li>
 </ul>
-
+<div class="row m-b-10">
+    <div class="col-12">
+        <div class="form-group">
+            <input type="text" ng-model="$ctrl.productsQuery.keyword" placeholder="{{'customer.product.search' | translate}}" 
+                    ng-change="$ctrl.getProducts($ctrl.category._id)" class="form-control">
+        </div>
+    </div>
+</div>
 <div class="row m-b-15">
     <div class="col-sm-7 col-md-7 col-lg-8 col-xl-9">
         <div class="col">

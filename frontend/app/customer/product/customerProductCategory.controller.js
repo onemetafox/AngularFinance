@@ -44,34 +44,6 @@ export default class CustomerProductCategoryCtrl {
         this.requestAllCategories = this.categoryQuery.all;
         this.getCategories(this.categoryQuery);
     }
-    getProducts(query) {
-        this.categoriesLoaded = false;
-        this.isLoading = true;
-        const _onSuccess = (res) => {
-            this.productList = res.data.data;
-            this.productsTotalPages = Math.ceil(
-                this.productList.count / this.query.limit);
-        };
-        const _onError = (err) => {
-            if (err.code === 500) {
-                this.hasError = true;
-            } else if (err.code === 501) {
-                this.noInternetConnection = true;
-            }
-        };
-        const _onFinal = () => {
-            this.isLoading = false;
-        };
-        this._ProductService.getProducts(query)
-            .then(_onSuccess, _onError)
-            .finally(_onFinal);
-    }
-    setProductsCurrentPage(pageNumber) {
-        this.productCurrentPage = pageNumber;
-        this.query.skip = (pageNumber - 1) * this.query.limit;
-        this.getProducts(this.query);
-    }
-
     getCategories(query) {
         this.categoriesLoaded = false;
         const _onSuccess = (res) => {

@@ -35,12 +35,14 @@ export default class CustomerProductListCtrl {
             categoryId: this._$stateParams.categoryId,
             supplierId: this.supplierId,
             skip: 0,
+            keyword: "",
             limit: 9
         };
 
         this.otherProductsQuery = {
             categoryId: this._$stateParams.categoryId,
             supplierId: this.supplierId,
+            keyword: "",
             skip: 0,
             limit: 9
         };

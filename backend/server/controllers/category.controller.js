@@ -322,7 +322,12 @@ function getProducts(req, res) {
           match: { $and: [{ deleted: false }, { status: { $ne: 'Hidden' } }] },
           populate: {
             path: 'products',
-            match: { supplier: req.query.supplierId, deleted: false, status: { $ne: 'Hidden' } },
+            match: { supplier: req.query.supplierId, deleted: false, status: { $ne: 'Hidden' },$or: [
+              { englishName: new RegExp(req.query.keyword, 'i') },
+              { arabicName: new RegExp(req.query.keyword ,'i') },
+              { englishDescription : new RegExp(req.query.keyword ,'i') },
+              { arabicDescription : new RegExp(req.query.keyword ,'i') }
+            ] },
             populate: [{
               path: 'categories',
               select: '_id arabicName englishName parentCategory',
