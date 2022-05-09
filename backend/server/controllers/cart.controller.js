@@ -130,6 +130,7 @@ function get(req, res) {
     const fromDate = ''; // eslint-disable-line no-unused-vars
     const cart = req.cart.map(c => c)
       .filter(c => c.customer.user.toString() === req.user._id.toString());
+
     if (cart.length > 0) {
       const totalPrice = cart[0].products.map(c => c.price * c.quantity)
         .reduce((sum, value) => sum + value, 0);
@@ -743,7 +744,7 @@ function loadByCartId(req, res, next, id) {
     })
     .populate({
       path: 'products.product',
-      select: '_id englishName arabicName supplier price unit',
+      select: '_id englishName arabicName supplier price unit coverPhoto',
       populate: {
         path: 'unit',
         select: '_id arabicName englishName'
@@ -783,7 +784,7 @@ function loadBySupplierId(req, res, next, id) {
         })
         .populate({
           path: 'products.product',
-          select: '_id englishName arabicName supplier price unit',
+          select: '_id englishName arabicName supplier price unit coverPhoto',
           populate: {
             path: 'unit',
             select: '_id arabicName englishName'
@@ -823,7 +824,7 @@ function getProductAndCustomer(customerEmail, productId, userId, quantity, callb
     },
     product: (parallelCallback) => {
       Product.findById(productId)
-          .select('_id englishName arabicName supplier price unit')
+          .select('_id englishName arabicName supplier price unit coverPhoto')
           .populate({
             path: 'supplier',
             select: '_id representativeName VATRegisterNumber'
