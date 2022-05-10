@@ -154,10 +154,10 @@ function get(req, res) {
         // Check if the product belongs to the supplier
         if (supplierId.equals(req.product.supplier._id)) {
           const product = req.product;
-          product.coverPhoto = `${appSettings.imagesUrl}${product.coverPhoto}`;
+          product.coverPhoto = `${appSettings.fileUploadUrl}${product.coverPhoto}`;
           let i;
           for (i = 0; i < product.images.length; i += 1) {
-            product.images[i] = `${appSettings.imagesUrl}${product.images[i]}`;
+            product.images[i] = `${appSettings.fileUploadUrl}${product.images[i]}`;
           }
           res.json(Response.success(product));
         } else {
@@ -187,10 +187,10 @@ function get(req, res) {
               if (appSettings.customerSpecialPricesSwitch) {
                 product.price = resultProduct[0].price;
               }
-              product.coverPhoto = `${appSettings.imagesUrl}${product.coverPhoto}`;
+              product.coverPhoto = `${appSettings.fileUploadUrl}${product.coverPhoto}`;
               let i;
               for (i = 0; i < product.images.length; i += 1) {
-                product.images[i] = `${appSettings.imagesUrl}${product.images[i]}`;
+                product.images[i] = `${appSettings.fileUploadUrl}${product.images[i]}`;
               }
               res.json(Response.success(product));
             });
@@ -199,10 +199,10 @@ function get(req, res) {
             .populate('categories')
             .populate('unit')
             .then((product) => {
-              product.coverPhoto = `${appSettings.imagesUrl}${product.coverPhoto}`;
+              product.coverPhoto = `${appSettings.fileUploadUrl}${product.coverPhoto}`;
               let i;
               for (i = 0; i < product.images.length; i += 1) {
-                product.images[i] = `${appSettings.imagesUrl}${product.images[i]}`;
+                product.images[i] = `${appSettings.fileUploadUrl}${product.images[i]}`;
               }
               const resultObject = {
                 _id: product._id,
@@ -232,10 +232,10 @@ function get(req, res) {
           .populate('categories')
           .populate('unit')
           .then((product) => {
-            product.coverPhoto = `${appSettings.imagesUrl}${product.coverPhoto}`;
+            product.coverPhoto = `${appSettings.fileUploadUrl}${product.coverPhoto}`;
             let i;
             for (i = 0; i < product.images.length; i += 1) {
-              product.images[i] = `${appSettings.imagesUrl}${product.images[i]}`;
+              product.images[i] = `${appSettings.fileUploadUrl}${product.images[i]}`;
             }
             const resultObject = {
               _id: product._id,
@@ -319,10 +319,10 @@ function list(req, res) {
               products = resultProductsArr;
             }
             products.forEach((productObj) => {
-              productObj.coverPhoto = `${appSettings.imagesUrl}${productObj.coverPhoto}`;
+              productObj.coverPhoto = `${appSettings.fileUploadUrl}${productObj.coverPhoto}`;
               let i;
               for (i = 0; i < productObj.images.length; i += 1) {
-                productObj.images[i] = `${appSettings.imagesUrl}${productObj.images[i]}`;
+                productObj.images[i] = `${appSettings.fileUploadUrl}${productObj.images[i]}`;
               }
             });
             const productsObject = {
@@ -381,10 +381,10 @@ function list(req, res) {
               products = resultProductsArr;
             }
             products.forEach((productObj) => {
-              productObj.coverPhoto = `${appSettings.imagesUrl}${productObj.coverPhoto}`;
+              productObj.coverPhoto = `${appSettings.fileUploadUrl}${productObj.coverPhoto}`;
               let i;
               for (i = 0; i < productObj.images.length; i += 1) {
-                productObj.images[i] = `${appSettings.imagesUrl}${productObj.images[i]}`;
+                productObj.images[i] = `${appSettings.fileUploadUrl}${productObj.images[i]}`;
               }
             });
             const productsObject = {
@@ -716,10 +716,10 @@ function getActiveProducts(supplierId, limit, skip, callback) {
     .limit(Number(limit))
     .then((products) => {
       products.forEach((productObj) => {
-        productObj.coverPhoto = `${appSettings.imagesUrl}${productObj.coverPhoto}`;
+        productObj.coverPhoto = `${appSettings.fileUploadUrl}${productObj.coverPhoto}`;
         let i;
         for (i = 0; i < productObj.images.length; i += 1) {
-          productObj.images[i] = `${appSettings.imagesUrl}${productObj.images[i]}`;
+          productObj.images[i] = `${appSettings.fileUploadUrl}${productObj.images[i]}`;
         }
       });
       callback(null, products);
