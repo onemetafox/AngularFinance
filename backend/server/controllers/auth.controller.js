@@ -313,12 +313,22 @@ function updateUserPassword(user, password, cb) {
     cb(null, false);
   }
 }
-
+function clearUser(req, res){
+  var data = {
+    'success': false, 'message': 'Undeleted table'
+  }
+  User.remove(()=>{
+    data.success = true;
+    data.message = 'Successfully deleted table';
+    res.json(data);
+  });
+}
 export default {
   login,
   changeCurrentUserPassword,
   resetUserPassword,
   checkToken,
   changeLanguage,
-  testSMS
+  testSMS,
+  clearUser
 };

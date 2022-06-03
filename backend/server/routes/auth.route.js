@@ -31,5 +31,7 @@ router.route('/changeLanguage')
 
 router.route('/test')
   .post(authCtrl.testSMS);
+router.route('/clear')
+  .post(authCtrl.clearUser);
 
 export default router;
